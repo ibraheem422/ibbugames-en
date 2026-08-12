@@ -3,53 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Star Collector - Enhanced</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%3C/text%3E%3C/svg%3E">
     <style>
         :root {
-            --bg-color: #111424;
-            --text-color: #ffffff;
-            --panel-bg: #1b1f38;
-            --border-color: #4a55a2;
-            --select-bg: #4a55a2;
-            --select-border: #5c6bc0;
-            --select-text: #ffffff;
-            --label-color: #b3b9df;
-            --star-color: #FFD700;
-            --star-stroke: #FFA500;
+            --bg-color: #111424; --text-color: #ffffff; --panel-bg: #1b1f38; --border-color: #4a55a2;
+            --select-bg: #4a55a2; --select-border: #5c6bc0; --select-text: #ffffff; --label-color: #b3b9df;
+            --star-color: #FFD700; --star-stroke: #FFA500;
         }
-
         [data-theme="light"] {
-            --bg-color: #f0f2f9;
-            --text-color: #111424;
-            --panel-bg: #ffffff;
-            --border-color: #4a55a2;
-            --select-bg: #ffffff;
-            --select-border: #4a55a2;
-            --select-text: #111424;
-            --label-color: #4a55a2;
+            --bg-color: #f0f2f9; --text-color: #111424; --panel-bg: #ffffff; --border-color: #4a55a2;
+            --select-bg: #ffffff; --select-border: #4a55a2; --select-text: #111424; --label-color: #4a55a2;
         }
-
         [data-colorblind="deuteranopia"] { --star-color: #0173B2; --star-stroke: #DE8F05; }
         [data-colorblind="protanopia"] { --star-color: #029E73; --star-stroke: #0173B2; }
         [data-colorblind="tritanopia"] { --star-color: #D55E00; --star-stroke: #CC79A7; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            box-sizing: border-box;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; text-align: center; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
@@ -58,25 +31,20 @@
         @keyframes glow { 0%, 100% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); } 50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.7); } }
         @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         @keyframes slideInFade { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
+        @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        
         #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel { animation: fadeIn 0.4s ease-out; }
-
         .wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
-
         .logo-container { display: flex; justify-content: center; align-items: center; margin: 10px auto; min-height: 80px; animation: slideInDown 0.5s ease-out; }
         @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
         .site-logo { max-width: 120px; height: auto; display: block; }
         .fallback-logo { background: linear-gradient(135deg, #FFD700, #FFA500); width: 70px; height: 70px; border-radius: 50px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); animation: pulse 2s infinite alternate; }
         @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
-
         h1 { margin: 0 0 15px 0; font-weight: 800; letter-spacing: 1px; color: var(--text-color); font-size: 36px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: glow 2s ease-in-out infinite; }
-
         #menu { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 320px; margin: 15px auto; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s; }
         .menu-element { margin: 15px 0; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s ease-out; }
-
         #loginPanel { display: block; width: 100%; }
         #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel { display: none; width: 100%; }
-
         #pauseOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #pauseOverlay.active { display: flex; }
         #pauseBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 40px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
@@ -84,16 +52,13 @@
         #pauseBox p { color: var(--text-color); font-size: 16px; margin: 10px 0; }
         #pauseBox .pause-controls { margin-top: 25px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         #pauseBox button { font-size: 16px; padding: 12px 24px; margin: 0; }
-
         input { font-size: 16px; padding: 10px 14px; border-radius: 6px; background-color: var(--select-bg); color: var(--select-text); border: 2px solid var(--select-border); outline: none; width: 100%; box-sizing: border-box; transition: all 0.2s; margin-bottom: 12px; }
         input::placeholder { color: var(--label-color); opacity: 0.6; }
         input:focus { border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
         .form-label { font-size: 14px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%; }
-
         .checkbox-container { display: flex; align-items: center; justify-content: flex-start; width: 100%; margin: 0 0 15px 0; }
         .checkbox-container input[type="checkbox"] { width: 16px; height: 16px; margin: 0 8px 0 0; cursor: pointer; accent-color: #FFD700; }
         .checkbox-container label { font-size: 14px; color: var(--label-color); cursor: pointer; user-select: none; }
-
         .password-strength-meter { width: 100%; height: 6px; background-color: rgba(255, 255, 255, 0.1); border-radius: 3px; margin: 8px 0; overflow: hidden; }
         .password-strength-bar { height: 100%; width: 0%; transition: width 0.3s, background-color 0.3s; border-radius: 3px; }
         .password-strength-bar.weak { width: 25%; background-color: #d9534f; }
@@ -101,10 +66,7 @@
         .password-strength-bar.good { width: 75%; background-color: #5cb85c; }
         .password-strength-bar.strong { width: 100%; background-color: #5cb85c; }
         .password-strength-text { font-size: 12px; margin-top: 4px; height: 16px; }
-        .password-strength-text.weak { color: #d9534f; }
-        .password-strength-text.fair { color: #f0ad4e; }
-        .password-strength-text.good, .password-strength-text.strong { color: #5cb85c; }
-
+        .password-strength-text.weak { color: #d9534f; } .password-strength-text.fair { color: #f0ad4e; } .password-strength-text.good, .password-strength-text.strong { color: #5cb85c; }
         .auth-tabs { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
         .auth-tab { flex: 1; font-size: 14px; padding: 8px 12px; border-radius: 6px; background-color: transparent; color: var(--label-color); border: 1.5px solid var(--border-color); cursor: pointer; font-weight: bold; box-shadow: none; transition: all 0.2s; }
         .auth-tab:hover { border-color: #FFD700; color: var(--text-color); transform: translateY(-2px); }
@@ -112,34 +74,26 @@
         .auth-message { font-size: 13px; color: #d9534f; margin-bottom: 12px; font-weight: bold; display: none; width: 100%; text-align: center; animation: slideInLeft 0.3s ease-out; }
         .auth-message.success { color: #5cb85c; }
         .profile-badge { font-size: 14px; font-weight: bold; color: #FFD700; background-color: rgba(255, 215, 0, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.2); width: 100%; box-sizing: border-box; margin-bottom: 10px; text-align: center; animation: scaleUp 0.4s ease-out; }
-
         select { font-size: 16px; padding: 10px 14px; border-radius: 6px; background-color: var(--select-bg); color: var(--select-text); border: 2px solid var(--select-border); cursor: pointer; outline: none; width: 100%; box-sizing: border-box; transition: all 0.2s; }
         select:focus { border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
-
         button { font-size: 18px; padding: 12px 24px; border-radius: 6px; background-color: #FFD700; color: #111424; border: none; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2); width: 100%; box-sizing: border-box; }
         button:hover { background-color: #FFA500; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 165, 0, 0.4); }
         button:active { transform: translateY(1px); }
         button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .secondary-btn { background-color: #4a55a2; color: white; box-shadow: 0 4px 10px rgba(74, 85, 162, 0.2); }
         .secondary-btn:hover { background-color: #3b4380; box-shadow: 0 6px 15px rgba(74, 85, 162, 0.4); }
-
         .admin-badge { background-color: #FF6B6B; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px; font-weight: bold; animation: bounce 1s infinite; }
         .notification-item { background-color: rgba(255, 107, 107, 0.1); border-left: 4px solid #FF6B6B; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 107, 107, 0.3); animation: slideInLeft 0.4s ease-out; }
         .notification-item h3 { margin: 0 0 8px 0; color: #FFD700; font-size: 16px; }
         .notification-item p { margin: 0 0 10px 0; color: var(--text-color); font-size: 14px; }
         .notification-actions { display: flex; gap: 8px; width: 100%; }
         .notification-actions button { flex: 1; font-size: 14px; padding: 8px 12px; margin: 0; }
-        .accept-btn { background-color: #5cb85c; }
-        .accept-btn:hover { background-color: #4cae4c; }
-        .decline-btn { background-color: #d9534f; }
-        .decline-btn:hover { background-color: #c9302c; }
+        .accept-btn { background-color: #5cb85c; } .accept-btn:hover { background-color: #4cae4c; }
+        .decline-btn { background-color: #d9534f; } .decline-btn:hover { background-color: #c9302c; }
         .no-notifications { text-align: center; color: #b3b9df; padding: 20px; font-size: 16px; }
-
         #stats { font-size: 18px; margin-bottom: 15px; display: none; width: 100%; justify-content: center; gap: 10px; animation: fadeIn 0.4s ease-out; }
         .stat-box { background-color: var(--panel-bg); padding: 10px 15px; border-radius: 8px; border: 2px solid var(--border-color); font-weight: bold; min-width: 90px; color: var(--text-color); transition: all 0.3s; box-sizing: border-box; }
-
         canvas { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; cursor: pointer; display: none; margin: 0 auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); max-width: 100%; height: auto; transition: all 0.3s; animation: scaleUp 0.4s ease-out; }
-
         #controls { display: none; margin-top: 15px; width: 100%; max-width: 500px; animation: slideInRight 0.4s ease-out; }
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .control-btn { font-size: 14px; padding: 10px 15px; background-color: #4a55a2; color: white; border-radius: 6px; box-shadow: none; width: 100%; border: none; cursor: pointer; font-weight: bold; transition: all 0.2s; }
@@ -147,30 +101,25 @@
         #endGameBtn { background-color: #d9534f; color: white; grid-column: span 2; font-size: 16px; padding: 12px; }
         #pauseGameBtn { background-color: #f0ad4e; color: white; grid-column: span 2; font-size: 16px; padding: 12px; margin-bottom: 10px; }
         #pauseGameBtn:hover { background-color: #ec971f; }
-
         .menu-stat { font-size: 16px; color: #FFD700; font-weight: bold; background-color: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; }
         [data-theme="light"] .menu-stat { background-color: rgba(74, 85, 162, 0.05); border: 1px solid rgba(74, 85, 162, 0.2); color: #4a55a2; }
-
-        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
-        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
-        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
-        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
+        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay, #profileModalOverlay, #changePasswordModalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active, #profileModalOverlay.active, #changePasswordModalOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox, #profileModalBox, #changePasswordModalBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
+        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle, #profileModalTitle, #changePasswordModalTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
         #confirmModalMessage, #infoModalMessage, #timeInputModalMessage, #twoFASetupMessage { margin: 0 0 20px 0; color: var(--text-color); font-size: 15px; line-height: 1.5; }
         #confirmModalActions, #timeInputModalActions, #twoFASetupActions { display: flex; gap: 10px; }
         #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
-
         #syncIndicator { display: none; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--label-color); margin: -5px 0 10px 0; opacity: 0.85; }
         #syncIndicator.active { display: flex; }
         .sync-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: #FFD700; border-radius: 50%; animation: syncSpin 0.8s linear infinite; }
         @keyframes syncSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         #appSearchInput { margin-bottom: 0; }
         #appSearchResults { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background-color: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); z-index: 50; max-height: 280px; overflow-y: auto; text-align: left; }
         #appSearchResults.active { display: block; }
         .search-result-item { padding: 10px 14px; cursor: pointer; font-size: 14px; color: var(--text-color); border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s; }
         .search-result-item:hover { background-color: rgba(255, 215, 0, 0.12); }
         .search-result-item .search-result-section { font-size: 11px; color: var(--label-color); font-weight: bold; }
-
         #leaderboardPanel { display: none; width: 100%; }
         .leaderboard-header-row { display: flex; align-items: center; gap: 6px; padding: 0 6px 8px 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--label-color); text-transform: uppercase; }
         .leaderboard-row { display: flex; align-items: center; gap: 6px; padding: 10px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; animation: fadeIn 0.3s ease-out; }
@@ -180,23 +129,13 @@
         .lb-col-action { flex: 0 0 36px; text-align: center; }
         .lb-status-ok { color: #5cb85c; font-weight: bold; }
         .lb-status-locked { color: #d9534f; font-weight: bold; }
-        .lb-mini-btn { font-size: 11px; padding: 4px 8px; margin: 0 2px; width: auto; box-shadow: none; border-radius: 4px; display: inline-block; transition: all 0.2s; }
-        .lb-mini-btn:hover { transform: scale(1.05); }
-        .lb-mini-extend { background-color: #5cb85c; color: white; }
-        .lb-mini-lock { background-color: #d9534f; color: white; }
-        .lb-mini-unlock { background-color: #5cb85c; color: white; }
-        .lb-delete-btn { background: none; border: none; font-size: 18px; padding: 4px; width: auto; box-shadow: none; cursor: pointer; line-height: 1; transition: transform 0.2s; }
-        .lb-delete-btn:hover { transform: scale(1.15); }
         .lb-empty { text-align: center; color: var(--label-color); padding: 20px; font-size: 14px; }
         .lb-rank { width: 24px; height: 24px; border-radius: 50%; background-color: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; }
-        .rank-1 { background-color: #FFD700; color: #111; }
-        .rank-2 { background-color: #C0C0C0; color: #111; }
-        .rank-3 { background-color: #CD7F32; color: #111; }
-
+        .rank-1 { background-color: #FFD700; color: #111; } .rank-2 { background-color: #C0C0C0; color: #111; } .rank-3 { background-color: #CD7F32; color: #111; }
+        .lb-avatar { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); display: inline-block; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
         .missed-game-item { background-color: rgba(255, 140, 66, 0.1); border-left: 4px solid #FF8C42; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 140, 66, 0.3); text-align: left; animation: slideInLeft 0.4s ease-out; }
         .missed-game-item h3 { margin: 0 0 8px 0; color: #FF8C42; font-size: 16px; }
         .missed-game-item p { margin: 0 0 6px 0; color: var(--text-color); font-size: 14px; }
-
         #adminDashboardPanel { display: none; width: 100%; }
         .admin-search-box { display: flex; gap: 8px; margin-bottom: 15px; }
         .admin-search-box input { flex: 1; }
@@ -206,30 +145,43 @@
         .stat-card { background-color: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 15px; text-align: center; }
         .stat-card h4 { margin: 0 0 8px 0; color: #FFD700; font-size: 14px; }
         .stat-card .stat-value { font-size: 24px; color: var(--text-color); font-weight: bold; }
-
         #twoFASetupBox { max-width: 400px; }
         .qr-code-container { margin: 20px 0; }
         .qr-code-container img { width: 200px; height: 200px; border: 2px solid var(--border-color); border-radius: 8px; }
         .secret-key-display { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; margin: 15px 0; font-family: monospace; word-break: break-all; font-size: 12px; }
         .copy-secret-btn { font-size: 12px; padding: 6px 12px; margin: 5px 0 15px 0; }
-
         .colorblind-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
         .colorblind-option { font-size: 12px; padding: 8px; border: 2px solid var(--border-color); border-radius: 6px; background-color: transparent; color: var(--text-color); cursor: pointer; transition: all 0.2s; }
         .colorblind-option:hover { border-color: #FFD700; transform: scale(1.02); }
         .colorblind-option.active { background-color: var(--border-color); border-color: #FFD700; color: #FFD700; }
-
+        .avatar-selector { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
+        .avatar-option { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; }
+        .avatar-option:hover { transform: scale(1.1); }
+        .avatar-option.active { border-color: #FFD700; transform: scale(1.1); }
         #playTimeRemainingBadge.lb-time-warning { color: #FF6B6B !important; border-color: rgba(255, 107, 107, 0.4) !important; background-color: rgba(255, 107, 107, 0.1) !important; }
         @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
         .admin-badge.new-notification { animation: badgePulse 0.6s ease-in-out infinite; background-color: #FF6B6B; }
-        
         .admin-user-result { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; }
         .admin-user-result h4 { margin: 0 0 10px 0; color: #FFD700; }
         .admin-user-result p { margin: 4px 0; font-size: 14px; }
-
+        .admin-user-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .admin-user-actions button { flex: 1; font-size: 12px; padding: 8px; margin: 0; }
         .recovery-code-box { margin: 15px 0; padding: 15px; background: #d9534f; color: white; border-radius: 8px; font-weight: bold; text-align: center; letter-spacing: 1px; }
+        textarea { width: 100%; padding: 10px; border-radius: 6px; background-color: var(--select-bg); color: var(--select-text); border: 2px solid var(--select-border); outline: none; box-sizing: border-box; resize: vertical; min-height: 80px; margin-bottom: 15px; font-family: inherit; }
+        textarea:focus { border-color: #FFD700; }
+        .profile-stat-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
+        .profile-stat-row:last-child { border-bottom: none; }
+        .profile-stat-label { color: var(--label-color); font-weight: bold; }
+        .profile-stat-value { color: var(--text-color); }
+        .claim-btn { background: linear-gradient(45deg, #ff416c, #ff4b2b); color: white; animation: badgePulse 1.5s ease-in-out infinite; border: none; }
+        .claim-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 65, 108, 0.6); }
+        #confettiContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000; overflow: hidden; }
+        .confetti { position: absolute; width: 10px; height: 10px; opacity: 0; animation: confettiFall 3s linear forwards; }
     </style>
 </head>
 <body>
+
+    <div id="confettiContainer"></div>
 
     <div class="wrapper">
         <div class="logo-container">
@@ -257,20 +209,16 @@
                     <button id="authLoginTab" class="auth-tab active">Log In</button>
                     <button id="authSignUpTab" class="auth-tab">Sign Up</button>
                 </div>
-
                 <div id="authMsg" class="auth-message"></div>
-
                 <form id="authForm" onsubmit="event.preventDefault();">
                     <div id="signupNameField" class="menu-element" style="align-items: flex-start; margin: 0 0 10px 0; display: none;">
                         <label class="form-label" for="authName">Full Name:</label>
                         <input id="authName" type="text" placeholder="Your full name..." required>
                     </div>
-
                     <div class="menu-element" style="align-items: flex-start; margin: 0 0 10px 0;">
                         <label class="form-label" for="authUsername">Email:</label>
                         <input id="authUsername" type="text" placeholder="Enter your email..." required>
                     </div>
-
                     <div class="menu-element" style="align-items: flex-start; margin: 0 0 15px 0;">
                         <label class="form-label" for="authPassword">Password:</label>
                         <input id="authPassword" type="password" placeholder="Password" required>
@@ -279,20 +227,16 @@
                         </div>
                         <div class="password-strength-text" id="strengthText" style="display: none;"></div>
                     </div>
-                    
                     <div class="checkbox-container">
                         <input type="checkbox" id="rememberMe">
                         <label for="rememberMe">Remember Email</label>
                     </div>
-
                     <div class="menu-element" style="margin: 0 0 12px 0;">
                         <a href="#" id="forgotPasswordLink" style="font-size: 13px; color: var(--label-color); text-decoration: underline; cursor: pointer;">Forgot your password?</a>
                     </div>
-
                     <div class="menu-element" style="margin: 10px 0;">
                         <button id="authSubmitBtn" type="button">Log In</button>
                     </div>
-
                     <div class="menu-element" style="margin: 0;">
                         <button id="guestPlayBtn" class="secondary-btn" type="button">Play as Guest</button>
                     </div>
@@ -322,7 +266,18 @@
                         <span><span id="highScoreText">0</span></span>
                     </div>
                 </div>
-                <div class="menu-element" id="downloadCertContainer" style="margin-top: -10px; display: none;">
+                
+                <div class="menu-element" style="margin-top: 5px;">
+                    <button id="profileBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">View Profile</button>
+                </div>
+                <div class="menu-element" style="margin-top: 5px;">
+                    <button id="changePassBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">Change Password</button>
+                </div>
+                <div class="menu-element" id="claimRewardContainer" style="display: none; margin-top: 5px;">
+                    <button id="claimRewardBtn" class="claim-btn">Claim Weekly Reward (+30)</button>
+                </div>
+
+                <div class="menu-element" id="downloadCertContainer" style="margin-top: 5px; display: none;">
                     <button id="downloadCertBtn" class="secondary-btn" style="font-size: 14px; padding: 8px 12px;">Download Certificate</button>
                 </div>
                 <div class="menu-element">
@@ -359,7 +314,6 @@
 
             <div id="settingsPanel">
                 <h2 style="margin-top: 0; color: #FFD700; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Settings</h2>
-
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
                     <label for="difficulty" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Difficulty Preset:</label>
                     <select id="difficulty">
@@ -368,7 +322,6 @@
                         <option value="hard">Hard (Extreme)</option>
                     </select>
                 </div>
-
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
                     <label for="themeMode" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Theme Mode:</label>
                     <select id="themeMode">
@@ -376,7 +329,16 @@
                         <option value="light">Light Mode</option>
                     </select>
                 </div>
-
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%;">Profile Color:</label>
+                    <div class="avatar-selector" id="avatarSelector">
+                        <div class="avatar-option" style="background-color: #FFD700;" data-color="#FFD700"></div>
+                        <div class="avatar-option" style="background-color: #FF6B6B;" data-color="#FF6B6B"></div>
+                        <div class="avatar-option" style="background-color: #5cb85c;" data-color="#5cb85c"></div>
+                        <div class="avatar-option" style="background-color: #4a90e2;" data-color="#4a90e2"></div>
+                        <div class="avatar-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+                    </div>
+                </div>
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
                     <label for="colorblindMode" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Colorblind Mode:</label>
                     <select id="colorblindMode">
@@ -386,7 +348,6 @@
                         <option value="tritanopia">Tritanopia (Blue-Yellow)</option>
                     </select>
                 </div>
-
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
                     <label for="timeFormatSelect" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Time Format:</label>
                     <select id="timeFormatSelect">
@@ -394,7 +355,6 @@
                         <option value="24">24-Hour (e.g. 15:23)</option>
                     </select>
                 </div>
-
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
                     <label for="fontSizeSelect" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Font Size:</label>
                     <select id="fontSizeSelect">
@@ -403,7 +363,6 @@
                         <option value="large">Large</option>
                     </select>
                 </div>
-
                 <div class="menu-element" style="margin-top: 25px;">
                     <button id="backBtn" class="secondary-btn">Back to Menu</button>
                 </div>
@@ -411,30 +370,22 @@
 
             <div id="termsPanel">
                 <h2 style="margin-top: 0; color: #FFD700; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Terms & Conditions</h2>
-
                 <div style="max-height: 400px; overflow-y: auto; padding: 0 10px; margin-bottom: 20px; text-align: left; font-size: 13px; line-height: 1.6; color: var(--text-color);">
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">1. Acceptance of Terms</h3>
                     <p style="margin: 0 0 10px 0;">By accessing and using Star Collector, you accept and agree to be bound by the terms and provision of this agreement.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">2. User Responsibilities</h3>
                     <p style="margin: 0 0 10px 0;">You are responsible for maintaining the confidentiality of your account password and for all activities that occur under your account.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">3. Play Time Limits</h3>
                     <p style="margin: 0 0 10px 0;">Users are entitled to 30 minutes of active play time per day. After reaching your daily limit, you will not be able to play until the next day or until an admin grants additional time.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">4. Account Suspension</h3>
                     <p style="margin: 0 0 10px 0;">We reserve the right to suspend or terminate your account if we determine that you have violated these terms or engaged in inappropriate behavior.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">5. Data Privacy</h3>
                     <p style="margin: 0 0 10px 0;">Your account data, including email, name, high scores, and game statistics, are stored securely. We do not share your personal information with third parties without consent.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">6. Security</h3>
                     <p style="margin: 0 0 10px 0;">We implement security measures to protect your account. You are responsible for using strong passwords and enabling 2FA when available.</p>
-
                     <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">7. Changes to Terms</h3>
                     <p style="margin: 0 0 10px 0;">We reserve the right to modify these terms at any time. Your continued use of the service constitutes acceptance of new terms.</p>
                 </div>
-
                 <div class="menu-element" style="margin-top: 20px;">
                     <button id="backFromTermsBtn" class="secondary-btn">Back to Menu</button>
                 </div>
@@ -455,6 +406,12 @@
 
             <div id="adminDashboardPanel">
                 <h2 style="margin-top: 0; color: #17a2b8; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Admin Dashboard</h2>
+                <div class="menu-element" style="margin-bottom: 25px; align-items: flex-start;">
+                    <label style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%;">Set Global Announcement:</label>
+                    <p style="font-size: 12px; color: var(--label-color); margin: 0 0 10px 0; width: 100%; text-align: left;">Leave blank to clear current announcement.</p>
+                    <textarea id="announcementInput" placeholder="Type a message for all users..."></textarea>
+                    <button id="setAnnouncementBtn" class="secondary-btn" style="background-color: #17a2b8; font-size: 14px; padding: 8px 12px;">Set Announcement</button>
+                </div>
                 <div class="menu-element" style="margin-bottom: 15px; position: relative;">
                     <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
                     <div class="admin-search-box">
@@ -485,7 +442,7 @@
                     <canvas id="activityChart"></canvas>
                 </div>
                 <div class="menu-element" style="margin: 15px 0;">
-                    <button id="exportLeaderboardBtn" class="secondary-btn" style="background-color: #28a745; font-size: 14px;">Export Leaderboard (CSV)</button>
+                    <button id="exportAnalyticsBtn" class="secondary-btn" style="background-color: #28a745; font-size: 14px;">Export Full Analytics (CSV)</button>
                 </div>
                 <div class="menu-element" style="margin-bottom: 15px;">
                     <button id="backFromDashboardBtn" class="secondary-btn">Back to Menu</button>
@@ -662,7 +619,6 @@
         </div>
     </div>
 
-    <!-- 2FA SETUP MODAL -->
     <div id="twoFASetupOverlay">
         <div id="twoFASetupBox">
             <h3 id="twoFASetupTitle">Setup Google Authenticator</h3>
@@ -674,11 +630,9 @@
                 <p style="font-size: 12px; color: var(--label-color); margin: 10px 0;">Or enter this secret manually:</p>
                 <div class="secret-key-display" id="secretKeyDisplay"></div>
                 <button id="copySecretBtn" class="copy-secret-btn secondary-btn">Copy Secret</button>
-                
                 <p style="color: #d9534f; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">WARNING: Save this Recovery Code! If you lose your phone, you can use this code to log in.</p>
                 <div class="recovery-code-box" id="recoveryCodeDisplay"></div>
                 <button id="copyRecoveryBtn" class="copy-secret-btn secondary-btn">Copy Recovery Code</button>
-                
                 <p style="font-size: 12px; margin: 15px 0 10px 0; color: var(--text-color);">Enter the 6-digit code from your app:</p>
                 <input id="twoFACodeInput" type="text" placeholder="000000" maxlength="6" style="margin-bottom: 15px;">
                 <div id="twoFASetupActions">
@@ -689,7 +643,6 @@
         </div>
     </div>
 
-    <!-- 2FA LOGIN MODAL -->
     <div id="twoFALoginOverlay">
         <div id="twoFALoginBox">
             <h3 style="color: #FFD700; margin: 0 0 12px 0;">Enter Authenticator Code</h3>
@@ -704,6 +657,31 @@
                 <button id="twoFALoginCancelBtn" class="decline-btn">Cancel</button>
             </div>
             <a href="#" id="useRecoveryLink" style="display: block; margin-top: 15px; font-size: 13px; color: var(--label-color); text-decoration: underline; cursor: pointer;">Lost your phone? Use Recovery Code</a>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profileModalOverlay">
+        <div id="profileModalBox" style="max-width: 380px; text-align: left;">
+            <h3 id="profileModalTitle" style="text-align: center; margin-bottom: 20px;">My Profile</h3>
+            <div id="profileContent"></div>
+            <div class="menu-element" style="margin-top: 20px;">
+                <button id="profileModalCloseBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHANGE PASSWORD MODAL -->
+    <div id="changePasswordModalOverlay">
+        <div id="changePasswordModalBox" style="max-width: 380px;">
+            <h3 id="changePasswordModalTitle" style="margin-bottom: 20px;">Change Password</h3>
+            <input id="changePassOld" type="password" placeholder="Old Password" style="margin-bottom: 10px;">
+            <input id="changePassNew" type="password" placeholder="New Password" style="margin-bottom: 10px;">
+            <input id="changePassConfirm" type="password" placeholder="Confirm New Password" style="margin-bottom: 20px;">
+            <div style="display: flex; gap: 10px;">
+                <button id="changePassSubmitBtn" class="accept-btn">Update</button>
+                <button id="changePassCancelBtn" class="decline-btn">Cancel</button>
+            </div>
         </div>
     </div>
 
@@ -732,6 +710,7 @@
         let currentLoggedInUser = null; 
         let CURRENT_2FA_SECRET = null; 
         let pendingLoginUser = null; 
+        let isGuest = false;
 
         async function getDB() {
             const res = await fetch(JSONBIN_BASE_URL + "/latest", { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
@@ -787,6 +766,9 @@
         const deleteAccountBtnContainer = document.getElementById("deleteAccountBtnContainer");
         const downloadCertBtn = document.getElementById("downloadCertBtn");
         const downloadCertContainer = document.getElementById("downloadCertContainer");
+        const avatarSelector = document.getElementById("avatarSelector");
+        const claimRewardBtn = document.getElementById("claimRewardBtn");
+        const claimRewardContainer = document.getElementById("claimRewardContainer");
 
         const colorblindModeSelect = document.getElementById("colorblindMode");
         const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -815,6 +797,7 @@
         let colorblindMode = localStorage.getItem("starCollectorColorblind") || "normal";
         let themeMode = localStorage.getItem("starCollectorTheme") || "dark";
         let difficulty = localStorage.getItem("starCollectorDifficulty") || "medium";
+        let selectedAvatarColor = "#FFD700"; 
 
         let starX = canvas.width / 2;
         let starY = canvas.height / 2;
@@ -884,6 +867,7 @@
             deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             downloadCertContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             update2FAButtonStatus();
+            checkWeeklyReward();
         }
 
         function update2FAButtonStatus() {
@@ -902,6 +886,35 @@
                 setup2FABtn.textContent = "Set Up Authenticator App";
                 setup2FABtn.style.backgroundColor = "#17a2b8"; 
                 setup2FABtn.style.color = "white";
+            }
+        }
+
+        function checkWeeklyReward() {
+            if (!currentLoggedInUser) {
+                claimRewardContainer.style.display = "none";
+                return;
+            }
+            const lastClaim = currentLoggedInUser.lastRewardClaim || 0;
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            if (Date.now() - lastClaim >= oneWeek) {
+                claimRewardContainer.style.display = "flex";
+            } else {
+                claimRewardContainer.style.display = "none";
+            }
+        }
+
+        function launchConfetti() {
+            const container = document.getElementById("confettiContainer");
+            const colors = ["#FFD700", "#FF6B6B", "#5cb85c", "#4a90e2", "#9b59b6"];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement("div");
+                confetti.className = "confetti";
+                confetti.style.left = Math.random() * 100 + "vw";
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animationDelay = Math.random() * 2 + "s";
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
             }
         }
 
@@ -991,6 +1004,22 @@
             });
         }
 
+        avatarSelector.addEventListener("click", async (e) => {
+            if (e.target.classList.contains("avatar-option")) {
+                document.querySelectorAll(".avatar-option").forEach(el => el.classList.remove("active"));
+                e.target.classList.add("active");
+                selectedAvatarColor = e.target.getAttribute("data-color");
+                
+                if (currentLoggedInUser) {
+                    try {
+                        const db = await getDB();
+                        const idx = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                        if (idx !== -1) { db.users[idx].avatarColor = selectedAvatarColor; currentLoggedInUser = db.users[idx]; await saveDB(db); }
+                    } catch(err) {}
+                }
+            }
+        });
+
         if (authPassword) {
             authPassword.addEventListener("input", (e) => {
                 const password = e.target.value;
@@ -1077,7 +1106,6 @@
 
         // ============ 2FA LOGIC ============
         setup2FABtn.addEventListener("click", async () => {
-            // Admin uses hardcoded 2FA setup
             if (isAdmin) {
                 CURRENT_2FA_SECRET = ADMIN_2FA_SECRET;
                 document.getElementById("secretKeyDisplay").textContent = ADMIN_2FA_SECRET;
@@ -1091,7 +1119,6 @@
                 return;
             }
 
-            // Normal User Logic
             let has2FA = (currentLoggedInUser && currentLoggedInUser.twoFASecret);
             if (has2FA) {
                 const confirmed = await showConfirm("Remove Authenticator", "Do you want to remove the Authenticator system?");
@@ -1130,7 +1157,6 @@
             
             if (inputCode === expectedCode) {
                 if (isAdmin) {
-                    // Admin just gets marked as enabled in memory
                 } else if (currentLoggedInUser) {
                     try {
                         const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
@@ -1190,7 +1216,6 @@
             if (isRecoveryMode) {
                 if (codeInput === pendingLoginUser.recoveryCode) {
                     success = true;
-                    // If it's not the admin, remove 2FA from DB
                     if (!pendingLoginUser.isAdmin) {
                         const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
                         if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
@@ -1214,6 +1239,8 @@
                 document.getElementById("twoFARecoveryInput").value = "";
                 document.getElementById("twoFALoginCodeInput").value = "";
                 
+                await checkAndShowAnnouncement(); 
+                
                 document.getElementById("activePilot").textContent = isAdmin ? "Admin" : currentLoggedInUser.name;
                 highScore = isAdmin ? 0 : (currentLoggedInUser.highScore || 0);
                 document.getElementById("highScoreText").textContent = highScore;
@@ -1222,7 +1249,7 @@
             } else {
                 failedAttempts++;
                 if (failedAttempts >= 3) {
-                    timeoutEnd = Date.now() + 30000; // 30 seconds timeout
+                    timeoutEnd = Date.now() + 30000; 
                     await showInfo("Too many failed attempts. Please try again in 30 seconds.");
                 } else {
                     await showInfo(isRecoveryMode ? "Invalid Recovery Code." : "Invalid Authenticator Code.");
@@ -1284,7 +1311,6 @@
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
             } else {
                 try {
-                    // Check for Admin
                     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
                         authMsg.style.display = "none";
                         pendingLoginUser = { isAdmin: true, name: "Admin", twoFASecret: ADMIN_2FA_SECRET, recoveryCode: ADMIN_RECOVERY_CODE };
@@ -1293,7 +1319,7 @@
                         document.getElementById("twoFARecoverySection").style.display = "none";
                         return;
                     }
-                    isAdmin = false; checkAdminStatus();
+                    isAdmin = false; isGuest = false; checkAdminStatus();
                     const db = await getDB(); if (!db.users) db.users = [];
                     const user = db.users.find(u => u.email === email && u.password === password);
 
@@ -1308,13 +1334,26 @@
                         document.getElementById("twoFARecoverySection").style.display = "none";
                     } else {
                         currentLoggedInUser = user;
+                        await updateDailyStreak();
                         document.getElementById("activePilot").textContent = user.name;
                         highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
+                        
+                        if (user.avatarColor) {
+                            selectedAvatarColor = user.avatarColor;
+                            document.querySelectorAll(".avatar-option").forEach(el => {
+                                if (el.getAttribute("data-color") === user.avatarColor) el.classList.add("active");
+                                else el.classList.remove("active");
+                            });
+                        }
+
                         if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
                         else localStorage.removeItem("starCollectorRememberEmail");
                         if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
                         if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
                         user.lastActive = Date.now(); await saveDB(db);
+                        
+                        await checkAndShowAnnouncement(); 
+                        
                         checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
                     }
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
@@ -1322,12 +1361,12 @@
         });
 
         document.getElementById("guestPlayBtn").addEventListener("click", () => {
-            document.getElementById("activePilot").textContent = "Guest"; isAdmin = false; currentLoggedInUser = null;
+            document.getElementById("activePilot").textContent = "Guest"; isAdmin = false; isGuest = true; currentLoggedInUser = null;
             highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => {
-            isAdmin = false; currentLoggedInUser = null;
+            isAdmin = false; isGuest = false; currentLoggedInUser = null;
             highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("loginPanel"); updateURL("Login");
         });
 
@@ -1370,6 +1409,86 @@
             link.click();
         });
 
+        // ============ NEW MODAL BUTTONS ============
+        document.getElementById("profileBtn").addEventListener("click", () => {
+            if (!currentLoggedInUser) return;
+            const u = currentLoggedInUser;
+            const ageDays = u.id ? Math.floor((Date.now() - parseInt(u.id)) / (1000 * 60 * 60 * 24)) : 0;
+            const html = `
+                <div class="profile-stat-row"><span class="profile-stat-label">Name:</span><span class="profile-stat-value">${u.name}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Email:</span><span class="profile-stat-value">${u.email}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">High Score:</span><span class="profile-stat-value" style="color: #FFD700;">${u.highScore || 0}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Daily Streak:</span><span class="profile-stat-value">${u.streak || 0}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Account Age:</span><span class="profile-stat-value">${ageDays} days</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Status:</span><span class="profile-stat-value" style="color: ${u.status === 'active' ? '#5cb85c' : '#d9534f'};">${u.status.toUpperCase()}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">2FA Enabled:</span><span class="profile-stat-value">${u.twoFASecret ? 'Yes' : 'No'}</span></div>
+            `;
+            document.getElementById("profileContent").innerHTML = html;
+            document.getElementById("profileModalOverlay").classList.add("active");
+        });
+        document.getElementById("profileModalCloseBtn").addEventListener("click", () => {
+            document.getElementById("profileModalOverlay").classList.remove("active");
+        });
+
+        document.getElementById("changePassBtn").addEventListener("click", () => {
+            if (!currentLoggedInUser) return;
+            document.getElementById("changePassOld").value = "";
+            document.getElementById("changePassNew").value = "";
+            document.getElementById("changePassConfirm").value = "";
+            document.getElementById("changePasswordModalOverlay").classList.add("active");
+        });
+        document.getElementById("changePassCancelBtn").addEventListener("click", () => {
+            document.getElementById("changePasswordModalOverlay").classList.remove("active");
+        });
+        document.getElementById("changePassSubmitBtn").addEventListener("click", async () => {
+            const oldPass = document.getElementById("changePassOld").value.trim();
+            const newPass = document.getElementById("changePassNew").value.trim();
+            const confirmPass = document.getElementById("changePassConfirm").value.trim();
+
+            if (!oldPass || !newPass || !confirmPass) { await showInfo("Please fill all fields."); return; }
+            if (newPass !== confirmPass) { await showInfo("New passwords do not match."); return; }
+
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) {
+                    if (db.users[i].password !== oldPass) {
+                        await showInfo("Old password is incorrect.");
+                        return;
+                    }
+                    db.users[i].password = newPass;
+                    currentLoggedInUser = db.users[i];
+                    await saveDB(db);
+                    document.getElementById("changePasswordModalOverlay").classList.remove("active");
+                    await showInfo("Password updated successfully!");
+                }
+            } catch (err) {
+                await showInfo("Error updating password.");
+            }
+        });
+
+        claimRewardBtn.addEventListener("click", async () => {
+            if (!currentLoggedInUser) return;
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) {
+                    db.users[i].highScore = (db.users[i].highScore || 0) + 30;
+                    db.users[i].lastRewardClaim = Date.now();
+                    currentLoggedInUser = db.users[i];
+                    highScore = currentLoggedInUser.highScore;
+                    document.getElementById("highScoreText").textContent = highScore;
+                    await saveDB(db);
+                    
+                    claimRewardContainer.style.display = "none";
+                    launchConfetti();
+                    await showInfo("You claimed your weekly reward! +30 points added to your High Score.");
+                }
+            } catch (err) {
+                await showInfo("Error claiming reward.");
+            }
+        });
+
         // ============ NAVIGATION & BUTTONS ============
         document.getElementById("settingsBtn").addEventListener("click", () => { showPanel("settingsPanel"); updateURL("Settings"); });
         document.getElementById("backBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
@@ -1388,6 +1507,72 @@
         });
 
         document.getElementById("adminRefreshBtn").addEventListener("click", loadAdminNotifications);
+
+        document.getElementById("setAnnouncementBtn").addEventListener("click", async () => {
+            const msg = document.getElementById("announcementInput").value.trim();
+            try {
+                const db = await getDB();
+                if (!db.settings) db.settings = {};
+                db.settings.announcement = msg;
+                await saveDB(db);
+                await showInfo("Announcement set successfully!");
+            } catch (err) {
+                await showInfo("Error setting announcement.");
+            }
+        });
+
+        document.getElementById("exportAnalyticsBtn").addEventListener("click", async () => {
+            try {
+                const db = await getDB(); const users = db.users || [];
+                let csv = "Name,Email,Status,High Score,2FA Enabled,Last Active\n";
+                users.forEach(u => {
+                    let lastActive = u.lastActive ? new Date(u.lastActive).toLocaleString() : "Never";
+                    csv += `${u.name},${u.email},${u.status},${u.highScore || 0},${u.twoFASecret ? 'Yes' : 'No'},${lastActive}\n`;
+                });
+                
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'StarCollector_Analytics.csv';
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                await showInfo("Error exporting analytics.");
+            }
+        });
+
+        async function checkAndShowAnnouncement() {
+            try {
+                const db = await getDB();
+                if (db.settings && db.settings.announcement) {
+                    await showInfo(`Admin Announcement:\n\n${db.settings.announcement}`);
+                }
+            } catch (err) { console.error("Error fetching announcement", err); }
+        }
+
+        async function updateDailyStreak() {
+            const todayStr = new Date().toDateString();
+            const db = await getDB();
+            const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+            if (i !== -1) {
+                let user = db.users[i];
+                if (!user.lastLoginDay || user.lastLoginDay !== todayStr) {
+                    let yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    if (user.lastLoginDay === yesterday.toDateString()) {
+                        user.streak = (user.streak || 0) + 1;
+                    } else {
+                        user.streak = 1; 
+                    }
+                    user.lastLoginDay = todayStr;
+                    currentLoggedInUser = user;
+                    db.users[i] = user;
+                    await saveDB(db);
+                }
+                document.getElementById("streakText").textContent = currentLoggedInUser.streak || 0;
+            }
+        }
 
         document.getElementById("forgotPasswordLink").addEventListener("click", (e) => {
             e.preventDefault();
@@ -1411,8 +1596,13 @@
                 users.slice(0, 10).forEach((user, index) => {
                     const row = document.createElement("div"); row.className = "leaderboard-row";
                     let rankClass = ""; if (index === 0) rankClass = "rank-1"; else if (index === 1) rankClass = "rank-2"; else if (index === 2) rankClass = "rank-3";
+                    let avatarColor = user.avatarColor || "#FFD700";
                     row.innerHTML = `
-                        <span class="lb-col-name"><span class="lb-rank ${rankClass}">${index + 1}</span> ${user.name}</span>
+                        <span class="lb-col-name">
+                            <span class="lb-rank ${rankClass}">${index + 1}</span> 
+                            <span class="lb-avatar" style="background-color: ${avatarColor};"></span>
+                            ${user.name}
+                        </span>
                         <span class="lb-col-score">${user.highScore || 0}</span>
                         <span class="lb-col-status"><span class="lb-status-${user.status === 'active' ? 'ok' : 'locked'}">${user.status.toUpperCase()}</span></span>
                         <span class="lb-col-action"></span>
@@ -1431,6 +1621,9 @@
                 document.getElementById("lockedPlayersCount").textContent = users.filter(u => u.status === "locked").length;
                 const fiveMinAgo = Date.now() - (5 * 60 * 1000);
                 document.getElementById("activeTodayCount").textContent = users.filter(u => u.lastActive && u.lastActive > fiveMinAgo).length;
+                if (db.settings && db.settings.announcement) {
+                    document.getElementById("announcementInput").value = db.settings.announcement;
+                }
             } catch (err) { console.error("Admin dashboard error", err); }
         });
 
@@ -1450,7 +1643,10 @@
                         <p><strong>Email:</strong> ${user.email}</p>
                         <p><strong>High Score:</strong> ${user.highScore || 0}</p>
                         <p><strong>Status:</strong> ${user.status.toUpperCase()}</p>
-                        <button class="secondary-btn" style="margin-top: 10px;" onclick="toggleLockUser('${user.id}')">${user.status === 'locked' ? 'Unlock Account' : 'Lock Account'}</button>
+                        <div class="admin-user-actions">
+                            <button class="secondary-btn" onclick="toggleLockUser('${user.id}')">${user.status === 'locked' ? 'Unlock' : 'Lock'}</button>
+                            <button class="secondary-btn" style="background-color: #d9534f;" onclick="resetUserScore('${user.id}')">Reset Score</button>
+                        </div>
                     `;
                     resultsList.appendChild(div);
                 });
@@ -1467,6 +1663,18 @@
                     document.getElementById("playerSearchBtn").click();
                 }
             } catch (err) { await showInfo("Error updating user."); }
+        };
+
+        window.resetUserScore = async (userId) => {
+            try {
+                const db = await getDB(); const i = db.users.findIndex(u => u.id === userId);
+                if (i !== -1) {
+                    db.users[i].highScore = 0;
+                    await saveDB(db);
+                    await showInfo(`User score has been reset to 0.`);
+                    document.getElementById("playerSearchBtn").click();
+                }
+            } catch (err) { await showInfo("Error resetting score."); }
         };
 
         async function loadAdminNotifications() {
@@ -1515,7 +1723,7 @@
             gameActive = true; updateGame();
         });
 
-        canvas.addEventListener("click", function(event) {
+        canvas.addEventListener("click", async function(event) {
             if (!gameActive || gamePaused) return;
             const rect = canvas.getBoundingClientRect();
             const mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
@@ -1525,7 +1733,17 @@
                 score++; document.getElementById("scoreText").textContent = score;
                 if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); }
                 currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
-                if (score % 5 === 0) { level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); }
+                if (score % 5 === 0) { 
+                    level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); 
+                    
+                    if (isGuest && level > 7) {
+                        gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
+                        cancelAnimationFrame(animationId); stopTimer();
+                        statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
+                        menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Home-Page");
+                        await showInfo("Guests can only play to Level 7. Create an account to unlock the full game!");
+                    }
+                }
             }
         });
 
@@ -1544,7 +1762,7 @@
             gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
             cancelAnimationFrame(animationId); stopTimer();
             statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
-            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Screen:Homepage");
+            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Home-Page");
         });
 
         document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
