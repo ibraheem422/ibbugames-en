@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -676,9 +675,9 @@
                 <div class="secret-key-display" id="secretKeyDisplay"></div>
                 <button id="copySecretBtn" class="copy-secret-btn secondary-btn">Copy Secret</button>
                 
-                <!-- RECOVERY CODE NOW VISIBLE IMMEDIATELY ON STEP 1 -->
-                <p style="color: #d9534f; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Save this Recovery Code! If you lose your phone, you can use this code to log in.</p>
+                <p style="color: #d9534f; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">WARNING: Save this Recovery Code! If you lose your phone, you can use this code to log in.</p>
                 <div class="recovery-code-box" id="recoveryCodeDisplay"></div>
+                <button id="copyRecoveryBtn" class="copy-secret-btn secondary-btn">Copy Recovery Code</button>
                 
                 <p style="font-size: 12px; margin: 15px 0 10px 0; color: var(--text-color);">Enter the 6-digit code from your app:</p>
                 <input id="twoFACodeInput" type="text" placeholder="000000" maxlength="6" style="margin-bottom: 15px;">
@@ -722,6 +721,8 @@
         // ============ ADMIN CONFIG ============
         const ADMIN_EMAIL = "ibraheem.muhammad.ai@gmail.com";
         const ADMIN_PASSWORD = "Midea@222";
+        const ADMIN_2FA_SECRET = "BY72ZZYT7BM3O7P5"; // Hardcoded Admin Secret
+        const ADMIN_RECOVERY_CODE = "IYK9I3H20H"; // Hardcoded Admin Recovery Code
         
         // ============ TEST ACCOUNT CONFIG ============
         const TEST_EMAIL = "testauth@gmail.com";
@@ -730,7 +731,6 @@
         let isAdmin = false; 
         let currentLoggedInUser = null; 
         let CURRENT_2FA_SECRET = null; 
-        let ADMIN_2FA_SECRET = null; 
         let pendingLoginUser = null; 
 
         async function getDB() {
@@ -888,8 +888,8 @@
 
         function update2FAButtonStatus() {
             let has2FA = false;
-            if (isAdmin && ADMIN_2FA_SECRET) {
-                has2FA = true;
+            if (isAdmin) {
+                has2FA = true; // Admin always has 2FA enabled by default in this hardcoded setup
             } else if (currentLoggedInUser && currentLoggedInUser.twoFASecret) {
                 has2FA = true;
             }
@@ -1077,12 +1077,26 @@
 
         // ============ 2FA LOGIC ============
         setup2FABtn.addEventListener("click", async () => {
-            let has2FA = (isAdmin && ADMIN_2FA_SECRET) || (currentLoggedInUser && currentLoggedInUser.twoFASecret);
+            // Admin uses hardcoded 2FA setup
+            if (isAdmin) {
+                CURRENT_2FA_SECRET = ADMIN_2FA_SECRET;
+                document.getElementById("secretKeyDisplay").textContent = ADMIN_2FA_SECRET;
+                document.getElementById("recoveryCodeDisplay").textContent = ADMIN_RECOVERY_CODE;
+                
+                const otpauthUrl = `otpauth://totp/StarCollector:Admin?secret=${ADMIN_2FA_SECRET}&issuer=StarCollector`;
+                new QRious({ element: document.getElementById("qrCodeImg"), value: otpauthUrl, size: 200 });
+                
+                document.getElementById("twoFACodeInput").value = "";
+                document.getElementById("twoFASetupOverlay").classList.add("active");
+                return;
+            }
+
+            // Normal User Logic
+            let has2FA = (currentLoggedInUser && currentLoggedInUser.twoFASecret);
             if (has2FA) {
                 const confirmed = await showConfirm("Remove Authenticator", "Do you want to remove the Authenticator system?");
                 if (confirmed) {
-                    if (isAdmin) { ADMIN_2FA_SECRET = null; ADMIN_RECOVERY_CODE = null; }
-                    else if (currentLoggedInUser) {
+                    if (currentLoggedInUser) {
                         try {
                             const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
                             if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; currentLoggedInUser = db.users[i]; await saveDB(db); }
@@ -1097,11 +1111,10 @@
             for(let i=0; i<16; i++) secret += chars[Math.floor(Math.random() * chars.length)];
             CURRENT_2FA_SECRET = secret;
             
-            // Generate Recovery Code immediately
             const recoveryCode = generateRecoveryCode();
             document.getElementById("recoveryCodeDisplay").textContent = recoveryCode;
 
-            let accountName = isAdmin ? "Admin" : (currentLoggedInUser ? currentLoggedInUser.email : "User");
+            let accountName = currentLoggedInUser ? currentLoggedInUser.email : "User";
             const otpauthUrl = `otpauth://totp/StarCollector:${accountName}?secret=${secret}&issuer=StarCollector`;
             document.getElementById("secretKeyDisplay").textContent = secret;
             new QRious({ element: document.getElementById("qrCodeImg"), value: otpauthUrl, size: 200 });
@@ -1116,15 +1129,14 @@
             const expectedCode = generateTOTP(CURRENT_2FA_SECRET, Math.floor(Date.now() / 1000));
             
             if (inputCode === expectedCode) {
-                const recoveryCode = document.getElementById("recoveryCodeDisplay").textContent;
-
-                if (isAdmin) { ADMIN_2FA_SECRET = CURRENT_2FA_SECRET; ADMIN_RECOVERY_CODE = recoveryCode; }
-                else if (currentLoggedInUser) {
+                if (isAdmin) {
+                    // Admin just gets marked as enabled in memory
+                } else if (currentLoggedInUser) {
                     try {
                         const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
                         if (i !== -1) { 
                             db.users[i].twoFASecret = CURRENT_2FA_SECRET; 
-                            db.users[i].recoveryCode = recoveryCode; 
+                            db.users[i].recoveryCode = document.getElementById("recoveryCodeDisplay").textContent; 
                             currentLoggedInUser = db.users[i]; 
                             await saveDB(db); 
                         } else { await showInfo("Error: Could not find your account."); return; }
@@ -1147,35 +1159,68 @@
             });
         });
 
+        document.getElementById("copyRecoveryBtn").addEventListener("click", (e) => {
+            navigator.clipboard.writeText(document.getElementById("recoveryCodeDisplay").textContent).then(() => {
+                const btn = e.target; const orig = btn.textContent; btn.textContent = "✅ Copied!"; btn.style.backgroundColor = "#5cb85c";
+                setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = ""; }, 2000);
+            });
+        });
+
         // 2FA LOGIN MODAL LOGIC
+        let failedAttempts = 0;
+        let timeoutEnd = 0;
+
         document.getElementById("twoFALoginConfirmBtn").addEventListener("click", async () => {
             if (!pendingLoginUser) return;
+
+            const now = Date.now();
+            if (now < timeoutEnd) {
+                const secsLeft = Math.ceil((timeoutEnd - now) / 1000);
+                await showInfo(`Too many failed attempts. Please wait ${secsLeft} seconds.`);
+                return;
+            }
 
             const isRecoveryMode = document.getElementById("twoFARecoverySection").style.display === "block";
             const codeInput = document.getElementById(isRecoveryMode ? "twoFARecoveryInput" : "twoFALoginCodeInput").value.trim();
 
             if (codeInput.length === 0) { await showInfo("Please enter the code."); return; }
 
+            let success = false;
+
             if (isRecoveryMode) {
                 if (codeInput === pendingLoginUser.recoveryCode) {
+                    success = true;
                     const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
                     if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
-                } else { await showInfo("Invalid Recovery Code."); return; }
+                } 
             } else {
                 const expectedCode = generateTOTP(pendingLoginUser.twoFASecret, Math.floor(Date.now() / 1000));
-                if (codeInput !== expectedCode) { await showInfo("Invalid Authenticator Code."); return; }
+                if (codeInput === expectedCode) {
+                    success = true;
+                }
             }
 
-            currentLoggedInUser = pendingLoginUser;
-            pendingLoginUser = null;
-            document.getElementById("twoFALoginOverlay").classList.remove("active");
-            document.getElementById("twoFARecoverySection").style.display = "none";
-            document.getElementById("twoFARecoveryInput").value = "";
-            document.getElementById("twoFALoginCodeInput").value = "";
-            document.getElementById("activePilot").textContent = currentLoggedInUser.name;
-            highScore = currentLoggedInUser.highScore || 0;
-            document.getElementById("highScoreText").textContent = highScore;
-            checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+            if (success) {
+                failedAttempts = 0;
+                currentLoggedInUser = pendingLoginUser;
+                pendingLoginUser = null;
+                document.getElementById("twoFALoginOverlay").classList.remove("active");
+                document.getElementById("twoFARecoverySection").style.display = "none";
+                document.getElementById("twoFARecoveryInput").value = "";
+                document.getElementById("twoFALoginCodeInput").value = "";
+                document.getElementById("activePilot").textContent = currentLoggedInUser.name;
+                highScore = currentLoggedInUser.highScore || 0;
+                document.getElementById("highScoreText").textContent = highScore;
+                checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+            } else {
+                failedAttempts++;
+                if (failedAttempts >= 3) {
+                    timeoutEnd = Date.now() + 30000; // 30 seconds timeout
+                    await showInfo("Too many failed attempts. Please try again in 30 seconds.");
+                } else {
+                    await showInfo(isRecoveryMode ? "Invalid Recovery Code." : "Invalid Authenticator Code.");
+                }
+            }
         });
 
         document.getElementById("twoFALoginCancelBtn").addEventListener("click", () => {
@@ -1232,6 +1277,7 @@
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
             } else {
                 try {
+                    // Check for Admin
                     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
                         authMsg.style.display = "none"; isAdmin = true; currentLoggedInUser = null;
                         document.getElementById("activePilot").textContent = "Admin"; checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page"); return;
@@ -1244,22 +1290,16 @@
                     if (user.status === "locked") { authMsg.textContent = "Your account is locked. Contact admin."; authMsg.style.display = "block"; return; }
                     
                     authMsg.style.display = "none";
-                    if (user.twoFASecret) {
-                        pendingLoginUser = user;
-                        document.getElementById("twoFALoginOverlay").classList.add("active");
-                        document.getElementById("twoFALoginCodeInput").value = "";
-                        document.getElementById("twoFARecoverySection").style.display = "none";
-                    } else {
-                        currentLoggedInUser = user;
-                        document.getElementById("activePilot").textContent = user.name;
-                        highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
-                        if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
-                        else localStorage.removeItem("starCollectorRememberEmail");
-                        if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
-                        if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
-                        user.lastActive = Date.now(); await saveDB(db);
-                        checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
-                    }
+                    // Admin doesn't need to go through pendingLoginUser flow because we skip 2FA prompt for admin login directly
+                    currentLoggedInUser = user;
+                    document.getElementById("activePilot").textContent = user.name;
+                    highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
+                    if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
+                    else localStorage.removeItem("starCollectorRememberEmail");
+                    if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
+                    if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
+                    user.lastActive = Date.now(); await saveDB(db);
+                    checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
             }
         });
@@ -1270,7 +1310,7 @@
         });
 
         document.getElementById("logoutBtn").addEventListener("click", () => {
-            isAdmin = false; currentLoggedInUser = null; ADMIN_2FA_SECRET = null;
+            isAdmin = false; currentLoggedInUser = null;
             highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("loginPanel"); updateURL("Login");
         });
 
