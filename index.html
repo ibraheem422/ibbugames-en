@@ -721,8 +721,8 @@
         // ============ ADMIN CONFIG ============
         const ADMIN_EMAIL = "ibraheem.muhammad.ai@gmail.com";
         const ADMIN_PASSWORD = "Midea@222";
-        const ADMIN_2FA_SECRET = "BY72ZZYT7BM3O7P5"; // Hardcoded Admin Secret
-        const ADMIN_RECOVERY_CODE = "IYK9I3H20H"; // Hardcoded Admin Recovery Code
+        const ADMIN_2FA_SECRET = "BY72ZZYT7BM3O7P5"; 
+        const ADMIN_RECOVERY_CODE = "IYK9I3H20H";
         
         // ============ TEST ACCOUNT CONFIG ============
         const TEST_EMAIL = "testauth@gmail.com";
@@ -889,7 +889,7 @@
         function update2FAButtonStatus() {
             let has2FA = false;
             if (isAdmin) {
-                has2FA = true; // Admin always has 2FA enabled by default in this hardcoded setup
+                has2FA = true; 
             } else if (currentLoggedInUser && currentLoggedInUser.twoFASecret) {
                 has2FA = true;
             }
@@ -1190,8 +1190,11 @@
             if (isRecoveryMode) {
                 if (codeInput === pendingLoginUser.recoveryCode) {
                     success = true;
-                    const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
-                    if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
+                    // If it's not the admin, remove 2FA from DB
+                    if (!pendingLoginUser.isAdmin) {
+                        const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
+                        if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
+                    }
                 } 
             } else {
                 const expectedCode = generateTOTP(pendingLoginUser.twoFASecret, Math.floor(Date.now() / 1000));
@@ -1202,15 +1205,19 @@
 
             if (success) {
                 failedAttempts = 0;
-                currentLoggedInUser = pendingLoginUser;
+                isAdmin = pendingLoginUser.isAdmin; 
+                currentLoggedInUser = (isAdmin) ? null : pendingLoginUser; 
                 pendingLoginUser = null;
+                
                 document.getElementById("twoFALoginOverlay").classList.remove("active");
                 document.getElementById("twoFARecoverySection").style.display = "none";
                 document.getElementById("twoFARecoveryInput").value = "";
                 document.getElementById("twoFALoginCodeInput").value = "";
-                document.getElementById("activePilot").textContent = currentLoggedInUser.name;
-                highScore = currentLoggedInUser.highScore || 0;
+                
+                document.getElementById("activePilot").textContent = isAdmin ? "Admin" : currentLoggedInUser.name;
+                highScore = isAdmin ? 0 : (currentLoggedInUser.highScore || 0);
                 document.getElementById("highScoreText").textContent = highScore;
+                
                 checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
             } else {
                 failedAttempts++;
@@ -1279,8 +1286,12 @@
                 try {
                     // Check for Admin
                     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-                        authMsg.style.display = "none"; isAdmin = true; currentLoggedInUser = null;
-                        document.getElementById("activePilot").textContent = "Admin"; checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page"); return;
+                        authMsg.style.display = "none";
+                        pendingLoginUser = { isAdmin: true, name: "Admin", twoFASecret: ADMIN_2FA_SECRET, recoveryCode: ADMIN_RECOVERY_CODE };
+                        document.getElementById("twoFALoginOverlay").classList.add("active");
+                        document.getElementById("twoFALoginCodeInput").value = "";
+                        document.getElementById("twoFARecoverySection").style.display = "none";
+                        return;
                     }
                     isAdmin = false; checkAdminStatus();
                     const db = await getDB(); if (!db.users) db.users = [];
@@ -1290,16 +1301,22 @@
                     if (user.status === "locked") { authMsg.textContent = "Your account is locked. Contact admin."; authMsg.style.display = "block"; return; }
                     
                     authMsg.style.display = "none";
-                    // Admin doesn't need to go through pendingLoginUser flow because we skip 2FA prompt for admin login directly
-                    currentLoggedInUser = user;
-                    document.getElementById("activePilot").textContent = user.name;
-                    highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
-                    if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
-                    else localStorage.removeItem("starCollectorRememberEmail");
-                    if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
-                    if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
-                    user.lastActive = Date.now(); await saveDB(db);
-                    checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+                    if (user.twoFASecret) {
+                        pendingLoginUser = user;
+                        document.getElementById("twoFALoginOverlay").classList.add("active");
+                        document.getElementById("twoFALoginCodeInput").value = "";
+                        document.getElementById("twoFARecoverySection").style.display = "none";
+                    } else {
+                        currentLoggedInUser = user;
+                        document.getElementById("activePilot").textContent = user.name;
+                        highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
+                        if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
+                        else localStorage.removeItem("starCollectorRememberEmail");
+                        if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
+                        if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
+                        user.lastActive = Date.now(); await saveDB(db);
+                        checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+                    }
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
             }
         });
@@ -1527,7 +1544,7 @@
             gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
             cancelAnimationFrame(animationId); stopTimer();
             statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
-            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Home-Page");
+            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Screen:Homepage");
         });
 
         document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
