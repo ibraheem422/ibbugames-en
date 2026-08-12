@@ -1,0 +1,1517 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Collector - Enhanced</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%3C/text%3E%3C/svg%3E">
+    <style>
+        :root {
+            --bg-color: #111424;
+            --text-color: #ffffff;
+            --panel-bg: #1b1f38;
+            --border-color: #4a55a2;
+            --select-bg: #4a55a2;
+            --select-border: #5c6bc0;
+            --select-text: #ffffff;
+            --label-color: #b3b9df;
+            --star-color: #FFD700;
+            --star-stroke: #FFA500;
+        }
+
+        [data-theme="light"] {
+            --bg-color: #f0f2f9;
+            --text-color: #111424;
+            --panel-bg: #ffffff;
+            --border-color: #4a55a2;
+            --select-bg: #ffffff;
+            --select-border: #4a55a2;
+            --select-text: #111424;
+            --label-color: #4a55a2;
+        }
+
+        [data-colorblind="deuteranopia"] { --star-color: #0173B2; --star-stroke: #DE8F05; }
+        [data-colorblind="protanopia"] { --star-color: #029E73; --star-stroke: #0173B2; }
+        [data-colorblind="tritanopia"] { --star-color: #D55E00; --star-stroke: #CC79A7; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @keyframes glow { 0%, 100% { text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); } 50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.7); } }
+        @keyframes modalFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes slideInFade { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+        #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel { animation: fadeIn 0.4s ease-out; }
+
+        .wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
+
+        .logo-container { display: flex; justify-content: center; align-items: center; margin: 10px auto; min-height: 80px; animation: slideInDown 0.5s ease-out; }
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .site-logo { max-width: 120px; height: auto; display: block; }
+        .fallback-logo { background: linear-gradient(135deg, #FFD700, #FFA500); width: 70px; height: 70px; border-radius: 50px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); animation: pulse 2s infinite alternate; }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+
+        h1 { margin: 0 0 15px 0; font-weight: 800; letter-spacing: 1px; color: var(--text-color); font-size: 36px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: glow 2s ease-in-out infinite; }
+
+        #menu { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 320px; margin: 15px auto; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s; }
+        .menu-element { margin: 15px 0; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s ease-out; }
+
+        #loginPanel { display: block; width: 100%; }
+        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel { display: none; width: 100%; }
+
+        #pauseOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        #pauseOverlay.active { display: flex; }
+        #pauseBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 40px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
+        #pauseBox h2 { color: #FFD700; font-size: 48px; margin: 0 0 20px 0; }
+        #pauseBox p { color: var(--text-color); font-size: 16px; margin: 10px 0; }
+        #pauseBox .pause-controls { margin-top: 25px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        #pauseBox button { font-size: 16px; padding: 12px 24px; margin: 0; }
+
+        input { font-size: 16px; padding: 10px 14px; border-radius: 6px; background-color: var(--select-bg); color: var(--select-text); border: 2px solid var(--select-border); outline: none; width: 100%; box-sizing: border-box; transition: all 0.2s; margin-bottom: 12px; }
+        input::placeholder { color: var(--label-color); opacity: 0.6; }
+        input:focus { border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+        .form-label { font-size: 14px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%; }
+
+        .checkbox-container { display: flex; align-items: center; justify-content: flex-start; width: 100%; margin: 0 0 15px 0; }
+        .checkbox-container input[type="checkbox"] { width: 16px; height: 16px; margin: 0 8px 0 0; cursor: pointer; accent-color: #FFD700; }
+        .checkbox-container label { font-size: 14px; color: var(--label-color); cursor: pointer; user-select: none; }
+
+        .password-strength-meter { width: 100%; height: 6px; background-color: rgba(255, 255, 255, 0.1); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+        .password-strength-bar { height: 100%; width: 0%; transition: width 0.3s, background-color 0.3s; border-radius: 3px; }
+        .password-strength-bar.weak { width: 25%; background-color: #d9534f; }
+        .password-strength-bar.fair { width: 50%; background-color: #f0ad4e; }
+        .password-strength-bar.good { width: 75%; background-color: #5cb85c; }
+        .password-strength-bar.strong { width: 100%; background-color: #5cb85c; }
+        .password-strength-text { font-size: 12px; margin-top: 4px; height: 16px; }
+        .password-strength-text.weak { color: #d9534f; }
+        .password-strength-text.fair { color: #f0ad4e; }
+        .password-strength-text.good, .password-strength-text.strong { color: #5cb85c; }
+
+        .auth-tabs { display: flex; gap: 10px; width: 100%; margin-bottom: 15px; }
+        .auth-tab { flex: 1; font-size: 14px; padding: 8px 12px; border-radius: 6px; background-color: transparent; color: var(--label-color); border: 1.5px solid var(--border-color); cursor: pointer; font-weight: bold; box-shadow: none; transition: all 0.2s; }
+        .auth-tab:hover { border-color: #FFD700; color: var(--text-color); transform: translateY(-2px); }
+        .auth-tab.active { background-color: #4a55a2; color: white; border-color: #4a55a2; }
+        .auth-message { font-size: 13px; color: #d9534f; margin-bottom: 12px; font-weight: bold; display: none; width: 100%; text-align: center; animation: slideInLeft 0.3s ease-out; }
+        .auth-message.success { color: #5cb85c; }
+        .profile-badge { font-size: 14px; font-weight: bold; color: #FFD700; background-color: rgba(255, 215, 0, 0.1); padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(255, 215, 0, 0.2); width: 100%; box-sizing: border-box; margin-bottom: 10px; text-align: center; animation: scaleUp 0.4s ease-out; }
+
+        select { font-size: 16px; padding: 10px 14px; border-radius: 6px; background-color: var(--select-bg); color: var(--select-text); border: 2px solid var(--select-border); cursor: pointer; outline: none; width: 100%; box-sizing: border-box; transition: all 0.2s; }
+        select:focus { border-color: #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+
+        button { font-size: 18px; padding: 12px 24px; border-radius: 6px; background-color: #FFD700; color: #111424; border: none; font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 10px rgba(255, 215, 0, 0.2); width: 100%; box-sizing: border-box; }
+        button:hover { background-color: #FFA500; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 165, 0, 0.4); }
+        button:active { transform: translateY(1px); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .secondary-btn { background-color: #4a55a2; color: white; box-shadow: 0 4px 10px rgba(74, 85, 162, 0.2); }
+        .secondary-btn:hover { background-color: #3b4380; box-shadow: 0 6px 15px rgba(74, 85, 162, 0.4); }
+
+        .admin-badge { background-color: #FF6B6B; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px; font-weight: bold; animation: bounce 1s infinite; }
+        .notification-item { background-color: rgba(255, 107, 107, 0.1); border-left: 4px solid #FF6B6B; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 107, 107, 0.3); animation: slideInLeft 0.4s ease-out; }
+        .notification-item h3 { margin: 0 0 8px 0; color: #FFD700; font-size: 16px; }
+        .notification-item p { margin: 0 0 10px 0; color: var(--text-color); font-size: 14px; }
+        .notification-actions { display: flex; gap: 8px; width: 100%; }
+        .notification-actions button { flex: 1; font-size: 14px; padding: 8px 12px; margin: 0; }
+        .accept-btn { background-color: #5cb85c; }
+        .accept-btn:hover { background-color: #4cae4c; }
+        .decline-btn { background-color: #d9534f; }
+        .decline-btn:hover { background-color: #c9302c; }
+        .no-notifications { text-align: center; color: #b3b9df; padding: 20px; font-size: 16px; }
+
+        #stats { font-size: 18px; margin-bottom: 15px; display: none; width: 100%; justify-content: center; gap: 10px; animation: fadeIn 0.4s ease-out; }
+        .stat-box { background-color: var(--panel-bg); padding: 10px 15px; border-radius: 8px; border: 2px solid var(--border-color); font-weight: bold; min-width: 90px; color: var(--text-color); transition: all 0.3s; box-sizing: border-box; }
+
+        canvas { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; cursor: pointer; display: none; margin: 0 auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); max-width: 100%; height: auto; transition: all 0.3s; animation: scaleUp 0.4s ease-out; }
+
+        #controls { display: none; margin-top: 15px; width: 100%; max-width: 500px; animation: slideInRight 0.4s ease-out; }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .control-btn { font-size: 14px; padding: 10px 15px; background-color: #4a55a2; color: white; border-radius: 6px; box-shadow: none; width: 100%; border: none; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+        .control-btn:hover { background-color: #3b4380; transform: translateY(-1px); box-shadow: 0 4px 8px rgba(0,0,0,0.2); }
+        #endGameBtn { background-color: #d9534f; color: white; grid-column: span 2; font-size: 16px; padding: 12px; }
+        #pauseGameBtn { background-color: #f0ad4e; color: white; grid-column: span 2; font-size: 16px; padding: 12px; margin-bottom: 10px; }
+        #pauseGameBtn:hover { background-color: #ec971f; }
+
+        .menu-stat { font-size: 16px; color: #FFD700; font-weight: bold; background-color: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; }
+        [data-theme="light"] .menu-stat { background-color: rgba(74, 85, 162, 0.05); border: 1px solid rgba(74, 85, 162, 0.2); color: #4a55a2; }
+
+        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
+        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
+        #confirmModalMessage, #infoModalMessage, #timeInputModalMessage, #twoFASetupMessage { margin: 0 0 20px 0; color: var(--text-color); font-size: 15px; line-height: 1.5; }
+        #confirmModalActions, #timeInputModalActions, #twoFASetupActions { display: flex; gap: 10px; }
+        #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
+
+        #syncIndicator { display: none; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--label-color); margin: -5px 0 10px 0; opacity: 0.85; }
+        #syncIndicator.active { display: flex; }
+        .sync-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: #FFD700; border-radius: 50%; animation: syncSpin 0.8s linear infinite; }
+        @keyframes syncSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        #appSearchInput { margin-bottom: 0; }
+        #appSearchResults { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background-color: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); z-index: 50; max-height: 280px; overflow-y: auto; text-align: left; }
+        #appSearchResults.active { display: block; }
+        .search-result-item { padding: 10px 14px; cursor: pointer; font-size: 14px; color: var(--text-color); border-bottom: 1px solid rgba(255, 255, 255, 0.06); display: flex; justify-content: space-between; align-items: center; transition: background-color 0.2s; }
+        .search-result-item:hover { background-color: rgba(255, 215, 0, 0.12); }
+        .search-result-item .search-result-section { font-size: 11px; color: var(--label-color); font-weight: bold; }
+
+        #leaderboardPanel { display: none; width: 100%; }
+        .leaderboard-header-row { display: flex; align-items: center; gap: 6px; padding: 0 6px 8px 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--label-color); text-transform: uppercase; }
+        .leaderboard-row { display: flex; align-items: center; gap: 6px; padding: 10px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; animation: fadeIn 0.3s ease-out; }
+        .lb-col-name { flex: 2; text-align: left; color: var(--text-color); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+        .lb-col-score { flex: 1; text-align: center; color: #FFD700; font-weight: bold; }
+        .lb-col-status { flex: 2; text-align: center; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .lb-col-action { flex: 0 0 36px; text-align: center; }
+        .lb-status-ok { color: #5cb85c; font-weight: bold; }
+        .lb-status-locked { color: #d9534f; font-weight: bold; }
+        .lb-mini-btn { font-size: 11px; padding: 4px 8px; margin: 0 2px; width: auto; box-shadow: none; border-radius: 4px; display: inline-block; transition: all 0.2s; }
+        .lb-mini-btn:hover { transform: scale(1.05); }
+        .lb-mini-extend { background-color: #5cb85c; color: white; }
+        .lb-mini-lock { background-color: #d9534f; color: white; }
+        .lb-mini-unlock { background-color: #5cb85c; color: white; }
+        .lb-delete-btn { background: none; border: none; font-size: 18px; padding: 4px; width: auto; box-shadow: none; cursor: pointer; line-height: 1; transition: transform 0.2s; }
+        .lb-delete-btn:hover { transform: scale(1.15); }
+        .lb-empty { text-align: center; color: var(--label-color); padding: 20px; font-size: 14px; }
+        .lb-rank { width: 24px; height: 24px; border-radius: 50%; background-color: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+        .rank-1 { background-color: #FFD700; color: #111; }
+        .rank-2 { background-color: #C0C0C0; color: #111; }
+        .rank-3 { background-color: #CD7F32; color: #111; }
+
+        .missed-game-item { background-color: rgba(255, 140, 66, 0.1); border-left: 4px solid #FF8C42; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 140, 66, 0.3); text-align: left; animation: slideInLeft 0.4s ease-out; }
+        .missed-game-item h3 { margin: 0 0 8px 0; color: #FF8C42; font-size: 16px; }
+        .missed-game-item p { margin: 0 0 6px 0; color: var(--text-color); font-size: 14px; }
+
+        #adminDashboardPanel { display: none; width: 100%; }
+        .admin-search-box { display: flex; gap: 8px; margin-bottom: 15px; }
+        .admin-search-box input { flex: 1; }
+        .admin-search-box button { flex: 0 0 100px; font-size: 14px; padding: 10px 14px; margin: 0; }
+        .admin-chart-container { background-color: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 15px; margin: 15px 0; height: 300px; }
+        .admin-quick-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .stat-card { background-color: var(--panel-bg); border: 2px solid var(--border-color); border-radius: 8px; padding: 15px; text-align: center; }
+        .stat-card h4 { margin: 0 0 8px 0; color: #FFD700; font-size: 14px; }
+        .stat-card .stat-value { font-size: 24px; color: var(--text-color); font-weight: bold; }
+
+        #twoFASetupBox { max-width: 400px; }
+        .qr-code-container { margin: 20px 0; }
+        .qr-code-container img { width: 200px; height: 200px; border: 2px solid var(--border-color); border-radius: 8px; }
+        .secret-key-display { background-color: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; margin: 15px 0; font-family: monospace; word-break: break-all; font-size: 12px; }
+        .copy-secret-btn { font-size: 12px; padding: 6px 12px; margin: 5px 0 15px 0; }
+
+        .colorblind-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+        .colorblind-option { font-size: 12px; padding: 8px; border: 2px solid var(--border-color); border-radius: 6px; background-color: transparent; color: var(--text-color); cursor: pointer; transition: all 0.2s; }
+        .colorblind-option:hover { border-color: #FFD700; transform: scale(1.02); }
+        .colorblind-option.active { background-color: var(--border-color); border-color: #FFD700; color: #FFD700; }
+
+        #playTimeRemainingBadge.lb-time-warning { color: #FF6B6B !important; border-color: rgba(255, 107, 107, 0.4) !important; background-color: rgba(255, 107, 107, 0.1) !important; }
+        @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+        .admin-badge.new-notification { animation: badgePulse 0.6s ease-in-out infinite; background-color: #FF6B6B; }
+        
+        .admin-user-result { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; margin-top: 15px; text-align: left; }
+        .admin-user-result h4 { margin: 0 0 10px 0; color: #FFD700; }
+        .admin-user-result p { margin: 4px 0; font-size: 14px; }
+
+        .recovery-code-box { margin: 15px 0; padding: 15px; background: #d9534f; color: white; border-radius: 8px; font-weight: bold; text-align: center; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="logo-container">
+            <img id="logoImg" src="logo.png" alt="Game Logo" class="site-logo" onerror="handleLogoError()">
+        </div>
+        <script>
+            function handleLogoError() {
+                const logoContainer = document.querySelector('.logo-container');
+                if (logoContainer) {
+                    logoContainer.innerHTML = '<div class="fallback-logo">?</div>';
+                }
+            }
+        </script>
+
+        <h1>Star Collector</h1>
+
+        <div id="syncIndicator">
+            <div class="sync-spinner"></div>
+            <span>Syncing...</span>
+        </div>
+
+        <div id="menu">
+            <div id="loginPanel">
+                <div class="auth-tabs">
+                    <button id="authLoginTab" class="auth-tab active">Log In</button>
+                    <button id="authSignUpTab" class="auth-tab">Sign Up</button>
+                </div>
+
+                <div id="authMsg" class="auth-message"></div>
+
+                <form id="authForm" onsubmit="event.preventDefault();">
+                    <div id="signupNameField" class="menu-element" style="align-items: flex-start; margin: 0 0 10px 0; display: none;">
+                        <label class="form-label" for="authName">Full Name:</label>
+                        <input id="authName" type="text" placeholder="Your full name..." required>
+                    </div>
+
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 10px 0;">
+                        <label class="form-label" for="authUsername">Email:</label>
+                        <input id="authUsername" type="text" placeholder="Enter your email..." required>
+                    </div>
+
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 15px 0;">
+                        <label class="form-label" for="authPassword">Password:</label>
+                        <input id="authPassword" type="password" placeholder="Password" required>
+                        <div class="password-strength-meter" id="strengthMeter" style="display: none;">
+                            <div class="password-strength-bar" id="strengthBar"></div>
+                        </div>
+                        <div class="password-strength-text" id="strengthText" style="display: none;"></div>
+                    </div>
+                    
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="rememberMe">
+                        <label for="rememberMe">Remember Email</label>
+                    </div>
+
+                    <div class="menu-element" style="margin: 0 0 12px 0;">
+                        <a href="#" id="forgotPasswordLink" style="font-size: 13px; color: var(--label-color); text-decoration: underline; cursor: pointer;">Forgot your password?</a>
+                    </div>
+
+                    <div class="menu-element" style="margin: 10px 0;">
+                        <button id="authSubmitBtn" type="button">Log In</button>
+                    </div>
+
+                    <div class="menu-element" style="margin: 0;">
+                        <button id="guestPlayBtn" class="secondary-btn" type="button">Play as Guest</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="mainMenuPanel">
+                <div class="menu-element" style="margin: 0 0 15px 0; position: relative;">
+                    <input id="appSearchInput" type="text" placeholder="Search anything (e.g. theme mode)..." autocomplete="off">
+                    <div id="appSearchResults"></div>
+                </div>
+                <div class="profile-badge">
+                    Pilot: <span id="activePilot">Guest</span>
+                </div>
+                <div id="playTimeRemainingBadge" class="menu-stat" style="display: none; margin-bottom: 15px; justify-content: center; gap: 8px;">
+                    <span id="playTimeRemainingText">Time left</span>
+                </div>
+                <div class="menu-element">
+                    <div class="menu-stat">
+                        <span>Daily Streak:</span>
+                        <span><span id="streakText">0</span></span>
+                    </div>
+                </div>
+                <div class="menu-element">
+                    <div class="menu-stat">
+                        <span>High Score:</span>
+                        <span><span id="highScoreText">0</span></span>
+                    </div>
+                </div>
+                <div class="menu-element" id="downloadCertContainer" style="margin-top: -10px; display: none;">
+                    <button id="downloadCertBtn" class="secondary-btn" style="font-size: 14px; padding: 8px 12px;">Download Certificate</button>
+                </div>
+                <div class="menu-element">
+                    <button id="missedGamesBtn" class="secondary-btn" style="background-color: #FF8C42;">Missed Games <span id="missedGamesCount" class="admin-badge" style="background-color: #d9534f;">0</span></button>
+                </div>
+                <div class="menu-element" id="adminNotificationsBtnContainer" style="display: none;">
+                    <button id="adminNotificationsBtn" class="secondary-btn">Admin Notifications <span id="notificationCount" class="admin-badge">0</span></button>
+                </div>
+                <div class="menu-element" id="leaderboardBtnContainer" style="display: none;">
+                    <button id="leaderboardBtn" class="secondary-btn" style="background-color: #6f42c1;">Leaderboard</button>
+                </div>
+                <div class="menu-element" id="adminDashboardBtnContainer" style="display: none;">
+                    <button id="adminDashboardBtn" class="secondary-btn" style="background-color: #17a2b8;">Admin Dashboard</button>
+                </div>
+                <div class="menu-element">
+                    <button id="setup2FABtn" class="secondary-btn" style="background-color: #17a2b8;">Set Up Authenticator App</button>
+                </div>
+                <div class="menu-element">
+                    <button id="startBtn">Start Game</button>
+                </div>
+                <div class="menu-element">
+                    <button id="settingsBtn" class="secondary-btn">Game Settings</button>
+                </div>
+                <div class="menu-element">
+                    <button id="termsBtn" class="secondary-btn" style="background-color: #5c6bc0; font-size: 14px;">Terms & Conditions</button>
+                </div>
+                <div class="menu-element">
+                    <button id="logoutBtn" class="secondary-btn" style="background-color: #d9534f;">Log Out</button>
+                </div>
+                <div class="menu-element" id="deleteAccountBtnContainer" style="display: none;">
+                    <button id="deleteAccountBtn" class="secondary-btn" style="background-color: #8b0000;">Delete Account</button>
+                </div>
+            </div>
+
+            <div id="settingsPanel">
+                <h2 style="margin-top: 0; color: #FFD700; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Settings</h2>
+
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label for="difficulty" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Difficulty Preset:</label>
+                    <select id="difficulty">
+                        <option value="easy">Easy (Relaxed)</option>
+                        <option value="medium" selected>Medium (Standard)</option>
+                        <option value="hard">Hard (Extreme)</option>
+                    </select>
+                </div>
+
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label for="themeMode" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Theme Mode:</label>
+                    <select id="themeMode">
+                        <option value="dark" selected>Dark Mode (Default)</option>
+                        <option value="light">Light Mode</option>
+                    </select>
+                </div>
+
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label for="colorblindMode" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Colorblind Mode:</label>
+                    <select id="colorblindMode">
+                        <option value="normal" selected>Normal Vision (Default)</option>
+                        <option value="deuteranopia">Deuteranopia (Red-Green)</option>
+                        <option value="protanopia">Protanopia (Red Colorblind)</option>
+                        <option value="tritanopia">Tritanopia (Blue-Yellow)</option>
+                    </select>
+                </div>
+
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label for="timeFormatSelect" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Time Format:</label>
+                    <select id="timeFormatSelect">
+                        <option value="12">12-Hour (e.g. 3:23 PM)</option>
+                        <option value="24">24-Hour (e.g. 15:23)</option>
+                    </select>
+                </div>
+
+                <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
+                    <label for="fontSizeSelect" style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left;">Font Size:</label>
+                    <select id="fontSizeSelect">
+                        <option value="small">Small</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+
+                <div class="menu-element" style="margin-top: 25px;">
+                    <button id="backBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="termsPanel">
+                <h2 style="margin-top: 0; color: #FFD700; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Terms & Conditions</h2>
+
+                <div style="max-height: 400px; overflow-y: auto; padding: 0 10px; margin-bottom: 20px; text-align: left; font-size: 13px; line-height: 1.6; color: var(--text-color);">
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">1. Acceptance of Terms</h3>
+                    <p style="margin: 0 0 10px 0;">By accessing and using Star Collector, you accept and agree to be bound by the terms and provision of this agreement.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">2. User Responsibilities</h3>
+                    <p style="margin: 0 0 10px 0;">You are responsible for maintaining the confidentiality of your account password and for all activities that occur under your account.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">3. Play Time Limits</h3>
+                    <p style="margin: 0 0 10px 0;">Users are entitled to 30 minutes of active play time per day. After reaching your daily limit, you will not be able to play until the next day or until an admin grants additional time.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">4. Account Suspension</h3>
+                    <p style="margin: 0 0 10px 0;">We reserve the right to suspend or terminate your account if we determine that you have violated these terms or engaged in inappropriate behavior.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">5. Data Privacy</h3>
+                    <p style="margin: 0 0 10px 0;">Your account data, including email, name, high scores, and game statistics, are stored securely. We do not share your personal information with third parties without consent.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">6. Security</h3>
+                    <p style="margin: 0 0 10px 0;">We implement security measures to protect your account. You are responsible for using strong passwords and enabling 2FA when available.</p>
+
+                    <h3 style="color: #FFD700; margin-top: 15px; margin-bottom: 8px;">7. Changes to Terms</h3>
+                    <p style="margin: 0 0 10px 0;">We reserve the right to modify these terms at any time. Your continued use of the service constitutes acceptance of new terms.</p>
+                </div>
+
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromTermsBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="adminNotificationsPanel">
+                <h2 style="margin-top: 0; color: #FF6B6B; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Admin Notifications</h2>
+                <div class="menu-element" style="margin-bottom: 15px;">
+                    <button id="adminRefreshBtn" class="secondary-btn" style="background-color: #5cb85c; font-size: 14px; padding: 8px 12px;">Check for New Requests</button>
+                </div>
+                <div id="notificationsList">
+                    <div class="no-notifications">No new notifications</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromAdminBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="adminDashboardPanel">
+                <h2 style="margin-top: 0; color: #17a2b8; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Admin Dashboard</h2>
+                <div class="menu-element" style="margin-bottom: 15px; position: relative;">
+                    <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
+                    <div class="admin-search-box">
+                        <input id="playerSearchInput" type="text" placeholder="Search by name or email...">
+                        <button id="playerSearchBtn" class="secondary-btn" style="width: 80px; font-size: 12px; padding: 10px;">Search</button>
+                    </div>
+                    <div id="searchResultsList"></div>
+                </div>
+                <div class="admin-quick-stats">
+                    <div class="stat-card">
+                        <h4>Total Players</h4>
+                        <div class="stat-value" id="totalPlayersCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Players Online Now</h4>
+                        <div class="stat-value" id="activeTodayCount" style="color: #5cb85c;">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Avg High Score</h4>
+                        <div class="stat-value" id="avgScoreCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Locked Players</h4>
+                        <div class="stat-value" id="lockedPlayersCount">0</div>
+                    </div>
+                </div>
+                <div class="admin-chart-container" id="activityChartContainer">
+                    <canvas id="activityChart"></canvas>
+                </div>
+                <div class="menu-element" style="margin: 15px 0;">
+                    <button id="exportLeaderboardBtn" class="secondary-btn" style="background-color: #28a745; font-size: 14px;">Export Leaderboard (CSV)</button>
+                </div>
+                <div class="menu-element" style="margin-bottom: 15px;">
+                    <button id="backFromDashboardBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="leaderboardPanel">
+                <h2 style="margin-top: 0; color: #FFD700; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Leaderboard</h2>
+                <div class="leaderboard-header-row">
+                    <span class="lb-col-name">Student Name</span>
+                    <span class="lb-col-score">High Score</span>
+                    <span class="lb-col-status">Status</span>
+                    <span class="lb-col-action"></span>
+                </div>
+                <div id="leaderboardList">
+                    <div class="lb-empty">No scores recorded yet. Be the first!</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromLeaderboardBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="missedGamesPanel">
+                <h2 style="margin-top: 0; color: #FF8C42; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Missed Games</h2>
+                <div id="missedGamesList">
+                    <div class="lb-empty">You haven't missed any games. Great job!</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromMissedBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="guestNamePanel">
+                <h2 style="margin-top: 20px; color: #FFD700; font-size: 28px; margin-bottom: 20px;">Guest Information</h2>
+                <form id="guestNameForm" onsubmit="event.preventDefault();">
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 20px 0;">
+                        <label class="form-label" for="guestNameInput">Your Name:</label>
+                        <input id="guestNameInput" type="text" placeholder="Enter your name..." required>
+                    </div>
+                    <div class="menu-element" style="margin: 10px 0;">
+                        <button id="guestSendRequestBtn" type="button" class="secondary-btn" style="background-color: #FFD700; color: #111424;">Send Request to Admin</button>
+                    </div>
+                    <div class="menu-element" style="margin: 0;">
+                        <button id="guestBackBtn" type="button" class="secondary-btn" style="background-color: #d9534f;">Back to Login</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="guestWaitingPanel">
+                <h2 style="margin-top: 20px; color: #FFD700; font-size: 28px; margin-bottom: 20px;">Awaiting Admin Approval</h2>
+                <p style="font-size: 14px; color: #FFD700; margin-bottom: 25px; font-weight: bold;">Status: <span id="guestApprovalStatus">Pending...</span></p>
+                <button id="guestRefreshBtn" class="secondary-btn" style="margin-bottom: 12px;">Check Status</button>
+                <button id="guestCancelBtn" class="secondary-btn" style="background-color: #d9534f;">Cancel Request</button>
+            </div>
+
+            <div id="resetRequestPanel">
+                <h2 style="margin-top: 20px; color: #FFD700; font-size: 28px; margin-bottom: 20px;">Password Reset</h2>
+                <form id="resetRequestForm" onsubmit="event.preventDefault();">
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 20px 0;">
+                        <label class="form-label" for="resetEmailInput">Your Account Email:</label>
+                        <input id="resetEmailInput" type="text" placeholder="Enter the email on your account..." required>
+                    </div>
+                    <div class="menu-element" style="margin: 10px 0;">
+                        <button id="resetRequestSendBtn" type="button" class="secondary-btn" style="background-color: #FFD700; color: #111424;">Send Verification Code</button>
+                    </div>
+                    <div class="menu-element" style="margin: 0;">
+                        <button id="resetRequestBackBtn" type="button" class="secondary-btn" style="background-color: #d9534f;">Back to Login</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="resetVerifyPanel">
+                <h2 style="margin-top: 20px; color: #FFD700; font-size: 28px; margin-bottom: 20px;">Enter Code</h2>
+                <form id="resetVerifyForm" onsubmit="event.preventDefault();">
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 20px 0;">
+                        <label class="form-label" for="resetCodeInput">Verification Code:</label>
+                        <input id="resetCodeInput" type="text" placeholder="Enter the 6-digit code..." maxlength="6" required>
+                    </div>
+                    <div class="menu-element" style="margin: 10px 0;">
+                        <button id="resetVerifyConfirmBtn" type="button" class="secondary-btn" style="background-color: #FFD700; color: #111424;">Verify Code</button>
+                    </div>
+                    <div class="menu-element" style="margin: 0 0 10px 0;">
+                        <button id="resetResendCodeBtn" type="button" class="secondary-btn">Resend Code</button>
+                    </div>
+                    <div class="menu-element" style="margin: 0;">
+                        <button id="resetVerifyBackBtn" type="button" class="secondary-btn" style="background-color: #d9534f;">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="resetNewPasswordPanel">
+                <h2 style="margin-top: 20px; color: #FFD700; font-size: 28px; margin-bottom: 20px;">New Password</h2>
+                <form id="resetNewPasswordForm" onsubmit="event.preventDefault();">
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 15px 0;">
+                        <label class="form-label" for="resetNewPasswordInput">New Password:</label>
+                        <input id="resetNewPasswordInput" type="password" placeholder="New password..." required>
+                    </div>
+                    <div class="menu-element" style="align-items: flex-start; margin: 0 0 20px 0;">
+                        <label class="form-label" for="resetConfirmPasswordInput">Confirm New Password:</label>
+                        <input id="resetConfirmPasswordInput" type="password" placeholder="Confirm password..." required>
+                    </div>
+                    <div class="menu-element" style="margin: 10px 0;">
+                        <button id="resetSavePasswordBtn" type="button" class="secondary-btn" style="background-color: #5cb85c;">Save New Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="stats">
+            <span class="stat-box">Score: <span id="scoreText">0</span></span>
+            <span class="stat-box">Time: <span id="timerText">00:00</span></span>
+            <span class="stat-box">Level: <span id="levelText">1</span></span>
+            <span class="stat-box" id="inGameLimitBox" style="display:none;">Limit: <span id="inGameLimitText">--</span></span>
+        </div>
+
+        <canvas id="gameCanvas" width="500" height="400"></canvas>
+
+        <div id="controls">
+            <button id="pauseGameBtn" class="control-btn">Pause Game (ESC)</button>
+            <div class="control-grid">
+                <button id="resetScoreBtn" class="control-btn">Reset Score</button>
+                <button id="resetLevelBtn" class="control-btn">Reset Level</button>
+                <button id="resetBothBtn" class="control-btn" style="grid-column: span 2;">Reset Score & Level</button>
+            </div>
+            <button id="saveExitBtn" class="control-btn" style="background-color: #5cb85c; margin-bottom: 10px;">Save & Exit</button>
+            <button id="endGameBtn" class="control-btn">End Game</button>
+        </div>
+    </div>
+
+    <div id="pauseOverlay">
+        <div id="pauseBox">
+            <h2>PAUSED</h2>
+            <p>Score: <strong id="pauseScore">0</strong></p>
+            <p>Level: <strong id="pauseLevel">1</strong></p>
+            <div class="pause-controls">
+                <button id="resumeBtn" class="secondary-btn">Resume (ESC)</button>
+                <button id="pauseMenuBtn" class="secondary-btn" style="background-color: #d9534f;">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmModalOverlay">
+        <div id="confirmModalBox">
+            <h3 id="confirmModalTitle">Are you sure?</h3>
+            <p id="confirmModalMessage">Please confirm this action.</p>
+            <div id="confirmModalActions">
+                <button id="confirmModalYes" class="accept-btn">Yes</button>
+                <button id="confirmModalNo" class="decline-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="infoModalOverlay">
+        <div id="infoModalBox">
+            <p id="infoModalMessage"></p>
+            <div class="menu-element" style="margin-top: 10px;">
+                <button id="infoModalOkBtn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="timeInputModalOverlay">
+        <div id="timeInputModalBox">
+            <h3 id="timeInputModalTitle">Grant extra time</h3>
+            <p id="timeInputModalMessage">How much time should they get?</p>
+            <div class="menu-element" style="align-items: flex-start; margin: 0 0 15px 0;">
+                <input id="timeInputHours" type="number" min="0" placeholder="Hours" style="margin-bottom: 8px;">
+                <input id="timeInputMinutes" type="number" min="0" max="59" placeholder="Minutes">
+            </div>
+            <div id="timeInputModalActions">
+                <button id="timeInputConfirmBtn" class="accept-btn">Grant Time</button>
+                <button id="timeInputCancelBtn" class="decline-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2FA SETUP MODAL -->
+    <div id="twoFASetupOverlay">
+        <div id="twoFASetupBox">
+            <h3 id="twoFASetupTitle">Setup Google Authenticator</h3>
+            <div id="twoFASetupStep1">
+                <p id="twoFASetupMessage">Scan this QR code with your authenticator app:</p>
+                <div class="qr-code-container">
+                    <img id="qrCodeImg" src="" alt="QR Code">
+                </div>
+                <p style="font-size: 12px; color: var(--label-color); margin: 10px 0;">Or enter this secret manually:</p>
+                <div class="secret-key-display" id="secretKeyDisplay"></div>
+                <button id="copySecretBtn" class="copy-secret-btn secondary-btn">Copy Secret</button>
+                
+                <!-- RECOVERY CODE NOW VISIBLE IMMEDIATELY ON STEP 1 -->
+                <p style="color: #d9534f; font-weight: bold; margin-top: 15px; margin-bottom: 5px;">Save this Recovery Code! If you lose your phone, you can use this code to log in.</p>
+                <div class="recovery-code-box" id="recoveryCodeDisplay"></div>
+                
+                <p style="font-size: 12px; margin: 15px 0 10px 0; color: var(--text-color);">Enter the 6-digit code from your app:</p>
+                <input id="twoFACodeInput" type="text" placeholder="000000" maxlength="6" style="margin-bottom: 15px;">
+                <div id="twoFASetupActions">
+                    <button id="twoFAConfirmBtn" class="accept-btn">Verify & Enable</button>
+                    <button id="twoFACancelBtn" class="decline-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2FA LOGIN MODAL -->
+    <div id="twoFALoginOverlay">
+        <div id="twoFALoginBox">
+            <h3 style="color: #FFD700; margin: 0 0 12px 0;">Enter Authenticator Code</h3>
+            <p style="color: var(--text-color); margin: 0 0 15px 0;">Enter the 6-digit code from your Google Authenticator app:</p>
+            <input id="twoFALoginCodeInput" type="text" placeholder="000000" maxlength="6" style="margin-bottom: 15px;">
+            <div id="twoFARecoverySection" style="display: none; margin-top: 15px; border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <p style="color: var(--text-color); margin: 0 0 15px 0;">Enter your Recovery Code:</p>
+                <input id="twoFARecoveryInput" type="text" placeholder="Recovery Code" style="margin-bottom: 15px;">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button id="twoFALoginConfirmBtn" class="accept-btn">Verify</button>
+                <button id="twoFALoginCancelBtn" class="decline-btn">Cancel</button>
+            </div>
+            <a href="#" id="useRecoveryLink" style="display: block; margin-top: 15px; font-size: 13px; color: var(--label-color); text-decoration: underline; cursor: pointer;">Lost your phone? Use Recovery Code</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.2.0/sha.min.js"></script>
+
+    <script>
+        // ============ JSONBIN CONFIG ============
+        const JSONBIN_BIN_ID = "6a4cd69ada38895dfe3a0ae3";
+        const JSONBIN_MASTER_KEY = "$2a$10$x4RLzmXXNd8ylmjCBLdE8.gUy1Ue4WRfonZMe0StqRG4YFmY9tdBS";
+        const JSONBIN_BASE_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+
+        // ============ ADMIN CONFIG ============
+        const ADMIN_EMAIL = "ibraheem.muhammad.ai@gmail.com";
+        const ADMIN_PASSWORD = "Midea@222";
+        
+        // ============ TEST ACCOUNT CONFIG ============
+        const TEST_EMAIL = "testauth@gmail.com";
+        const TEST_PASSWORD = "test";
+
+        let isAdmin = false; 
+        let currentLoggedInUser = null; 
+        let CURRENT_2FA_SECRET = null; 
+        let ADMIN_2FA_SECRET = null; 
+        let pendingLoginUser = null; 
+
+        async function getDB() {
+            const res = await fetch(JSONBIN_BASE_URL + "/latest", { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
+            const data = await res.json();
+            return data.record;
+        }
+
+        async function saveDB(db) {
+            await fetch(JSONBIN_BASE_URL, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
+                body: JSON.stringify(db)
+            });
+        }
+
+        async function ensureTestAccountExists() {
+            try {
+                const db = await getDB();
+                if (!db.users) db.users = [];
+                let testUser = db.users.find(u => u.email === TEST_EMAIL);
+                if (!testUser) {
+                    testUser = { id: "test-user-id-001", name: "Test User", email: TEST_EMAIL, password: TEST_PASSWORD, status: "active" };
+                    db.users.push(testUser);
+                    await saveDB(db);
+                } else if (testUser.password !== TEST_PASSWORD) {
+                    testUser.password = TEST_PASSWORD;
+                    await saveDB(db);
+                }
+            } catch (err) { console.error("Error ensuring test account exists:", err); }
+        }
+        ensureTestAccountExists();
+
+        // ============ CORE SETUP ============
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        const menu = document.getElementById("menu");
+        const loginPanel = document.getElementById("loginPanel");
+        const mainMenuPanel = document.getElementById("mainMenuPanel");
+        const settingsPanel = document.getElementById("settingsPanel");
+        const termsPanel = document.getElementById("termsPanel");
+        const statsDiv = document.getElementById("stats");
+        const controlsDiv = document.getElementById("controls");
+       
+        const pauseOverlay = document.getElementById("pauseOverlay");
+        const pauseScore = document.getElementById("pauseScore");
+        const pauseLevel = document.getElementById("pauseLevel");
+        const pauseGameBtn = document.getElementById("pauseGameBtn");
+        const resumeBtn = document.getElementById("resumeBtn");
+        const pauseMenuBtn = document.getElementById("pauseMenuBtn");
+        const inGameLimitBox = document.getElementById("inGameLimitBox");
+        const setup2FABtn = document.getElementById("setup2FABtn");
+        const deleteAccountBtnContainer = document.getElementById("deleteAccountBtnContainer");
+        const downloadCertBtn = document.getElementById("downloadCertBtn");
+        const downloadCertContainer = document.getElementById("downloadCertContainer");
+
+        const colorblindModeSelect = document.getElementById("colorblindMode");
+        const fontSizeSelect = document.getElementById("fontSizeSelect");
+        const themeModeSelect = document.getElementById("themeMode");
+        const difficultySelect = document.getElementById("difficulty");
+        const authPassword = document.getElementById("authPassword");
+        const strengthMeter = document.getElementById("strengthMeter");
+        const strengthText = document.getElementById("strengthText");
+        const strengthBar = document.getElementById("strengthBar");
+        const authMsg = document.getElementById("authMsg");
+        const authUsernameInput = document.getElementById("authUsername");
+        const rememberMeCheckbox = document.getElementById("rememberMe");
+
+        let score = 0;
+        let level = 1;
+        let playStreak = 0;
+        let highScore = 0;
+        let gameActive = false;
+        let gamePaused = false;
+        let animationId;
+        let gameSeconds = 0;
+        let timerInterval = null;
+        let pauseStartTime = 0;
+        let totalPausedTime = 0;
+
+        let colorblindMode = localStorage.getItem("starCollectorColorblind") || "normal";
+        let themeMode = localStorage.getItem("starCollectorTheme") || "dark";
+        let difficulty = localStorage.getItem("starCollectorDifficulty") || "medium";
+
+        let starX = canvas.width / 2;
+        let starY = canvas.height / 2;
+        const normalRadius = 20;
+        const giantRadius = 40;
+        let currentRadius = normalRadius;
+
+        let baseSpeedX = 0;
+        let baseSpeedY = 0;
+        let speedX = 0;
+        let speedY = 0;
+        let speedMultiplier = 1;
+
+        // ============ HELPER FUNCTIONS ============
+        function showPanel(panelId) {
+            const panels = document.querySelectorAll('#menu > div');
+            panels.forEach(p => p.style.display = 'none');
+            const activePanel = document.getElementById(panelId);
+            if (activePanel) {
+                activePanel.style.display = 'block';
+                activePanel.style.animation = 'none';
+                activePanel.offsetHeight; 
+                activePanel.style.animation = 'fadeIn 0.4s ease-out';
+            }
+        }
+
+        function showInfo(message) {
+            return new Promise((resolve) => {
+                document.getElementById("infoModalMessage").textContent = message;
+                document.getElementById("infoModalOverlay").classList.add("active");
+                document.getElementById("infoModalOkBtn").onclick = () => {
+                    document.getElementById("infoModalOverlay").classList.remove("active");
+                    resolve();
+                };
+            });
+        }
+
+        function showConfirm(title, message) {
+            return new Promise((resolve) => {
+                document.getElementById("confirmModalTitle").textContent = title;
+                document.getElementById("confirmModalMessage").textContent = message;
+                document.getElementById("confirmModalOverlay").classList.add("active");
+                document.getElementById("confirmModalYes").onclick = () => {
+                    document.getElementById("confirmModalOverlay").classList.remove("active");
+                    resolve(true);
+                };
+                document.getElementById("confirmModalNo").onclick = () => {
+                    document.getElementById("confirmModalOverlay").classList.remove("active");
+                    resolve(false);
+                };
+            });
+        }
+
+        function updateURL(path) {
+            try {
+                const newUrl = `${window.location.origin}/${path}`;
+                if (window.location.href !== newUrl) {
+                    window.history.pushState({ path: path }, "", newUrl);
+                }
+            } catch (e) {}
+        }
+
+        function checkAdminStatus() {
+            document.getElementById("adminNotificationsBtnContainer").style.display = isAdmin ? "flex" : "none";
+            document.getElementById("leaderboardBtnContainer").style.display = isAdmin ? "flex" : "none";
+            document.getElementById("adminDashboardBtnContainer").style.display = isAdmin ? "flex" : "none";
+            deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            downloadCertContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            update2FAButtonStatus();
+        }
+
+        function update2FAButtonStatus() {
+            let has2FA = false;
+            if (isAdmin && ADMIN_2FA_SECRET) {
+                has2FA = true;
+            } else if (currentLoggedInUser && currentLoggedInUser.twoFASecret) {
+                has2FA = true;
+            }
+
+            if (has2FA) {
+                setup2FABtn.textContent = "Authenticator Enabled";
+                setup2FABtn.style.backgroundColor = "#5cb85c"; 
+                setup2FABtn.style.color = "white";
+            } else {
+                setup2FABtn.textContent = "Set Up Authenticator App";
+                setup2FABtn.style.backgroundColor = "#17a2b8"; 
+                setup2FABtn.style.color = "white";
+            }
+        }
+
+        // ============ TOTP GENERATION ============
+        function base32ToHex(base32) {
+            const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+            let bits = '';
+            let hex = '';
+            for (let i = 0; i < base32.length; i++) {
+                const val = base32Chars.indexOf(base32[i].toUpperCase());
+                if (val === -1) continue;
+                bits += val.toString(2).padStart(5, '0');
+            }
+            for (let i = 0; i + 8 <= bits.length; i += 8) {
+                const chunk = bits.substr(i, 8);
+                hex += parseInt(chunk, 2).toString(16).padStart(2, '0');
+            }
+            return hex;
+        }
+
+        function generateTOTP(secret, epoch) {
+            const timeHex = Math.floor(epoch / 30).toString(16).padStart(16, '0');
+            const key = base32ToHex(secret);
+            const shaObj = new jsSHA("SHA-1", "HEX");
+            shaObj.setHMACKey(key, "HEX");
+            shaObj.update(timeHex);
+            const hmac = shaObj.getHMAC("HEX");
+            const offset = parseInt(hmac.substring(hmac.length - 1), 16);
+            let otp = (parseInt(hmac.substr(offset * 2, 8), 16) & 0x7fffffff) + "";
+            otp = otp.substr(otp.length - 6, 6).padStart(6, '0');
+            return otp;
+        }
+
+        function generateRecoveryCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 10; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // ============ SETTINGS & THEME ============
+        function applyTheme(theme) {
+            if (theme === "light") document.documentElement.setAttribute("data-theme", "light");
+            else document.documentElement.removeAttribute("data-theme");
+        }
+
+        function applyColorblindMode(mode) {
+            if (mode === "normal") document.documentElement.removeAttribute("data-colorblind");
+            else document.documentElement.setAttribute("data-colorblind", mode);
+        }
+
+        function applyDifficulty(diff) {
+            difficulty = diff;
+            if (difficulty === "easy") { baseSpeedX = 2; baseSpeedY = 1.5; speedMultiplier = 0.5; }
+            else if (difficulty === "medium") { baseSpeedX = 4; baseSpeedY = 3; speedMultiplier = 1; }
+            else if (difficulty === "hard") { baseSpeedX = 7; baseSpeedY = 5; speedMultiplier = 1.5; }
+        }
+
+        if (themeModeSelect) {
+            themeModeSelect.addEventListener("change", async (e) => {
+                themeMode = e.target.value;
+                localStorage.setItem("starCollectorTheme", themeMode);
+                applyTheme(themeMode);
+                if (currentLoggedInUser) {
+                    try {
+                        const db = await getDB();
+                        const idx = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                        if (idx !== -1) { db.users[idx].theme = themeMode; await saveDB(db); }
+                    } catch(err) {}
+                }
+            });
+        }
+
+        if (difficultySelect) {
+            difficultySelect.addEventListener("change", async (e) => {
+                applyDifficulty(e.target.value);
+                localStorage.setItem("starCollectorDifficulty", difficulty);
+                if (currentLoggedInUser) {
+                    try {
+                        const db = await getDB();
+                        const idx = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                        if (idx !== -1) { db.users[idx].difficulty = difficulty; await saveDB(db); }
+                    } catch(err) {}
+                }
+            });
+        }
+
+        if (authPassword) {
+            authPassword.addEventListener("input", (e) => {
+                const password = e.target.value;
+                let strength = calculatePasswordStrength(password);
+                if (password.length === 0) { strengthMeter.style.display = "none"; strengthText.style.display = "none"; return; }
+                strengthMeter.style.display = "block"; strengthText.style.display = "block";
+                strengthBar.className = "password-strength-bar"; strengthText.className = "password-strength-text";
+                if (strength === "weak") { strengthBar.classList.add("weak"); strengthText.classList.add("weak"); strengthText.textContent = "Weak password"; }
+                else if (strength === "fair") { strengthBar.classList.add("fair"); strengthText.classList.add("fair"); strengthText.textContent = "Fair password"; }
+                else if (strength === "good") { strengthBar.classList.add("good"); strengthText.classList.add("good"); strengthText.textContent = "Good password"; }
+                else if (strength === "strong") { strengthBar.classList.add("strong"); strengthText.classList.add("strong"); strengthText.textContent = "Strong password"; }
+            });
+        }
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+            if (password.length >= 4) score++;
+            if (password.length >= 8) score++;
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
+            if (/[0-9]/.test(password)) score++;
+            if (/[!@#$%^&*]/.test(password)) score++;
+            if (score <= 1) return "weak"; if (score <= 2) return "fair"; if (score <= 3) return "good"; return "strong";
+        }
+
+        // ============ GAME LOGIC ============
+        function drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+            let rot = Math.PI / 2 * 3; let x = cx; let y = cy; let step = Math.PI / spikes;
+            ctx.beginPath(); ctx.moveTo(cx, cy - outerRadius);
+            for (let i = 0; i < spikes; i++) {
+                x = cx + Math.cos(rot) * outerRadius; y = cy + Math.sin(rot) * outerRadius; ctx.lineTo(x, y); rot += step;
+                x = cx + Math.cos(rot) * innerRadius; y = cy + Math.sin(rot) * innerRadius; ctx.lineTo(x, y); rot += step;
+            }
+            ctx.lineTo(cx, cy - outerRadius); ctx.closePath();
+            ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--star-color').trim() || '#FFD700';
+            ctx.fill();
+            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--star-stroke').trim() || '#FFA500';
+            ctx.lineWidth = 3; ctx.stroke();
+        }
+
+        function updateGame() {
+            if (!gameActive || gamePaused) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            starX += speedX; starY += speedY;
+            if (starX - currentRadius < 0 || starX + currentRadius > canvas.width) speedX = -speedX;
+            if (starY - currentRadius < 0 || starY + currentRadius > canvas.height) speedY = -speedY;
+            drawStar(starX, starY, 5, currentRadius, currentRadius / 2);
+            animationId = requestAnimationFrame(updateGame);
+        }
+
+        function updateSpeedForLevel() {
+            const levelIncreases = level - 1;
+            speedX = speedX > 0 ? baseSpeedX + (levelIncreases * speedMultiplier) : -baseSpeedX - (levelIncreases * speedMultiplier);
+            speedY = speedY > 0 ? baseSpeedY + (levelIncreases * speedMultiplier) : -baseSpeedY - (levelIncreases * speedMultiplier);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(gameSeconds / 60);
+            const seconds = gameSeconds % 60;
+            document.getElementById("timerText").textContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+        }
+
+        function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+        function togglePause() {
+            if (!gameActive) return;
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                pauseStartTime = Date.now();
+                pauseOverlay.classList.add("active");
+                pauseScore.textContent = score; pauseLevel.textContent = level;
+                if (timerInterval) clearInterval(timerInterval);
+                cancelAnimationFrame(animationId);
+                pauseGameBtn.textContent = "Resume (ESC)";
+            } else {
+                totalPausedTime += Date.now() - pauseStartTime;
+                pauseOverlay.classList.remove("active");
+                pauseGameBtn.textContent = "Pause Game (ESC)";
+                timerInterval = setInterval(() => { gameSeconds++; updateTimerDisplay(); }, 1000);
+                updateGame();
+            }
+        }
+
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape" && gameActive) togglePause(); });
+
+        // ============ 2FA LOGIC ============
+        setup2FABtn.addEventListener("click", async () => {
+            let has2FA = (isAdmin && ADMIN_2FA_SECRET) || (currentLoggedInUser && currentLoggedInUser.twoFASecret);
+            if (has2FA) {
+                const confirmed = await showConfirm("Remove Authenticator", "Do you want to remove the Authenticator system?");
+                if (confirmed) {
+                    if (isAdmin) { ADMIN_2FA_SECRET = null; ADMIN_RECOVERY_CODE = null; }
+                    else if (currentLoggedInUser) {
+                        try {
+                            const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                            if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; currentLoggedInUser = db.users[i]; await saveDB(db); }
+                        } catch (err) { await showInfo("Error connecting to server."); return; }
+                    }
+                    update2FAButtonStatus(); await showInfo("Authenticator removed successfully.");
+                }
+                return;
+            }
+
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; let secret = '';
+            for(let i=0; i<16; i++) secret += chars[Math.floor(Math.random() * chars.length)];
+            CURRENT_2FA_SECRET = secret;
+            
+            // Generate Recovery Code immediately
+            const recoveryCode = generateRecoveryCode();
+            document.getElementById("recoveryCodeDisplay").textContent = recoveryCode;
+
+            let accountName = isAdmin ? "Admin" : (currentLoggedInUser ? currentLoggedInUser.email : "User");
+            const otpauthUrl = `otpauth://totp/StarCollector:${accountName}?secret=${secret}&issuer=StarCollector`;
+            document.getElementById("secretKeyDisplay").textContent = secret;
+            new QRious({ element: document.getElementById("qrCodeImg"), value: otpauthUrl, size: 200 });
+            
+            document.getElementById("twoFACodeInput").value = "";
+            document.getElementById("twoFASetupOverlay").classList.add("active");
+        });
+
+        document.getElementById("twoFAConfirmBtn").addEventListener("click", async () => {
+            const inputCode = document.getElementById("twoFACodeInput").value.trim();
+            if (inputCode.length !== 6) { await showInfo("Please enter the 6-digit code."); return; }
+            const expectedCode = generateTOTP(CURRENT_2FA_SECRET, Math.floor(Date.now() / 1000));
+            
+            if (inputCode === expectedCode) {
+                const recoveryCode = document.getElementById("recoveryCodeDisplay").textContent;
+
+                if (isAdmin) { ADMIN_2FA_SECRET = CURRENT_2FA_SECRET; ADMIN_RECOVERY_CODE = recoveryCode; }
+                else if (currentLoggedInUser) {
+                    try {
+                        const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                        if (i !== -1) { 
+                            db.users[i].twoFASecret = CURRENT_2FA_SECRET; 
+                            db.users[i].recoveryCode = recoveryCode; 
+                            currentLoggedInUser = db.users[i]; 
+                            await saveDB(db); 
+                        } else { await showInfo("Error: Could not find your account."); return; }
+                    } catch (err) { await showInfo("Error connecting to server."); return; }
+                }
+                
+                document.getElementById("twoFASetupOverlay").classList.remove("active");
+                update2FAButtonStatus();
+                await showInfo("Authenticator app setup complete!");
+            } else {
+                await showInfo("Invalid code. Please check your app and try again.");
+            }
+        });
+
+        document.getElementById("twoFACancelBtn").addEventListener("click", () => document.getElementById("twoFASetupOverlay").classList.remove("active"));
+        document.getElementById("copySecretBtn").addEventListener("click", (e) => {
+            navigator.clipboard.writeText(document.getElementById("secretKeyDisplay").textContent).then(() => {
+                const btn = e.target; const orig = btn.textContent; btn.textContent = "✅ Copied!"; btn.style.backgroundColor = "#5cb85c";
+                setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = ""; }, 2000);
+            });
+        });
+
+        // 2FA LOGIN MODAL LOGIC
+        document.getElementById("twoFALoginConfirmBtn").addEventListener("click", async () => {
+            if (!pendingLoginUser) return;
+
+            const isRecoveryMode = document.getElementById("twoFARecoverySection").style.display === "block";
+            const codeInput = document.getElementById(isRecoveryMode ? "twoFARecoveryInput" : "twoFALoginCodeInput").value.trim();
+
+            if (codeInput.length === 0) { await showInfo("Please enter the code."); return; }
+
+            if (isRecoveryMode) {
+                if (codeInput === pendingLoginUser.recoveryCode) {
+                    const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
+                    if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
+                } else { await showInfo("Invalid Recovery Code."); return; }
+            } else {
+                const expectedCode = generateTOTP(pendingLoginUser.twoFASecret, Math.floor(Date.now() / 1000));
+                if (codeInput !== expectedCode) { await showInfo("Invalid Authenticator Code."); return; }
+            }
+
+            currentLoggedInUser = pendingLoginUser;
+            pendingLoginUser = null;
+            document.getElementById("twoFALoginOverlay").classList.remove("active");
+            document.getElementById("twoFARecoverySection").style.display = "none";
+            document.getElementById("twoFARecoveryInput").value = "";
+            document.getElementById("twoFALoginCodeInput").value = "";
+            document.getElementById("activePilot").textContent = currentLoggedInUser.name;
+            highScore = currentLoggedInUser.highScore || 0;
+            document.getElementById("highScoreText").textContent = highScore;
+            checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+        });
+
+        document.getElementById("twoFALoginCancelBtn").addEventListener("click", () => {
+            document.getElementById("twoFALoginOverlay").classList.remove("active");
+            pendingLoginUser = null;
+        });
+
+        document.getElementById("useRecoveryLink").addEventListener("click", (e) => {
+            e.preventDefault();
+            const sec = document.getElementById("twoFARecoverySection");
+            const isHidden = sec.style.display === "none";
+            sec.style.display = isHidden ? "block" : "none";
+            document.getElementById("twoFALoginConfirmBtn").textContent = isHidden ? "Verify Recovery" : "Verify";
+        });
+
+        // ============ AUTH LISTENERS ============
+        const authLoginTab = document.getElementById("authLoginTab");
+        const authSignUpTab = document.getElementById("authSignUpTab");
+        const signupNameField = document.getElementById("signupNameField");
+        const authSubmitBtn = document.getElementById("authSubmitBtn");
+        let isSignUpMode = false;
+
+        authLoginTab.addEventListener("click", () => {
+            isSignUpMode = false;
+            authLoginTab.classList.add("active"); authSignUpTab.classList.remove("active");
+            signupNameField.style.display = "none"; authSubmitBtn.textContent = "Log In"; authMsg.style.display = "none";
+            signupNameField.style.animation = 'slideInFade 0.3s ease-out';
+        });
+
+        authSignUpTab.addEventListener("click", () => {
+            isSignUpMode = true;
+            authSignUpTab.classList.add("active"); authLoginTab.classList.remove("active");
+            signupNameField.style.display = "flex"; authSubmitBtn.textContent = "Sign Up"; authMsg.style.display = "none";
+            signupNameField.style.animation = 'slideInFade 0.3s ease-out';
+        });
+
+        authSubmitBtn.addEventListener("click", async () => {
+            const email = document.getElementById("authUsername").value.trim();
+            const password = document.getElementById("authPassword").value.trim();
+            const name = document.getElementById("authName").value.trim();
+
+            if (!email || !password) { authMsg.textContent = "Please enter both email and password."; authMsg.classList.remove("success"); authMsg.style.display = "block"; return; }
+
+            if (isSignUpMode) {
+                if (!name) { authMsg.textContent = "Please enter your full name."; authMsg.style.display = "block"; return; }
+                try {
+                    const db = await getDB(); if (!db.users) db.users = []; if (!db.requests) db.requests = [];
+                    if (db.users.find(u => u.email === email)) { authMsg.textContent = "Account already exists."; authMsg.style.display = "block"; return; }
+                    if (db.requests.find(r => r.email === email)) { authMsg.textContent = "Request already pending."; authMsg.style.display = "block"; return; }
+                    db.requests.push({ id: Date.now().toString(), name, email, password, status: "pending", type: "signup" });
+                    await saveDB(db);
+                    authMsg.textContent = "Sign up request sent! Wait for admin approval."; authMsg.classList.add("success"); authMsg.style.display = "block";
+                    document.getElementById("authName").value = ""; document.getElementById("authUsername").value = ""; document.getElementById("authPassword").value = "";
+                } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
+            } else {
+                try {
+                    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                        authMsg.style.display = "none"; isAdmin = true; currentLoggedInUser = null;
+                        document.getElementById("activePilot").textContent = "Admin"; checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page"); return;
+                    }
+                    isAdmin = false; checkAdminStatus();
+                    const db = await getDB(); if (!db.users) db.users = [];
+                    const user = db.users.find(u => u.email === email && u.password === password);
+
+                    if (!user) { authMsg.textContent = "Invalid email or password."; authMsg.style.display = "block"; return; }
+                    if (user.status === "locked") { authMsg.textContent = "Your account is locked. Contact admin."; authMsg.style.display = "block"; return; }
+                    
+                    authMsg.style.display = "none";
+                    if (user.twoFASecret) {
+                        pendingLoginUser = user;
+                        document.getElementById("twoFALoginOverlay").classList.add("active");
+                        document.getElementById("twoFALoginCodeInput").value = "";
+                        document.getElementById("twoFARecoverySection").style.display = "none";
+                    } else {
+                        currentLoggedInUser = user;
+                        document.getElementById("activePilot").textContent = user.name;
+                        highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
+                        if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
+                        else localStorage.removeItem("starCollectorRememberEmail");
+                        if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
+                        if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
+                        user.lastActive = Date.now(); await saveDB(db);
+                        checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+                    }
+                } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
+            }
+        });
+
+        document.getElementById("guestPlayBtn").addEventListener("click", () => {
+            document.getElementById("activePilot").textContent = "Guest"; isAdmin = false; currentLoggedInUser = null;
+            highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("mainMenuPanel"); updateURL("Home-Page");
+        });
+
+        document.getElementById("logoutBtn").addEventListener("click", () => {
+            isAdmin = false; currentLoggedInUser = null; ADMIN_2FA_SECRET = null;
+            highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("loginPanel"); updateURL("Login");
+        });
+
+        document.getElementById("deleteAccountBtn").addEventListener("click", async () => {
+            if (!currentLoggedInUser || isAdmin) return;
+            const confirmed = await showConfirm("Delete Account", "Are you absolutely sure you want to delete your account? This cannot be undone.");
+            if (!confirmed) return;
+            try {
+                const db = await getDB(); if (!db.users) db.users = [];
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) { db.users.splice(i, 1); await saveDB(db); await showInfo("Account deleted successfully."); currentLoggedInUser = null; checkAdminStatus(); showPanel("loginPanel"); updateURL("Login"); }
+            } catch (err) { await showInfo("Error connecting to server."); }
+        });
+
+        downloadCertBtn.addEventListener("click", () => {
+            if (!currentLoggedInUser) return;
+            const certCanvas = document.createElement("canvas");
+            certCanvas.width = 800; certCanvas.height = 600;
+            const cctx = certCanvas.getContext("2d");
+            
+            cctx.fillStyle = "#111424"; cctx.fillRect(0, 0, 800, 600);
+            cctx.strokeStyle = "#FFD700"; cctx.lineWidth = 10; cctx.strokeRect(20, 20, 760, 560);
+            cctx.fillStyle = "#FFD700"; cctx.font = "bold 50px Segoe UI"; cctx.textAlign = "center";
+            cctx.fillText("Certificate of Achievement", 400, 150);
+            cctx.fillStyle = "#ffffff"; cctx.font = "24px Segoe UI";
+            cctx.fillText("This certifies that", 400, 230);
+            cctx.fillStyle = "#FFD700"; cctx.font = "bold 40px Segoe UI";
+            cctx.fillText(currentLoggedInUser.name, 400, 290);
+            cctx.fillStyle = "#ffffff"; cctx.font = "24px Segoe UI";
+            cctx.fillText("has achieved a High Score of", 400, 350);
+            cctx.fillStyle = "#FFD700"; cctx.font = "bold 60px Segoe UI";
+            cctx.fillText(highScore.toString(), 400, 430);
+            cctx.fillStyle = "#b3b9df"; cctx.font = "18px Segoe UI";
+            cctx.fillText("Date: " + new Date().toLocaleDateString(), 400, 500);
+            cctx.fillText("Star Collector - Official Game", 400, 530);
+
+            const link = document.createElement("a");
+            link.download = "StarCollector_Certificate.png";
+            link.href = certCanvas.toDataURL("image/png");
+            link.click();
+        });
+
+        // ============ NAVIGATION & BUTTONS ============
+        document.getElementById("settingsBtn").addEventListener("click", () => { showPanel("settingsPanel"); updateURL("Settings"); });
+        document.getElementById("backBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        document.getElementById("termsBtn").addEventListener("click", () => { showPanel("termsPanel"); updateURL("Terms"); });
+        document.getElementById("backFromTermsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        document.getElementById("missedGamesBtn").addEventListener("click", () => { showPanel("missedGamesPanel"); updateURL("Missed-Games"); });
+        document.getElementById("backFromMissedBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        document.getElementById("backFromLeaderboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        document.getElementById("backFromDashboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        document.getElementById("backFromAdminBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); updateURL("Home-Page"); });
+        
+        document.getElementById("adminNotificationsBtn").addEventListener("click", async () => {
+            showPanel("adminNotificationsPanel");
+            updateURL("Admin-Notifications");
+            await loadAdminNotifications();
+        });
+
+        document.getElementById("adminRefreshBtn").addEventListener("click", loadAdminNotifications);
+
+        document.getElementById("forgotPasswordLink").addEventListener("click", (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById("authUsername").value.trim();
+            if (emailInput) {
+                document.getElementById("resetEmailInput").value = emailInput;
+            }
+            showPanel("resetRequestPanel");
+            updateURL("Reset-Password");
+        });
+
+        document.getElementById("leaderboardBtn").addEventListener("click", async () => {
+            showPanel("leaderboardPanel"); updateURL("Leaderboard");
+            const list = document.getElementById("leaderboardList");
+            list.innerHTML = "<div class='lb-empty'>Loading...</div>";
+            try {
+                const db = await getDB(); let users = db.users || [];
+                users.sort((a, b) => (b.highScore || 0) - (a.highScore || 0));
+                if (users.length === 0) { list.innerHTML = "<div class='lb-empty'>No scores recorded yet.</div>"; return; }
+                list.innerHTML = "";
+                users.slice(0, 10).forEach((user, index) => {
+                    const row = document.createElement("div"); row.className = "leaderboard-row";
+                    let rankClass = ""; if (index === 0) rankClass = "rank-1"; else if (index === 1) rankClass = "rank-2"; else if (index === 2) rankClass = "rank-3";
+                    row.innerHTML = `
+                        <span class="lb-col-name"><span class="lb-rank ${rankClass}">${index + 1}</span> ${user.name}</span>
+                        <span class="lb-col-score">${user.highScore || 0}</span>
+                        <span class="lb-col-status"><span class="lb-status-${user.status === 'active' ? 'ok' : 'locked'}">${user.status.toUpperCase()}</span></span>
+                        <span class="lb-col-action"></span>
+                    `;
+                    list.appendChild(row);
+                });
+            } catch (err) { list.innerHTML = "<div class='lb-empty'>Error loading leaderboard.</div>"; }
+        });
+
+        document.getElementById("adminDashboardBtn").addEventListener("click", async () => {
+            showPanel("adminDashboardPanel"); updateURL("Admin-Dashboard");
+            try {
+                const db = await getDB(); const users = db.users || [];
+                document.getElementById("totalPlayersCount").textContent = users.length;
+                document.getElementById("avgScoreCount").textContent = users.length > 0 ? Math.round(users.reduce((a, b) => a + (b.highScore || 0), 0) / users.length) : 0;
+                document.getElementById("lockedPlayersCount").textContent = users.filter(u => u.status === "locked").length;
+                const fiveMinAgo = Date.now() - (5 * 60 * 1000);
+                document.getElementById("activeTodayCount").textContent = users.filter(u => u.lastActive && u.lastActive > fiveMinAgo).length;
+            } catch (err) { console.error("Admin dashboard error", err); }
+        });
+
+        document.getElementById("playerSearchBtn").addEventListener("click", async () => {
+            const searchVal = document.getElementById("playerSearchInput").value.trim().toLowerCase();
+            const resultsList = document.getElementById("searchResultsList");
+            if (!searchVal) { resultsList.innerHTML = ""; return; }
+            try {
+                const db = await getDB(); const users = db.users || [];
+                const found = users.filter(u => u.name.toLowerCase().includes(searchVal) || u.email.toLowerCase().includes(searchVal));
+                if (found.length === 0) { resultsList.innerHTML = "<div class='lb-empty'>No users found.</div>"; return; }
+                resultsList.innerHTML = "";
+                found.forEach(user => {
+                    const div = document.createElement("div"); div.className = "admin-user-result";
+                    div.innerHTML = `
+                        <h4>${user.name}</h4>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>High Score:</strong> ${user.highScore || 0}</p>
+                        <p><strong>Status:</strong> ${user.status.toUpperCase()}</p>
+                        <button class="secondary-btn" style="margin-top: 10px;" onclick="toggleLockUser('${user.id}')">${user.status === 'locked' ? 'Unlock Account' : 'Lock Account'}</button>
+                    `;
+                    resultsList.appendChild(div);
+                });
+            } catch (err) { resultsList.innerHTML = "<div class='lb-empty'>Error searching.</div>"; }
+        });
+
+        window.toggleLockUser = async (userId) => {
+            try {
+                const db = await getDB(); const i = db.users.findIndex(u => u.id === userId);
+                if (i !== -1) {
+                    db.users[i].status = db.users[i].status === 'locked' ? 'active' : 'locked';
+                    await saveDB(db);
+                    await showInfo(`User has been ${db.users[i].status}.`);
+                    document.getElementById("playerSearchBtn").click();
+                }
+            } catch (err) { await showInfo("Error updating user."); }
+        };
+
+        async function loadAdminNotifications() {
+            const list = document.getElementById("notificationsList");
+            list.innerHTML = "<div class='no-notifications'>Loading...</div>";
+            try {
+                const db = await getDB(); const requests = db.requests || [];
+                if (requests.length === 0) { list.innerHTML = "<div class='no-notifications'>No new notifications</div>"; return; }
+                list.innerHTML = "";
+                requests.forEach(req => {
+                    const item = document.createElement("div"); item.className = "notification-item";
+                    item.innerHTML = `<h3>New Signup Request</h3><p><strong>Name:</strong> ${req.name}</p><p><strong>Email:</strong> ${req.email}</p><div class="notification-actions"><button class="accept-btn" onclick="approveUser('${req.id}')">Accept</button><button class="decline-btn" onclick="declineUser('${req.id}')">Decline</button></div>`;
+                    list.appendChild(item);
+                });
+            } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading.</div>"; }
+        }
+
+        window.approveUser = async (reqId) => {
+            try {
+                const db = await getDB(); if (!db.requests) db.requests = []; if (!db.users) db.users = [];
+                const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
+                const req = db.requests[i];
+                db.users.push({ id: req.id, name: req.name, email: req.email, password: req.password, status: "active" });
+                db.requests.splice(i, 1); await saveDB(db);
+                await showInfo("User accepted!"); loadAdminNotifications();
+            } catch (err) { showInfo("Error approving user."); }
+        };
+
+        window.declineUser = async (reqId) => {
+            try {
+                const db = await getDB(); if (!db.requests) db.requests = [];
+                const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
+                db.requests.splice(i, 1); await saveDB(db);
+                await showInfo("User declined."); loadAdminNotifications();
+            } catch (err) { showInfo("Error declining user."); }
+        };
+
+        // ============ GAME CONTROLS ============
+        document.getElementById("startBtn").addEventListener("click", async function() {
+            applyDifficulty(difficultySelect.value);
+            speedX = baseSpeedX; speedY = baseSpeedY; score = 0; level = 1; gameSeconds = 0; gamePaused = false; totalPausedTime = 0;
+            document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateTimerDisplay();
+            starX = canvas.width / 2; starY = canvas.height / 2; currentRadius = normalRadius;
+            menu.style.display = "none"; statsDiv.style.display = "flex"; canvas.style.display = "block"; controlsDiv.style.display = "block"; updateURL("Playing-Game");
+            timerInterval = setInterval(() => { gameSeconds++; updateTimerDisplay(); }, 1000);
+            gameActive = true; updateGame();
+        });
+
+        canvas.addEventListener("click", function(event) {
+            if (!gameActive || gamePaused) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
+            const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
+            if (distance < currentRadius) {
+                score++; document.getElementById("scoreText").textContent = score;
+                if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); }
+                currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
+                if (score % 5 === 0) { level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); }
+            }
+        });
+
+        document.getElementById("pauseGameBtn").addEventListener("click", togglePause);
+        document.getElementById("resumeBtn").addEventListener("click", togglePause);
+
+        document.getElementById("pauseMenuBtn").addEventListener("click", async () => {
+            gamePaused = false; gameActive = false; pauseOverlay.classList.remove("active");
+            cancelAnimationFrame(animationId); stopTimer(); inGameLimitBox.style.display = "none";
+            statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
+            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Home-Page");
+        });
+
+        document.getElementById("endGameBtn").addEventListener("click", async function() {
+            if (!confirm("End game? Progress will NOT be saved.")) return;
+            gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
+            cancelAnimationFrame(animationId); stopTimer();
+            statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
+            menu.style.display = "block"; showPanel("mainMenuPanel"); updateURL("Home-Page");
+        });
+
+        document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
+        document.getElementById("resetLevelBtn").addEventListener("click", () => { level = 1; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
+        document.getElementById("resetBothBtn").addEventListener("click", () => { score = 0; level = 1; document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
+
+        document.getElementById("saveExitBtn").addEventListener("click", async () => {
+            await showInfo("Game saved successfully!");
+            if (currentLoggedInUser) {
+                try {
+                    const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                    if (i !== -1) { db.users[i].highScore = highScore; db.users[i].lastActive = Date.now(); currentLoggedInUser = db.users[i]; await saveDB(db); }
+                } catch (err) { console.error("Failed to save high score to DB:", err); }
+            }
+            document.getElementById("endGameBtn").click();
+        });
+
+        // ============ INIT ============
+        const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
+        if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
+        applyTheme(themeMode); themeModeSelect.value = themeMode;
+        applyColorblindMode(colorblindMode); colorblindModeSelect.value = colorblindMode;
+        applyDifficulty(difficulty); difficultySelect.value = difficulty;
+
+    </script>
+</body>
+</html>
