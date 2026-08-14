@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -33,7 +33,7 @@
         @keyframes slideInFade { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
         
-        #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel { animation: fadeIn 0.4s ease-out; }
+        #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel, #achievementsPanel { animation: fadeIn 0.4s ease-out; }
         .wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
         .logo-container { display: flex; justify-content: center; align-items: center; margin: 10px auto; min-height: 80px; animation: slideInDown 0.5s ease-out; }
         @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
@@ -44,7 +44,7 @@
         #menu { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 320px; margin: 15px auto; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s; }
         .menu-element { margin: 15px 0; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s ease-out; }
         #loginPanel { display: block; width: 100%; }
-        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel { display: none; width: 100%; }
+        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel, #achievementsPanel { display: none; width: 100%; }
         #pauseOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #pauseOverlay.active { display: flex; }
         #pauseBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 40px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
@@ -93,7 +93,7 @@
         .no-notifications { text-align: center; color: #b3b9df; padding: 20px; font-size: 16px; }
         #stats { font-size: 18px; margin-bottom: 15px; display: none; width: 100%; justify-content: center; gap: 10px; animation: fadeIn 0.4s ease-out; }
         .stat-box { background-color: var(--panel-bg); padding: 10px 15px; border-radius: 8px; border: 2px solid var(--border-color); font-weight: bold; min-width: 90px; color: var(--text-color); transition: all 0.3s; box-sizing: border-box; }
-        canvas { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; cursor: pointer; display: none; margin: 0 auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); max-width: 100%; height: auto; transition: all 0.3s; animation: scaleUp 0.4s ease-out; }
+        canvas { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; cursor: pointer; display: none; margin: 0 auto; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); max-width: 100%; height: auto; transition: all 0.3s; animation: scaleUp 0.4s ease-out; touch-action: none; }
         #controls { display: none; margin-top: 15px; width: 100%; max-width: 500px; animation: slideInRight 0.4s ease-out; }
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
         .control-btn { font-size: 14px; padding: 10px 15px; background-color: #4a55a2; color: white; border-radius: 6px; box-shadow: none; width: 100%; border: none; cursor: pointer; font-weight: bold; transition: all 0.2s; }
@@ -177,6 +177,15 @@
         .claim-btn:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255, 65, 108, 0.6); }
         #confettiContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000; overflow: hidden; }
         .confetti { position: absolute; width: 10px; height: 10px; opacity: 0; animation: confettiFall 3s linear forwards; }
+
+        /* New Achievement Styles */
+        .achievement-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 2px solid #555; transition: all 0.3s; }
+        .achievement-item.unlocked { border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
+        .achievement-icon { font-size: 24px; color: #555; transition: color 0.3s; }
+        .achievement-item.unlocked .achievement-icon { color: #FFD700; }
+        .achievement-info { text-align: left; flex: 1; }
+        .achievement-title { font-weight: bold; font-size: 14px; color: var(--text-color); }
+        .achievement-desc { font-size: 12px; color: var(--label-color); }
     </style>
 </head>
 <body>
@@ -273,6 +282,9 @@
                 <div class="menu-element" style="margin-top: 5px;">
                     <button id="changePassBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">Change Password</button>
                 </div>
+                <div class="menu-element" style="margin-top: 5px;">
+                    <button id="achievementsBtn" class="secondary-btn" style="background-color: #e67e22;">Achievements</button>
+                </div>
                 <div class="menu-element" id="claimRewardContainer" style="display: none; margin-top: 5px;">
                     <button id="claimRewardBtn" class="claim-btn">Claim Weekly Reward (+30)</button>
                 </div>
@@ -309,6 +321,16 @@
                 </div>
                 <div class="menu-element" id="deleteAccountBtnContainer" style="display: none;">
                     <button id="deleteAccountBtn" class="secondary-btn" style="background-color: #8b0000;">Delete Account</button>
+                </div>
+            </div>
+
+            <div id="achievementsPanel">
+                <h2 style="margin-top: 0; color: #e67e22; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Achievements</h2>
+                <div id="achievementsList">
+                    <div class="lb-empty">Loading achievements...</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromAchievementsBtn" class="secondary-btn">Back to Menu</button>
                 </div>
             </div>
 
@@ -791,6 +813,8 @@
         let timerInterval = null;
         let pauseStartTime = 0;
         let totalPausedTime = 0;
+        let sessionTimeLimit = 1800; // 30 minutes in seconds
+        let sessionTimeRemaining = 1800;
 
         let colorblindMode = localStorage.getItem("starCollectorColorblind") || "normal";
         let themeMode = localStorage.getItem("starCollectorTheme") || "dark";
@@ -802,6 +826,7 @@
         const normalRadius = 20;
         const giantRadius = 40;
         let currentRadius = normalRadius;
+        let touchHitRadius = normalRadius; // Adjusts for mobile
 
         let baseSpeedX = 0;
         let baseSpeedY = 0;
@@ -909,6 +934,85 @@
             }
         }
 
+        // ============ ACHIEVEMENTS LOGIC ============
+        const ACHIEVEMENTS = [
+            { id: "ach_50", name: "Half Century", desc: "Reach a score of 50 in a single game", icon: "⭐" },
+            { id: "ach_100", name: "Centurion", desc: "Reach a score of 100 in a single game", icon: "💯" },
+            { id: "ach_250", name: "Star Master", desc: "Reach a score of 250 in a single game", icon: "🏆" },
+            { id: "ach_lvl5", name: "Speedster", desc: "Reach Level 5", icon: "⚡" },
+            { id: "ach_hs_500", name: "High Roller", desc: "Get a total high score of 500", icon: "👑" }
+        ];
+
+        async function checkAndUnlockAchievements() {
+            if (!currentLoggedInUser || isAdmin) return;
+            
+            let unlockedSomething = false;
+            let newlyUnlocked = [];
+            let db;
+            try {
+                db = await getDB();
+            } catch (err) { return; }
+            
+            const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+            if (i === -1) return;
+            
+            let user = db.users[i];
+            if (!user.achievements) user.achievements = [];
+
+            ACHIEVEMENTS.forEach(ach => {
+                if (user.achievements.includes(ach.id)) return;
+                
+                let conditionMet = false;
+                if (ach.id === "ach_50" && score >= 50) conditionMet = true;
+                if (ach.id === "ach_100" && score >= 100) conditionMet = true;
+                if (ach.id === "ach_250" && score >= 250) conditionMet = true;
+                if (ach.id === "ach_lvl5" && level >= 5) conditionMet = true;
+                if (ach.id === "ach_hs_500" && (user.highScore || 0) >= 500) conditionMet = true;
+
+                if (conditionMet) {
+                    user.achievements.push(ach.id);
+                    newlyUnlocked.push(ach);
+                    unlockedSomething = true;
+                }
+            });
+
+            if (unlockedSomething) {
+                currentLoggedInUser = user;
+                db.users[i] = user;
+                await saveDB(db);
+                
+                for (let ach of newlyUnlocked) {
+                    await showInfo(`Achievement Unlocked: ${ach.name}!`);
+                }
+            }
+        }
+
+        async function renderAchievements() {
+            const list = document.getElementById("achievementsList");
+            list.innerHTML = "";
+            let unlockedAchs = [];
+            
+            if (isAdmin) {
+                ACHIEVEMENTS.forEach(ach => unlockedAchs.push(ach.id));
+            } else if (currentLoggedInUser && currentLoggedInUser.achievements) {
+                unlockedAchs = currentLoggedInUser.achievements;
+            }
+
+            ACHIEVEMENTS.forEach(ach => {
+                const isUnlocked = unlockedAchs.includes(ach.id);
+                const div = document.createElement("div");
+                div.className = `achievement-item ${isUnlocked ? 'unlocked' : ''}`;
+                div.innerHTML = `
+                    <div class="achievement-icon">${isUnlocked ? ach.icon : '🔒'}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-title">${ach.name}</div>
+                        <div class="achievement-desc">${ach.desc}</div>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+
         // ============ TOTP GENERATION ============
         function base32ToHex(base32) {
             const base32Chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
@@ -965,6 +1069,22 @@
             else if (difficulty === "medium") { baseSpeedX = 4; baseSpeedY = 3; speedMultiplier = 1; }
             else if (difficulty === "hard") { baseSpeedX = 7; baseSpeedY = 5; speedMultiplier = 1.5; }
         }
+
+        // Mobile responsive canvas sizing
+        function resizeCanvas() {
+            const wrapperWidth = document.querySelector('.wrapper').clientWidth;
+            const maxWidth = Math.min(wrapperWidth, 500);
+            const scale = maxWidth / 500;
+            canvas.style.width = `${maxWidth}px`;
+            canvas.style.height = `${400 * scale}px`;
+            // Larger hit radius for touch devices
+            if ('ontouchstart' in window) {
+                touchHitRadius = normalRadius * 1.5;
+            } else {
+                touchHitRadius = normalRadius;
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
 
         themeModeSelect.addEventListener("change", async (e) => {
             themeMode = e.target.value;
@@ -1064,9 +1184,28 @@
             const minutes = Math.floor(gameSeconds / 60);
             const seconds = gameSeconds % 60;
             document.getElementById("timerText").textContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
+            
+            // Update Limit UI
+            if (inGameLimitBox.style.display !== "none") {
+                const remMin = Math.floor(sessionTimeRemaining / 60);
+                const remSec = sessionTimeRemaining % 60;
+                document.getElementById("inGameLimitText").textContent = `${remMin < 10 ? '0' + remMin : remMin}:${remSec < 10 ? '0' + remSec : remSec}`;
+                
+                if (sessionTimeRemaining <= 0) {
+                    endGameDueToTimeLimit();
+                }
+            }
         }
 
         function stopTimer() { if (timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
+
+        async function endGameDueToTimeLimit() {
+            gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
+            cancelAnimationFrame(animationId); stopTimer();
+            statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
+            menu.style.display = "block"; showPanel("mainMenuPanel");
+            await showInfo("Time's up! You have reached your daily play limit of 30 minutes.");
+        }
 
         function togglePause() {
             if (!gameActive) return;
@@ -1082,7 +1221,11 @@
                 totalPausedTime += Date.now() - pauseStartTime;
                 pauseOverlay.classList.remove("active");
                 pauseGameBtn.textContent = "Pause Game (ESC)";
-                timerInterval = setInterval(() => { gameSeconds++; updateTimerDisplay(); }, 1000);
+                timerInterval = setInterval(() => { 
+                    gameSeconds++; 
+                    sessionTimeRemaining--; 
+                    updateTimerDisplay(); 
+                }, 1000);
                 updateGame();
             }
         }
@@ -1494,6 +1637,13 @@
         document.getElementById("backFromTermsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
         document.getElementById("missedGamesBtn").addEventListener("click", () => { showPanel("missedGamesPanel"); });
         document.getElementById("backFromMissedBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+        
+        document.getElementById("achievementsBtn").addEventListener("click", async () => {
+            showPanel("achievementsPanel");
+            await renderAchievements();
+        });
+        document.getElementById("backFromAchievementsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
         document.getElementById("leaderboardBtn").addEventListener("click", async () => { 
             showPanel("leaderboardPanel"); 
             const list = document.getElementById("leaderboardList");
@@ -1556,14 +1706,166 @@
         });
         document.getElementById("backFromAdminBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
 
+        // Admin Search and Time Grant Logic
+        document.getElementById("playerSearchBtn").addEventListener("click", async () => {
+            const searchVal = document.getElementById("playerSearchInput").value.trim().toLowerCase();
+            const resultsList = document.getElementById("searchResultsList");
+            if (!searchVal) { resultsList.innerHTML = ""; return; }
+            try {
+                const db = await getDB(); const users = db.users || [];
+                const found = users.filter(u => u.name.toLowerCase().includes(searchVal) || u.email.toLowerCase().includes(searchVal));
+                if (found.length === 0) { resultsList.innerHTML = "<div class='lb-empty'>No users found.</div>"; return; }
+                resultsList.innerHTML = "";
+                found.forEach(user => {
+                    const div = document.createElement("div"); div.className = "admin-user-result";
+                    div.innerHTML = `
+                        <h4>${user.name}</h4>
+                        <p><strong>Email:</strong> ${user.email}</p>
+                        <p><strong>High Score:</strong> ${user.highScore || 0}</p>
+                        <p><strong>Status:</strong> ${user.status.toUpperCase()}</p>
+                        <div class="admin-user-actions">
+                            <button class="secondary-btn" onclick="toggleLockUser('${user.id}')">${user.status === 'locked' ? 'Unlock' : 'Lock'}</button>
+                            <button class="secondary-btn" style="background-color: #d9534f;" onclick="resetUserScore('${user.id}')">Reset Score</button>
+                            <button class="secondary-btn" style="background-color: #17a2b8;" onclick="openGrantTimeModal('${user.id}')">Grant Time</button>
+                        </div>
+                    `;
+                    resultsList.appendChild(div);
+                });
+            } catch (err) { resultsList.innerHTML = "<div class='lb-empty'>Error searching.</div>"; }
+        });
+
+        window.toggleLockUser = async (userId) => {
+            try {
+                const db = await getDB(); const i = db.users.findIndex(u => u.id === userId);
+                if (i !== -1) {
+                    db.users[i].status = db.users[i].status === 'locked' ? 'active' : 'locked';
+                    await saveDB(db);
+                    await showInfo(`User has been ${db.users[i].status}.`);
+                    document.getElementById("playerSearchBtn").click();
+                }
+            } catch (err) { await showInfo("Error updating user."); }
+        };
+
+        window.resetUserScore = async (userId) => {
+            try {
+                const db = await getDB(); const i = db.users.findIndex(u => u.id === userId);
+                if (i !== -1) {
+                    db.users[i].highScore = 0;
+                    await saveDB(db);
+                    await showInfo(`User score has been reset to 0.`);
+                    document.getElementById("playerSearchBtn").click();
+                }
+            } catch (err) { await showInfo("Error resetting score."); }
+        };
+
+        let pendingTimeGrantUserId = null;
+        window.openGrantTimeModal = (userId) => {
+            pendingTimeGrantUserId = userId;
+            document.getElementById("timeInputHours").value = "0";
+            document.getElementById("timeInputMinutes").value = "15";
+            document.getElementById("timeInputModalOverlay").classList.add("active");
+        };
+
+        document.getElementById("timeInputConfirmBtn").addEventListener("click", async () => {
+            const hours = parseInt(document.getElementById("timeInputHours").value) || 0;
+            const minutes = parseInt(document.getElementById("timeInputMinutes").value) || 0;
+            const totalSeconds = (hours * 3600) + (minutes * 60);
+
+            if (totalSeconds <= 0) { await showInfo("Please enter a valid time."); return; }
+            if (!pendingTimeGrantUserId) { await showInfo("Error: No user selected."); return; }
+
+            try {
+                const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingTimeGrantUserId);
+                if (i !== -1) {
+                    db.users[i].extraTimeGranted = (db.users[i].extraTimeGranted || 0) + totalSeconds;
+                    await saveDB(db);
+                    document.getElementById("timeInputModalOverlay").classList.remove("active");
+                    await showInfo("Time granted successfully!");
+                    pendingTimeGrantUserId = null;
+                }
+            } catch (err) {
+                await showInfo("Error granting time.");
+            }
+        });
+
+        document.getElementById("timeInputCancelBtn").addEventListener("click", () => {
+            document.getElementById("timeInputModalOverlay").classList.remove("active");
+            pendingTimeGrantUserId = null;
+        });
+
+        window.approveUser = async (reqId) => {
+            try {
+                const db = await getDB(); if (!db.requests) db.requests = []; if (!db.users) db.users = [];
+                const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
+                const req = db.requests[i];
+                db.users.push({ id: req.id, name: req.name, email: req.email, password: req.password, status: "active" });
+                db.requests.splice(i, 1); await saveDB(db);
+                await showInfo("User accepted!"); loadAdminNotifications();
+            } catch (err) { showInfo("Error approving user."); }
+        };
+
+        window.declineUser = async (reqId) => {
+            try {
+                const db = await getDB(); if (!db.requests) db.requests = [];
+                const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
+                db.requests.splice(i, 1); await saveDB(db);
+                await showInfo("User declined."); loadAdminNotifications();
+            } catch (err) { showInfo("Error declining user."); }
+        };
+
         // ============ GAME CONTROLS ============
         document.getElementById("startBtn").addEventListener("click", async function() {
+            // Check Daily Limit
+            if (currentLoggedInUser && !isAdmin) {
+                try {
+                    const db = await getDB();
+                    const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                    if (i !== -1) {
+                        const today = new Date().toDateString();
+                        let user = db.users[i];
+                        if (user.lastPlayDate !== today) {
+                            user.lastPlayDate = today;
+                            user.timePlayedToday = 0;
+                            user.extraTimeGranted = 0;
+                        }
+                        const played = user.timePlayedToday || 0;
+                        const extra = user.extraTimeGranted || 0;
+                        sessionTimeLimit = 1800 + extra; // 30 mins + extra granted
+                        sessionTimeRemaining = sessionTimeLimit - played;
+                        
+                        if (sessionTimeRemaining <= 0) {
+                            await showInfo("You have reached your daily play limit of 30 minutes. Please come back tomorrow!");
+                            return;
+                        }
+                        
+                        // Save reset if necessary
+                        db.users[i] = user;
+                        await saveDB(db);
+                    }
+                } catch (err) {
+                    await showInfo("Error checking play time. Try again.");
+                    return;
+                }
+            } else {
+                sessionTimeRemaining = 1800; // Default limit for guests/admin
+            }
+
+            resizeCanvas();
             applyDifficulty(difficultySelect.value);
             speedX = baseSpeedX; speedY = baseSpeedY; score = 0; level = 1; gameSeconds = 0; gamePaused = false; totalPausedTime = 0;
             document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateTimerDisplay();
             starX = canvas.width / 2; starY = canvas.height / 2; currentRadius = normalRadius;
             menu.style.display = "none"; statsDiv.style.display = "flex"; canvas.style.display = "block"; controlsDiv.style.display = "block";
-            timerInterval = setInterval(() => { gameSeconds++; updateTimerDisplay(); }, 1000);
+            
+            // Show in-game limit box
+            inGameLimitBox.style.display = "inline-block";
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => { 
+                gameSeconds++; 
+                sessionTimeRemaining--; 
+                updateTimerDisplay(); 
+            }, 1000);
             gameActive = true; updateGame();
         });
 
@@ -1573,32 +1875,75 @@
             const mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
             const mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
             const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
-            if (distance < currentRadius) {
+            if (distance < touchHitRadius) {
                 score++; document.getElementById("scoreText").textContent = score;
                 if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; }
                 currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
                 if (score % 5 === 0) { 
                     level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); 
                 }
+                await checkAndUnlockAchievements();
             }
         });
 
+        // Also handle touch events for mobile
+        canvas.addEventListener("touchstart", async function(event) {
+            event.preventDefault();
+            if (!gameActive || gamePaused) return;
+            const rect = canvas.getBoundingClientRect();
+            const touch = event.touches[0];
+            const mouseX = (touch.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (touch.clientY - rect.top) * (canvas.height / rect.height);
+            const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
+            if (distance < touchHitRadius) {
+                score++; document.getElementById("scoreText").textContent = score;
+                if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; }
+                currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
+                if (score % 5 === 0) { 
+                    level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); 
+                }
+                await checkAndUnlockAchievements();
+            }
+        }, { passive: false });
+
         document.getElementById("pauseGameBtn").addEventListener("click", togglePause);
         document.getElementById("resumeBtn").addEventListener("click", togglePause);
+
+        async function saveTimePlayed() {
+            if (currentLoggedInUser && !isAdmin) {
+                try {
+                    const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                    if (i !== -1) {
+                        const today = new Date().toDateString();
+                        if (db.users[i].lastPlayDate !== today) {
+                            db.users[i].lastPlayDate = today;
+                            db.users[i].timePlayedToday = 0;
+                            db.users[i].extraTimeGranted = 0;
+                        }
+                        db.users[i].timePlayedToday = (db.users[i].timePlayedToday || 0) + gameSeconds;
+                        db.users[i].lastActive = Date.now(); 
+                        currentLoggedInUser = db.users[i];
+                        await saveDB(db);
+                    }
+                } catch (err) { console.error("Failed to save play time:", err); }
+            }
+        }
 
         document.getElementById("pauseMenuBtn").addEventListener("click", async () => {
             gamePaused = false; gameActive = false; pauseOverlay.classList.remove("active");
             cancelAnimationFrame(animationId); stopTimer(); inGameLimitBox.style.display = "none";
             statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
             menu.style.display = "block"; showPanel("mainMenuPanel");
+            await saveTimePlayed();
         });
 
         document.getElementById("endGameBtn").addEventListener("click", async function() {
             if (!confirm("End game? Progress will NOT be saved.")) return;
             gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
-            cancelAnimationFrame(animationId); stopTimer();
+            cancelAnimationFrame(animationId); stopTimer(); inGameLimitBox.style.display = "none";
             statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
             menu.style.display = "block"; showPanel("mainMenuPanel");
+            await saveTimePlayed();
         });
 
         document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
@@ -1610,18 +1955,25 @@
             if (currentLoggedInUser) {
                 try {
                     const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
-                    if (i !== -1) { db.users[i].highScore = highScore; db.users[i].lastActive = Date.now(); currentLoggedInUser = db.users[i]; await saveDB(db); }
+                    if (i !== -1) { 
+                        db.users[i].highScore = highScore; 
+                        db.users[i].lastActive = Date.now(); 
+                        await saveTimePlayed(); // Saves the time played
+                        currentLoggedInUser = db.users[i]; 
+                        await saveDB(db); 
+                    }
                 } catch (err) { console.error("Failed to save high score to DB:", err); }
             }
-            document.getElementById("endGameBtn").click(); 
+            document.getElementById("endGameBtn").click();
         });
 
-        // ============ INIT ============ working
+        // ============ INIT ============ test
         const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
         if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
         applyTheme(themeMode); themeModeSelect.value = themeMode;
         applyColorblindMode(colorblindMode); colorblindModeSelect.value = colorblindMode;
         applyDifficulty(difficulty); difficultySelect.value = difficulty;
+        resizeCanvas();
     </script>
 </body>
 </html>
