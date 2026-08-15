@@ -23,7 +23,7 @@
         [data-colorblind="protanopia"] { --star-color: #029E73; --star-stroke: #0173B2; }
         [data-colorblind="tritanopia"] { --star-color: #D55E00; --star-stroke: #CC79A7; }
 
-        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; text-align: center; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
+        body { background-color: var(--bg-color); color: var(--text-color); font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif; text-align: center; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; box-sizing: border-box; transition: background-color 0.3s, color 0.3s; overscroll-behavior: contain; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slideInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
@@ -179,7 +179,7 @@
         #confettiContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2000; overflow: hidden; }
         .confetti { position: absolute; width: 10px; height: 10px; opacity: 0; animation: confettiFall 3s linear forwards; }
 
-        /* New Achievement Styles */
+        /* Achievement Styles */
         .achievement-item { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 2px solid #555; transition: all 0.3s; }
         .achievement-item.unlocked { border-color: #FFD700; background: rgba(255, 215, 0, 0.1); }
         .achievement-icon { font-size: 24px; color: #555; transition: color 0.3s; }
@@ -429,20 +429,23 @@
 
             <div id="adminDashboardPanel">
                 <h2 style="margin-top: 0; color: #17a2b8; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Admin Dashboard</h2>
-                <div class="menu-element" style="margin-bottom: 25px; align-items: flex-start;">
-                    <label style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%;">Set Global Announcement:</label>
-                    <p style="font-size: 12px; color: var(--label-color); margin: 0 0 10px 0; width: 100%; text-align: left;">Leave blank to clear current announcement.</p>
-                    <textarea id="announcementInput" placeholder="Type a message for all users..."></textarea>
-                    <button id="setAnnouncementBtn" class="secondary-btn" style="background-color: #17a2b8; font-size: 14px; padding: 8px 12px;">Set Announcement</button>
-                </div>
-                <div class="menu-element" style="margin-bottom: 15px; position: relative;">
-                    <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
-                    <div class="admin-search-box">
-                        <input id="playerSearchInput" type="text" placeholder="Search by name or email...">
-                        <button id="playerSearchBtn" class="secondary-btn" style="width: 80px; font-size: 12px; padding: 10px;">Search</button>
+                <form onsubmit="event.preventDefault();">
+                    <div class="menu-element" style="margin-bottom: 25px; align-items: flex-start;">
+                        <label style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%;">Set Global Announcement:</label>
+                        <p style="font-size: 12px; color: var(--label-color); margin: 0 0 10px 0; width: 100%; text-align: left;">Leave blank to clear current announcement.</p>
+                        <textarea id="announcementInput" placeholder="Type a message for all users..."></textarea>
+                        <button id="setAnnouncementBtn" class="secondary-btn" style="background-color: #17a2b8; font-size: 14px; padding: 8px 12px;">Set Announcement</button>
                     </div>
-                    <div id="searchResultsList"></div>
-                </div>
+                    <div class="menu-element" style="margin-bottom: 15px; position: relative;">
+                        <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
+                        <div class="admin-search-box">
+                            <input id="playerSearchInput" type="text" placeholder="Search by name or email..." onkeydown="if(event.key==='Enter'){event.preventDefault(); document.getElementById('playerSearchBtn').click();}">
+                            <button id="playerSearchBtn" class="secondary-btn" style="width: 80px; font-size: 12px; padding: 10px;">Search</button>
+                        </div>
+                        <div id="searchResultsList"></div>
+                    </div>
+                </form>
+                
                 <div class="admin-quick-stats">
                     <div class="stat-card">
                         <h4>Total Players</h4>
@@ -461,9 +464,7 @@
                         <div class="stat-value" id="lockedPlayersCount">0</div>
                     </div>
                 </div>
-                <div class="admin-chart-container" id="activityChartContainer">
-                    <canvas id="activityChart"></canvas>
-                </div>
+                
                 <div class="menu-element" style="margin: 15px 0;">
                     <button id="exportAnalyticsBtn" class="secondary-btn" style="background-color: #28a745; font-size: 14px;">Export Full Analytics (CSV)</button>
                 </div>
@@ -735,16 +736,18 @@
 
         async function getDB() {
             const res = await fetch(JSONBIN_BASE_URL + "/latest", { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
+            if (!res.ok) throw new Error("Network response was not ok");
             const data = await res.json();
             return data.record;
         }
 
         async function saveDB(db) {
-            await fetch(JSONBIN_BASE_URL, {
+            const res = await fetch(JSONBIN_BASE_URL, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
                 body: JSON.stringify(db)
             });
+            if (!res.ok) throw new Error("Failed to save to database");
         }
 
         async function ensureTestAccountExists() {
@@ -827,7 +830,7 @@
         const normalRadius = 20;
         const giantRadius = 40;
         let currentRadius = normalRadius;
-        let touchHitRadius = normalRadius; // Adjusts for mobile
+        let touchHitRadius = normalRadius;
 
         let baseSpeedX = 0;
         let baseSpeedY = 0;
@@ -980,7 +983,9 @@
             if (unlockedSomething) {
                 currentLoggedInUser = user;
                 db.users[i] = user;
-                await saveDB(db);
+                try {
+                    await saveDB(db);
+                } catch (err) { console.error("Failed to save achievements:", err); }
                 
                 for (let ach of newlyUnlocked) {
                     await showInfo(`Achievement Unlocked: ${ach.name}!`);
@@ -1078,7 +1083,6 @@
             const scale = maxWidth / 500;
             canvas.style.width = `${maxWidth}px`;
             canvas.style.height = `${400 * scale}px`;
-            // Larger hit radius for touch devices
             if ('ontouchstart' in window) {
                 touchHitRadius = normalRadius * 1.5;
             } else {
@@ -1186,7 +1190,6 @@
             const seconds = gameSeconds % 60;
             document.getElementById("timerText").textContent = `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
             
-            // Update Limit UI
             if (inGameLimitBox.style.display !== "none") {
                 const remMin = Math.floor(sessionTimeRemaining / 60);
                 const remSec = sessionTimeRemaining % 60;
@@ -1321,7 +1324,6 @@
             });
         });
 
-        // 2FA LOGIN MODAL LOGIC
         let failedAttempts = 0;
         let timeoutEnd = 0;
 
@@ -1346,8 +1348,10 @@
                 if (codeInput === pendingLoginUser.recoveryCode) {
                     success = true;
                     if (!pendingLoginUser.isAdmin) {
-                        const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
-                        if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
+                        try {
+                            const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingLoginUser.id);
+                            if (i !== -1) { db.users[i].twoFASecret = null; db.users[i].recoveryCode = null; await saveDB(db); pendingLoginUser = db.users[i]; }
+                        } catch (err) { await showInfo("Error connecting to database."); return; }
                     }
                 } 
             } else {
@@ -1468,6 +1472,10 @@
                         document.getElementById("activePilot").textContent = user.name;
                         highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
                         
+                        if (user.theme) { themeMode = user.theme; themeModeSelect.value = themeMode; }
+                        if (user.difficulty) { applyDifficulty(user.difficulty); difficultySelect.value = user.difficulty; }
+                        applyTheme(themeMode);
+
                         if (user.avatarColor) {
                             selectedAvatarColor = user.avatarColor;
                             document.querySelectorAll(".avatar-option").forEach(el => {
@@ -1478,8 +1486,7 @@
 
                         if (rememberMeCheckbox.checked) localStorage.setItem("starCollectorRememberEmail", email);
                         else localStorage.removeItem("starCollectorRememberEmail");
-                        if (user.theme) { themeMode = user.theme; localStorage.setItem("starCollectorTheme", themeMode); themeModeSelect.value = themeMode; applyTheme(themeMode); }
-                        if (user.difficulty) { applyDifficulty(user.difficulty); localStorage.setItem("starCollectorDifficulty", difficulty); difficultySelect.value = difficulty; }
+                        
                         user.lastActive = Date.now(); await saveDB(db);
                         
                         checkAdminStatus(); showPanel("mainMenuPanel");
@@ -1544,7 +1551,6 @@
             const u = isAdmin ? { name: "Admin", email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, lastRewardClaim: 0 } : currentLoggedInUser;
             const ageDays = u.id ? Math.floor((Date.now() - parseInt(u.id)) / (1000 * 60 * 60 * 24)) : 0;
             
-            // Calculate days remaining to next claim
             const oneWeek = 7 * 24 * 60 * 60 * 1000;
             const timeSinceClaim = Date.now() - (u.lastRewardClaim || 0);
             const daysRemaining = Math.ceil((oneWeek - timeSinceClaim) / (24 * 60 * 60 * 1000));
@@ -1567,7 +1573,11 @@
             document.getElementById("profileModalOverlay").classList.remove("active");
         });
 
-        document.getElementById("changePassBtn").addEventListener("click", () => {
+        document.getElementById("changePassBtn").addEventListener("click", async () => {
+            if (isAdmin) {
+                await showInfo("Admin password cannot be changed here. It is hardcoded for security.");
+                return;
+            }
             if (!currentLoggedInUser) return;
             document.getElementById("changePassOld").value = "";
             document.getElementById("changePassNew").value = "";
@@ -1600,7 +1610,7 @@
                     await showInfo("Password updated successfully!");
                 }
             } catch (err) {
-                await showInfo("Error updating password.");
+                await showInfo("Error updating password. Check connection.");
             }
         });
 
@@ -1678,7 +1688,7 @@
                     `;
                     list.appendChild(row);
                 });
-            } catch (err) { list.innerHTML = "<div class='lb-empty'>Error loading leaderboard.</div>"; }
+            } catch (err) { list.innerHTML = "<div class='lb-empty'>Error loading leaderboard. Check connection.</div>"; }
         });
         document.getElementById("backFromLeaderboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
         
@@ -1693,10 +1703,29 @@
                 document.getElementById("activeTodayCount").textContent = users.filter(u => u.lastActive && u.lastActive > fiveMinAgo).length;
                 if (db.settings && db.settings.announcement) {
                     document.getElementById("announcementInput").value = db.settings.announcement;
+                } else {
+                    document.getElementById("announcementInput").value = "";
                 }
-            } catch (err) { console.error("Admin dashboard error", err); }
+            } catch (err) { 
+                document.getElementById("totalPlayersCount").textContent = "Err";
+                await showInfo("Error loading dashboard. Check connection."); 
+            }
         });
         document.getElementById("backFromDashboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
+        // Fixed Announcement Save Logic
+        document.getElementById("setAnnouncementBtn").addEventListener("click", async () => {
+            const msg = document.getElementById("announcementInput").value.trim();
+            try {
+                const db = await getDB();
+                if (!db.settings) db.settings = {};
+                db.settings.announcement = msg;
+                await saveDB(db);
+                await showInfo("Announcement set successfully!");
+            } catch (err) {
+                await showInfo("Error setting announcement. Check connection.");
+            }
+        });
         
         document.getElementById("adminNotificationsBtn").addEventListener("click", async () => {
             showPanel("adminNotificationsPanel");
@@ -1711,11 +1740,10 @@
                     item.innerHTML = `<h3>New Signup Request</h3><p><strong>Name:</strong> ${req.name}</p><p><strong>Email:</strong> ${req.email}</p><div class="notification-actions"><button class="accept-btn" onclick="approveUser('${req.id}')">Accept</button><button class="decline-btn" onclick="declineUser('${req.id}')">Decline</button></div>`;
                     list.appendChild(item);
                 });
-            } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading.</div>"; }
+            } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading. Check connection.</div>"; }
         });
         document.getElementById("backFromAdminBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
 
-        // Admin Search and Time Grant Logic
         document.getElementById("playerSearchBtn").addEventListener("click", async () => {
             const searchVal = document.getElementById("playerSearchInput").value.trim().toLowerCase();
             const resultsList = document.getElementById("searchResultsList");
@@ -1740,7 +1768,7 @@
                     `;
                     resultsList.appendChild(div);
                 });
-            } catch (err) { resultsList.innerHTML = "<div class='lb-empty'>Error searching.</div>"; }
+            } catch (err) { resultsList.innerHTML = "<div class='lb-empty'>Error searching. Check connection.</div>"; }
         });
 
         window.toggleLockUser = async (userId) => {
@@ -1752,7 +1780,7 @@
                     await showInfo(`User has been ${db.users[i].status}.`);
                     document.getElementById("playerSearchBtn").click();
                 }
-            } catch (err) { await showInfo("Error updating user."); }
+            } catch (err) { await showInfo("Error updating user. Check connection."); }
         };
 
         window.resetUserScore = async (userId) => {
@@ -1764,7 +1792,7 @@
                     await showInfo(`User score has been reset to 0.`);
                     document.getElementById("playerSearchBtn").click();
                 }
-            } catch (err) { await showInfo("Error resetting score."); }
+            } catch (err) { await showInfo("Error resetting score. Check connection."); }
         };
 
         let pendingTimeGrantUserId = null;
@@ -1793,7 +1821,7 @@
                     pendingTimeGrantUserId = null;
                 }
             } catch (err) {
-                await showInfo("Error granting time.");
+                await showInfo("Error granting time. Check connection.");
             }
         });
 
@@ -1810,7 +1838,7 @@
                 db.users.push({ id: req.id, name: req.name, email: req.email, password: req.password, status: "active" });
                 db.requests.splice(i, 1); await saveDB(db);
                 await showInfo("User accepted!"); loadAdminNotifications();
-            } catch (err) { showInfo("Error approving user."); }
+            } catch (err) { showInfo("Error approving user. Check connection."); }
         };
 
         window.declineUser = async (reqId) => {
@@ -1819,12 +1847,11 @@
                 const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
                 db.requests.splice(i, 1); await saveDB(db);
                 await showInfo("User declined."); loadAdminNotifications();
-            } catch (err) { showInfo("Error declining user."); }
+            } catch (err) { showInfo("Error declining user. Check connection."); }
         };
 
         // ============ GAME CONTROLS ============
         document.getElementById("startBtn").addEventListener("click", async function() {
-            // Check Daily Limit
             if (currentLoggedInUser && !isAdmin) {
                 try {
                     const db = await getDB();
@@ -1839,7 +1866,7 @@
                         }
                         const played = user.timePlayedToday || 0;
                         const extra = user.extraTimeGranted || 0;
-                        sessionTimeLimit = 1800 + extra; // 30 mins + extra granted
+                        sessionTimeLimit = 1800 + extra; 
                         sessionTimeRemaining = sessionTimeLimit - played;
                         
                         if (sessionTimeRemaining <= 0) {
@@ -1847,16 +1874,15 @@
                             return;
                         }
                         
-                        // Save reset if necessary
                         db.users[i] = user;
                         await saveDB(db);
                     }
                 } catch (err) {
-                    await showInfo("Error checking play time. Try again.");
+                    await showInfo("Error checking play time. Check connection.");
                     return;
                 }
             } else {
-                sessionTimeRemaining = 1800; // Default limit for guests/admin
+                sessionTimeRemaining = 1800; 
             }
 
             resizeCanvas();
@@ -1866,7 +1892,6 @@
             starX = canvas.width / 2; starY = canvas.height / 2; currentRadius = normalRadius;
             menu.style.display = "none"; statsDiv.style.display = "flex"; canvas.style.display = "block"; controlsDiv.style.display = "block";
             
-            // Show in-game limit box
             inGameLimitBox.style.display = "inline-block";
             updateTimerDisplay();
 
@@ -1895,7 +1920,6 @@
             }
         });
 
-        // Also handle touch events for mobile
         canvas.addEventListener("touchstart", async function(event) {
             event.preventDefault();
             if (!gameActive || gamePaused) return;
@@ -1947,11 +1971,25 @@
         });
 
         document.getElementById("endGameBtn").addEventListener("click", async function() {
-            if (!confirm("End game? Progress will NOT be saved.")) return;
+            const confirmed = await showConfirm("End Game?", "Progress will be saved, but the game will end.");
+            if (!confirmed) return;
+            
             gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
             cancelAnimationFrame(animationId); stopTimer(); inGameLimitBox.style.display = "none";
             statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
             menu.style.display = "block"; showPanel("mainMenuPanel");
+            
+            if (currentLoggedInUser) {
+                try {
+                    const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                    if (i !== -1) { 
+                        db.users[i].highScore = highScore; 
+                        db.users[i].lastActive = Date.now(); 
+                        currentLoggedInUser = db.users[i]; 
+                        await saveDB(db); 
+                    }
+                } catch (err) { console.error("Failed to save high score to DB:", err); }
+            }
             await saveTimePlayed();
         });
 
@@ -1967,7 +2005,6 @@
                     if (i !== -1) { 
                         db.users[i].highScore = highScore; 
                         db.users[i].lastActive = Date.now(); 
-                        await saveTimePlayed(); // Saves the time played
                         currentLoggedInUser = db.users[i]; 
                         await saveDB(db); 
                     }
@@ -1976,9 +2013,10 @@
             document.getElementById("endGameBtn").click();
         });
 
-        // ============ INIT ============
+        // ============ INIT ============ testing code is here.
         const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
         if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
+        
         applyTheme(themeMode); themeModeSelect.value = themeMode;
         applyColorblindMode(colorblindMode); colorblindModeSelect.value = colorblindMode;
         applyDifficulty(difficulty); difficultySelect.value = difficulty;
