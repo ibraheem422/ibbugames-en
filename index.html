@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1540,8 +1541,15 @@
         document.getElementById("profileBtn").addEventListener("click", () => {
             if (!currentLoggedInUser && !isAdmin) return;
             
-            const u = isAdmin ? { name: "Admin", email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET } : currentLoggedInUser;
+            const u = isAdmin ? { name: "Admin", email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, lastRewardClaim: 0 } : currentLoggedInUser;
             const ageDays = u.id ? Math.floor((Date.now() - parseInt(u.id)) / (1000 * 60 * 60 * 24)) : 0;
+            
+            // Calculate days remaining to next claim
+            const oneWeek = 7 * 24 * 60 * 60 * 1000;
+            const timeSinceClaim = Date.now() - (u.lastRewardClaim || 0);
+            const daysRemaining = Math.ceil((oneWeek - timeSinceClaim) / (24 * 60 * 60 * 1000));
+            const rewardStatus = timeSinceClaim >= oneWeek ? "<span style='color:#5cb85c; font-weight:bold;'>Available Now!</span>" : `<span style='color:#FFD700; font-weight:bold;'>${daysRemaining} day(s) remaining</span>`;
+            
             const html = `
                 <div class="profile-stat-row"><span class="profile-stat-label">Name:</span><span class="profile-stat-value">${u.name}</span></div>
                 <div class="profile-stat-row"><span class="profile-stat-label">Email:</span><span class="profile-stat-value">${u.email}</span></div>
@@ -1550,6 +1558,7 @@
                 <div class="profile-stat-row"><span class="profile-stat-label">Account Age:</span><span class="profile-stat-value">${ageDays} days</span></div>
                 <div class="profile-stat-row"><span class="profile-stat-label">Status:</span><span class="profile-stat-value" style="color: ${u.status === 'active' ? '#5cb85c' : '#d9534f'};">${u.status.toUpperCase()}</span></div>
                 <div class="profile-stat-row"><span class="profile-stat-label">2FA Enabled:</span><span class="profile-stat-value">${u.twoFASecret ? 'Yes' : 'No'}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Next Weekly Reward:</span><span class="profile-stat-value">${rewardStatus}</span></div>
             `;
             document.getElementById("profileContent").innerHTML = html;
             document.getElementById("profileModalOverlay").classList.add("active");
@@ -1967,7 +1976,7 @@
             document.getElementById("endGameBtn").click();
         });
 
-        // ============ INIT ============ test
+        // ============ INIT ============
         const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
         if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
         applyTheme(themeMode); themeModeSelect.value = themeMode;
