@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Star Collector - Enhanced</title>
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E⭐%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%AD%90%3C/text%3E%3C/svg%3E">
     <style>
         :root {
             --bg-color: #111424; --text-color: #ffffff; --panel-bg: #1b1f38; --border-color: #4a55a2;
@@ -104,13 +103,13 @@
         #pauseGameBtn:hover { background-color: #ec971f; }
         .menu-stat { font-size: 16px; color: #FFD700; font-weight: bold; background-color: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; }
         [data-theme="light"] .menu-stat { background-color: rgba(74, 85, 162, 0.05); border: 1px solid rgba(74, 85, 162, 0.2); color: #4a55a2; }
-        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay, #profileModalOverlay, #changePasswordModalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
-        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active, #profileModalOverlay.active, #changePasswordModalOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
-        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox, #profileModalBox, #changePasswordModalBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
-        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle, #profileModalTitle, #changePasswordModalTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
+        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay, #profileModalOverlay, #changePasswordModalOverlay, #requestTimeModalOverlay, #changeNameModalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active, #profileModalOverlay.active, #changePasswordModalOverlay.active, #requestTimeModalOverlay.active, #changeNameModalOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox, #profileModalBox, #changePasswordModalBox, #requestTimeModalBox, #changeNameModalBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
+        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle, #profileModalTitle, #changePasswordModalTitle, #requestTimeModalTitle, #changeNameModalTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
         #confirmModalMessage, #infoModalMessage, #timeInputModalMessage, #twoFASetupMessage { margin: 0 0 20px 0; color: var(--text-color); font-size: 15px; line-height: 1.5; }
-        #confirmModalActions, #timeInputModalActions, #twoFASetupActions { display: flex; gap: 10px; }
-        #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
+        #confirmModalActions, #timeInputModalActions, #twoFASetupActions, #requestTimeModalActions, #changeNameModalActions { display: flex; gap: 10px; }
+        #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button, #requestTimeModalActions button, #changeNameModalActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
         #syncIndicator { display: none; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--label-color); margin: -5px 0 10px 0; opacity: 0.85; }
         #syncIndicator.active { display: flex; }
         .sync-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: #FFD700; border-radius: 50%; animation: syncSpin 0.8s linear infinite; }
@@ -134,7 +133,7 @@
         .lb-rank { width: 24px; height: 24px; border-radius: 50%; background-color: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; }
         .rank-1 { background-color: #FFD700; color: #111; } .rank-2 { background-color: #C0C0C0; color: #111; } .rank-3 { background-color: #CD7F32; color: #111; }
         .lb-avatar { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.3); display: inline-block; box-shadow: 0 0 4px rgba(0,0,0,0.5); }
-        .missed-game-item { background-color: rgba(255, 140, 66, 0.1); border-left: 4px solid #FF8C42; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 140, 66, 0.3); text-align: left; animation: slideInLeft 0.4s ease-out; }
+        .missed-game-item { background-color: rgba(255, 140, 66, 0.1); border-left: 4px solid #FF8C42; padding: 12px; margin-bottom: 12px; border-radius: 6px; border: 1px solid rgba(255, 140, 66, 0.3); text-align: left; animation: slideInLeft 0.4s ease-out; display: flex; flex-direction: column; gap: 5px; }
         .missed-game-item h3 { margin: 0 0 8px 0; color: #FF8C42; font-size: 16px; }
         .missed-game-item p { margin: 0 0 6px 0; color: var(--text-color); font-size: 14px; }
         #adminDashboardPanel { display: none; width: 100%; }
@@ -237,6 +236,12 @@
                         </div>
                         <div class="password-strength-text" id="strengthText" style="display: none;"></div>
                     </div>
+                    
+                    <div id="termsCheckboxContainer" class="checkbox-container" style="display: none;">
+                        <input type="checkbox" id="agreeTermsCheckbox">
+                        <label for="agreeTermsCheckbox">I agree to the Terms & Conditions</label>
+                    </div>
+                    
                     <div class="checkbox-container">
                         <input type="checkbox" id="rememberMe">
                         <label for="rememberMe">Remember Email</label>
@@ -281,9 +286,12 @@
                     <button id="profileBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">View Profile</button>
                 </div>
                 <div class="menu-element" style="margin-top: 5px;">
-                    <button id="changePassBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">Change Password</button>
+                    <button id="changeNameBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">Change Name</button>
                 </div>
                 <div class="menu-element" style="margin-top: 5px;">
+                    <button id="changePassBtn" class="secondary-btn" style="font-size: 14px; padding: 10px 12px;">Change Password</button>
+                </div>
+                <div class="menu-element" id="achievementsBtnContainer" style="margin-top: 5px; display: none;">
                     <button id="achievementsBtn" class="secondary-btn" style="background-color: #e67e22;">Achievements</button>
                 </div>
                 <div class="menu-element" id="claimRewardContainer" style="display: none; margin-top: 5px;">
@@ -293,9 +301,14 @@
                 <div class="menu-element" id="downloadCertContainer" style="margin-top: 5px; display: none;">
                     <button id="downloadCertBtn" class="secondary-btn" style="font-size: 14px; padding: 8px 12px;">Download Certificate</button>
                 </div>
-                <div class="menu-element">
+                <div class="menu-element" id="missedGamesBtnContainer" style="margin-top: 5px; display: none;">
                     <button id="missedGamesBtn" class="secondary-btn" style="background-color: #FF8C42;">Missed Games <span id="missedGamesCount" class="admin-badge" style="background-color: #d9534f;">0</span></button>
                 </div>
+                
+                <div class="menu-element" id="requestTimeBtnContainer" style="display: none; margin-top: 5px;">
+                    <button id="requestTimeBtn" class="secondary-btn" style="background-color: #f0ad4e; color: white;">Request More Time</button>
+                </div>
+
                 <div class="menu-element" id="adminNotificationsBtnContainer" style="display: none;">
                     <button id="adminNotificationsBtn" class="secondary-btn">Admin Notifications <span id="notificationCount" class="admin-badge">0</span></button>
                 </div>
@@ -305,7 +318,7 @@
                 <div class="menu-element" id="adminDashboardBtnContainer" style="display: none;">
                     <button id="adminDashboardBtn" class="secondary-btn" style="background-color: #17a2b8;">Admin Dashboard</button>
                 </div>
-                <div class="menu-element">
+                <div class="menu-element" id="setup2FABtnContainer" style="margin-top: 5px; display: none;">
                     <button id="setup2FABtn" class="secondary-btn" style="background-color: #17a2b8;">Set Up Authenticator App</button>
                 </div>
                 <div class="menu-element">
@@ -643,6 +656,30 @@
         </div>
     </div>
 
+    <div id="requestTimeModalOverlay">
+        <div id="requestTimeModalBox">
+            <h3 id="requestTimeModalTitle">Request More Time</h3>
+            <p id="requestTimeModalMessage" style="font-size: 14px; color: var(--label-color); margin-bottom: 15px;">Enter a reason for needing more time. The admin will review your request.</p>
+            <textarea id="requestTimeReason" placeholder="e.g., I was on a roll! Just 10 more minutes please." style="min-height: 100px; margin-bottom: 20px;"></textarea>
+            <div id="requestTimeModalActions">
+                <button id="requestTimeSubmitBtn" class="accept-btn">Send Request</button>
+                <button id="requestTimeCancelBtn" class="decline-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Name Modal -->
+    <div id="changeNameModalOverlay">
+        <div id="changeNameModalBox">
+            <h3 id="changeNameModalTitle">Change Display Name</h3>
+            <input id="changeNameInput" type="text" placeholder="Enter new display name..." style="margin-bottom: 20px;">
+            <div id="changeNameModalActions">
+                <button id="changeNameSubmitBtn" class="accept-btn">Save Name</button>
+                <button id="changeNameCancelBtn" class="decline-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="twoFASetupOverlay">
         <div id="twoFASetupBox">
             <h3 id="twoFASetupTitle">Setup Google Authenticator</h3>
@@ -711,6 +748,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.2.0/sha.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
     <script>
         // ============ JSONBIN CONFIG ============
@@ -720,7 +758,7 @@
 
         // ============ ADMIN CONFIG ============
         const ADMIN_EMAIL = "ibraheem.muhammad.ai@gmail.com";
-        const ADMIN_PASSWORD = "Midea@222";
+        const ADMIN_PASSWORD = localStorage.getItem("starCollectorAdminPassword") || "Midea@222";
         const ADMIN_2FA_SECRET = "BY72ZZYT7BM3O7P5"; 
         const ADMIN_RECOVERY_CODE = "IYK9I3H20H";
         
@@ -728,11 +766,19 @@
         const TEST_EMAIL = "testauth@gmail.com";
         const TEST_PASSWORD = "test";
 
+        // ============ EMAILJS CONFIG ============
+        const EMAILJS_SERVICE_ID = "service_hnbvaot";
+        const EMAILJS_TEMPLATE_ID = "template_xfaeozt";
+        const EMAILJS_PUBLIC_KEY = "_LVa7sKWxP1A093PB";
+        const EMAILJS_PRIVATE_KEY = "Tkaz_fnY-BJUFDNiGCr9z"; // Private key for secure initialization
+        emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY, privateKey: EMAILJS_PRIVATE_KEY });
+
         let isAdmin = false; 
         let currentLoggedInUser = null; 
         let CURRENT_2FA_SECRET = null; 
         let pendingLoginUser = null; 
         let isGuest = false;
+        let passwordResetCode = "";
 
         async function getDB() {
             const res = await fetch(JSONBIN_BASE_URL + "/latest", { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
@@ -756,7 +802,7 @@
                 if (!db.users) db.users = [];
                 let testUser = db.users.find(u => u.email === TEST_EMAIL);
                 if (!testUser) {
-                    testUser = { id: "test-user-id-001", name: "Test User", email: TEST_EMAIL, password: TEST_PASSWORD, status: "active" };
+                    testUser = { id: Date.now().toString(), createdAt: Date.now(), name: "Test User", email: TEST_EMAIL, password: TEST_PASSWORD, status: "active" };
                     db.users.push(testUser);
                     await saveDB(db);
                 } else if (testUser.password !== TEST_PASSWORD) {
@@ -787,12 +833,16 @@
         const pauseMenuBtn = document.getElementById("pauseMenuBtn");
         const inGameLimitBox = document.getElementById("inGameLimitBox");
         const setup2FABtn = document.getElementById("setup2FABtn");
+        const setup2FABtnContainer = document.getElementById("setup2FABtnContainer");
+        const achievementsBtnContainer = document.getElementById("achievementsBtnContainer");
+        const missedGamesBtnContainer = document.getElementById("missedGamesBtnContainer");
         const deleteAccountBtnContainer = document.getElementById("deleteAccountBtnContainer");
         const downloadCertBtn = document.getElementById("downloadCertBtn");
         const downloadCertContainer = document.getElementById("downloadCertContainer");
         const avatarSelector = document.getElementById("avatarSelector");
         const claimRewardBtn = document.getElementById("claimRewardBtn");
         const claimRewardContainer = document.getElementById("claimRewardContainer");
+        const requestTimeBtnContainer = document.getElementById("requestTimeBtnContainer");
 
         const colorblindModeSelect = document.getElementById("colorblindMode");
         const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -839,6 +889,15 @@
         let speedMultiplier = 1;
 
         // ============ HELPER FUNCTIONS ============
+        function updateURL(path) {
+            try {
+                const newUrl = `${window.location.origin}/${path}`;
+                if (window.location.href !== newUrl) {
+                    window.history.pushState({ path: path }, "", newUrl);
+                }
+            } catch (e) {}
+        }
+
         function showPanel(panelId) {
             const panels = document.querySelectorAll('#menu > div');
             panels.forEach(p => p.style.display = 'none');
@@ -848,6 +907,27 @@
                 activePanel.style.animation = 'none';
                 activePanel.offsetHeight; 
                 activePanel.style.animation = 'fadeIn 0.4s ease-out';
+                
+                // Update URL based on panel
+                let urlPath = "Homepage";
+                if (panelId === "mainMenuPanel") urlPath = "Homepage";
+                else if (panelId === "settingsPanel") urlPath = "Game-Settings";
+                else if (panelId === "termsPanel") urlPath = "Terms-And-Conditions";
+                else if (panelId === "achievementsPanel") urlPath = "Achievements";
+                else if (panelId === "missedGamesPanel") urlPath = "Missed-Games";
+                else if (panelId === "leaderboardPanel") urlPath = "Leaderboard";
+                else if (panelId === "adminDashboardPanel") urlPath = "Admin-Dashboard";
+                else if (panelId === "adminNotificationsPanel") urlPath = "Admin-Notifications";
+                else if (panelId === "loginPanel") urlPath = "Homepage";
+                else if (panelId === "guestNamePanel") urlPath = "Homepage";
+                else if (panelId === "guestWaitingPanel") urlPath = "Homepage";
+                else if (panelId === "resetRequestPanel") urlPath = "Homepage";
+                else if (panelId === "resetVerifyPanel") urlPath = "Homepage";
+                else if (panelId === "resetNewPasswordPanel") urlPath = "Homepage";
+                
+                if (!gameActive) {
+                    updateURL(urlPath);
+                }
             }
         }
 
@@ -885,6 +965,18 @@
             
             deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             downloadCertContainer.style.display = (isAdmin || currentLoggedInUser) ? "flex" : "none";
+            requestTimeBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            
+            // Guest restrictions
+            if (isGuest) {
+                achievementsBtnContainer.style.display = "none";
+                missedGamesBtnContainer.style.display = "none";
+                setup2FABtnContainer.style.display = "none";
+            } else {
+                achievementsBtnContainer.style.display = "flex";
+                missedGamesBtnContainer.style.display = "flex";
+                setup2FABtnContainer.style.display = "flex";
+            }
             
             update2FAButtonStatus();
             checkWeeklyReward();
@@ -914,7 +1006,7 @@
                 claimRewardContainer.style.display = "none";
                 return;
             }
-            let lastClaim = isAdmin ? 0 : (currentLoggedInUser.lastRewardClaim || 0);
+            let lastClaim = isAdmin ? (parseInt(localStorage.getItem("starCollectorAdminLastReward")) || 0) : (currentLoggedInUser.lastRewardClaim || 0);
             const oneWeek = 7 * 24 * 60 * 60 * 1000;
             if (Date.now() - lastClaim >= oneWeek) {
                 claimRewardContainer.style.display = "flex";
@@ -1058,6 +1150,15 @@
             return code;
         }
 
+        function generateGameCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789;:&*_-';
+            let code = '';
+            for (let i = 0; i < 16; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
         // ============ SETTINGS & THEME ============
         function applyTheme(theme) {
             if (theme === "light") document.documentElement.setAttribute("data-theme", "light");
@@ -1076,7 +1177,6 @@
             else if (difficulty === "hard") { baseSpeedX = 7; baseSpeedY = 5; speedMultiplier = 1.5; }
         }
 
-        // Mobile responsive canvas sizing
         function resizeCanvas() {
             const wrapperWidth = document.querySelector('.wrapper').clientWidth;
             const maxWidth = Math.min(wrapperWidth, 500);
@@ -1195,7 +1295,7 @@
                 const remSec = sessionTimeRemaining % 60;
                 document.getElementById("inGameLimitText").textContent = `${remMin < 10 ? '0' + remMin : remMin}:${remSec < 10 ? '0' + remSec : remSec}`;
                 
-                if (sessionTimeRemaining <= 0) {
+                if (sessionTimeRemaining <= 0 && !isAdmin) { // Admin has no limit
                     endGameDueToTimeLimit();
                 }
             }
@@ -1227,7 +1327,7 @@
                 pauseGameBtn.textContent = "Pause Game (ESC)";
                 timerInterval = setInterval(() => { 
                     gameSeconds++; 
-                    sessionTimeRemaining--; 
+                    if (!isAdmin) sessionTimeRemaining--; 
                     updateTimerDisplay(); 
                 }, 1000);
                 updateGame();
@@ -1238,6 +1338,7 @@
 
         // ============ 2FA LOGIC ============
         setup2FABtn.addEventListener("click", async () => {
+            updateURL("Setup-google-Authenticator");
             if (isAdmin) {
                 CURRENT_2FA_SECRET = ADMIN_2FA_SECRET;
                 document.getElementById("secretKeyDisplay").textContent = ADMIN_2FA_SECRET;
@@ -1304,12 +1405,16 @@
                 document.getElementById("twoFASetupOverlay").classList.remove("active");
                 update2FAButtonStatus();
                 await showInfo("Authenticator app setup complete!");
+                updateURL("Homepage");
             } else {
                 await showInfo("Invalid code. Please check your app and try again.");
             }
         });
 
-        document.getElementById("twoFACancelBtn").addEventListener("click", () => document.getElementById("twoFASetupOverlay").classList.remove("active"));
+        document.getElementById("twoFACancelBtn").addEventListener("click", () => {
+            document.getElementById("twoFASetupOverlay").classList.remove("active");
+            updateURL("Homepage");
+        });
         document.getElementById("copySecretBtn").addEventListener("click", (e) => {
             navigator.clipboard.writeText(document.getElementById("secretKeyDisplay").textContent).then(() => {
                 const btn = e.target; const orig = btn.textContent; btn.textContent = "✅ Copied!"; btn.style.backgroundColor = "#5cb85c";
@@ -1365,15 +1470,15 @@
                 failedAttempts = 0;
                 isAdmin = pendingLoginUser.isAdmin; 
                 currentLoggedInUser = (isAdmin) ? null : pendingLoginUser; 
-                pendingLoginUser = null;
+                pendingLoginUser = null; // Clear pending state
                 
                 document.getElementById("twoFALoginOverlay").classList.remove("active");
                 document.getElementById("twoFARecoverySection").style.display = "none";
                 document.getElementById("twoFARecoveryInput").value = "";
                 document.getElementById("twoFALoginCodeInput").value = "";
                 
-                document.getElementById("activePilot").textContent = isAdmin ? "Admin" : currentLoggedInUser.name;
-                highScore = isAdmin ? 0 : (currentLoggedInUser.highScore || 0);
+                document.getElementById("activePilot").textContent = isAdmin ? (localStorage.getItem("starCollectorAdminName") || "Admin") : currentLoggedInUser.name;
+                highScore = isAdmin ? (parseInt(localStorage.getItem("starCollectorAdminHighScore")) || 0) : (currentLoggedInUser.highScore || 0);
                 document.getElementById("highScoreText").textContent = highScore;
                 
                 checkAdminStatus(); showPanel("mainMenuPanel");
@@ -1388,9 +1493,14 @@
             }
         });
 
+        // 2FA Cancel Bug Fix: Fully clear pending state
         document.getElementById("twoFALoginCancelBtn").addEventListener("click", () => {
             document.getElementById("twoFALoginOverlay").classList.remove("active");
-            pendingLoginUser = null;
+            document.getElementById("twoFARecoverySection").style.display = "none";
+            document.getElementById("twoFARecoveryInput").value = "";
+            document.getElementById("twoFALoginCodeInput").value = "";
+            pendingLoginUser = null; // Clear pending state completely
+            failedAttempts = 0;
         });
 
         document.getElementById("useRecoveryLink").addEventListener("click", (e) => {
@@ -1405,6 +1515,7 @@
         const authLoginTab = document.getElementById("authLoginTab");
         const authSignUpTab = document.getElementById("authSignUpTab");
         const signupNameField = document.getElementById("signupNameField");
+        const termsCheckboxContainer = document.getElementById("termsCheckboxContainer");
         const authSubmitBtn = document.getElementById("authSubmitBtn");
         let isSignUpMode = false;
 
@@ -1412,6 +1523,7 @@
             isSignUpMode = false;
             authLoginTab.classList.add("active"); authSignUpTab.classList.remove("active");
             signupNameField.style.display = "none"; authSubmitBtn.textContent = "Log In"; authMsg.style.display = "none";
+            termsCheckboxContainer.style.display = "none"; 
             signupNameField.style.animation = 'slideInFade 0.3s ease-out';
         });
 
@@ -1419,6 +1531,7 @@
             isSignUpMode = true;
             authSignUpTab.classList.add("active"); authLoginTab.classList.remove("active");
             signupNameField.style.display = "flex"; authSubmitBtn.textContent = "Sign Up"; authMsg.style.display = "none";
+            termsCheckboxContainer.style.display = "flex"; 
             signupNameField.style.animation = 'slideInFade 0.3s ease-out';
         });
 
@@ -1431,14 +1544,22 @@
 
             if (isSignUpMode) {
                 if (!name) { authMsg.textContent = "Please enter your full name."; authMsg.style.display = "block"; return; }
+                
+                if (!document.getElementById("agreeTermsCheckbox").checked) {
+                    authMsg.textContent = "You must agree to the Terms & Conditions to sign up.";
+                    authMsg.style.display = "block";
+                    return;
+                }
+
                 try {
                     const db = await getDB(); if (!db.users) db.users = []; if (!db.requests) db.requests = [];
                     if (db.users.find(u => u.email === email)) { authMsg.textContent = "Account already exists."; authMsg.style.display = "block"; return; }
                     if (db.requests.find(r => r.email === email)) { authMsg.textContent = "Request already pending."; authMsg.style.display = "block"; return; }
-                    db.requests.push({ id: Date.now().toString(), name, email, password, status: "pending", type: "signup" });
+                    db.requests.push({ id: Date.now().toString(), createdAt: Date.now(), name, email, password, status: "pending", type: "signup" });
                     await saveDB(db);
                     authMsg.textContent = "Sign up request sent! Wait for admin approval."; authMsg.classList.add("success"); authMsg.style.display = "block";
                     document.getElementById("authName").value = ""; document.getElementById("authUsername").value = ""; document.getElementById("authPassword").value = "";
+                    document.getElementById("agreeTermsCheckbox").checked = false;
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
             } else {
                 try {
@@ -1495,6 +1616,118 @@
             }
         });
 
+        // Forgot Password Flow (Ask Email -> Send Code -> Verify -> New Password)
+        document.getElementById("forgotPasswordLink").addEventListener("click", (e) => {
+            e.preventDefault();
+            // Pre-fill email if they typed it on the login screen
+            document.getElementById("resetEmailInput").value = document.getElementById("authUsername").value;
+            showPanel("resetRequestPanel");
+        });
+
+        document.getElementById("resetRequestBackBtn").addEventListener("click", () => {
+            showPanel("loginPanel");
+        });
+
+        document.getElementById("resetRequestSendBtn").addEventListener("click", async () => {
+            const email = document.getElementById("resetEmailInput").value.trim();
+            if (!email) { await showInfo("Please enter your email."); return; }
+
+            authMsg.textContent = "Sending code...";
+            authMsg.style.display = "block";
+
+            try {
+                const db = await getDB();
+                const user = db.users.find(u => u.email === email);
+                if (!user) {
+                    authMsg.textContent = "No account found with that email.";
+                    authMsg.style.display = "block";
+                    return;
+                }
+
+                // Generate 6-digit code
+                passwordResetCode = Math.floor(100000 + Math.random() * 900000).toString();
+                
+                // Send email via EmailJS
+                const templateParams = {
+                    to_email: email,
+                    to_name: user.name,
+                    code: passwordResetCode
+                };
+                
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                
+                authMsg.style.display = "none";
+                await showInfo("Verification code sent to your email!");
+                showPanel("resetVerifyPanel");
+                
+            } catch (err) {
+                console.error("EmailJS Error:", err);
+                authMsg.textContent = "Error sending email. Check console for details.";
+                authMsg.style.display = "block";
+            }
+        });
+
+        document.getElementById("resetResendCodeBtn").addEventListener("click", async () => {
+            const email = document.getElementById("resetEmailInput").value.trim();
+            if (!email) return;
+
+            try {
+                const db = await getDB();
+                const user = db.users.find(u => u.email === email);
+                if (!user) return;
+
+                passwordResetCode = Math.floor(100000 + Math.random() * 900000).toString();
+                const templateParams = { to_email: email, to_name: user.name, code: passwordResetCode };
+                await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams);
+                await showInfo("New code sent to your email!");
+            } catch (err) {
+                await showInfo("Error resending email. Check connection.");
+            }
+        });
+
+        document.getElementById("resetVerifyBackBtn").addEventListener("click", () => {
+            showPanel("loginPanel");
+        });
+
+        document.getElementById("resetVerifyConfirmBtn").addEventListener("click", async () => {
+            const code = document.getElementById("resetCodeInput").value.trim();
+            if (code !== passwordResetCode) {
+                await showInfo("Invalid verification code.");
+                return;
+            }
+            // Code is correct, move to new password panel
+            showPanel("resetNewPasswordPanel");
+        });
+
+        document.getElementById("resetSavePasswordBtn").addEventListener("click", async () => {
+            const newPass = document.getElementById("resetNewPasswordInput").value.trim();
+            const confirmPass = document.getElementById("resetConfirmPasswordInput").value.trim();
+            const email = document.getElementById("resetEmailInput").value.trim();
+
+            if (!newPass || !confirmPass) { await showInfo("Please fill all fields."); return; }
+            if (newPass !== confirmPass) { await showInfo("Passwords do not match."); return; }
+
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.email === email);
+                if (i !== -1) {
+                    db.users[i].password = newPass;
+                    await saveDB(db);
+                    await showInfo("Password updated successfully! Please log in.");
+                    showPanel("loginPanel");
+                    // Clear reset fields
+                    document.getElementById("resetNewPasswordInput").value = "";
+                    document.getElementById("resetConfirmPasswordInput").value = "";
+                    document.getElementById("resetCodeInput").value = "";
+                    passwordResetCode = "";
+                } else {
+                    await showInfo("Error: Account not found.");
+                }
+            } catch (err) {
+                await showInfo("Error saving password. Check connection.");
+            }
+        });
+
         document.getElementById("guestPlayBtn").addEventListener("click", () => {
             document.getElementById("activePilot").textContent = "Guest"; isAdmin = false; isGuest = true; currentLoggedInUser = null;
             highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("mainMenuPanel");
@@ -1547,14 +1780,15 @@
         // ============ MODAL BUTTONS ============
         document.getElementById("profileBtn").addEventListener("click", () => {
             if (!currentLoggedInUser && !isAdmin) return;
+            updateURL("View-Profile");
             
-            const u = isAdmin ? { name: "Admin", email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, lastRewardClaim: 0 } : currentLoggedInUser;
-            const ageDays = u.id ? Math.floor((Date.now() - parseInt(u.id)) / (1000 * 60 * 60 * 24)) : 0;
+            const u = isAdmin ? { name: (localStorage.getItem("starCollectorAdminName") || "Admin"), email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, createdAt: Date.now(), lastRewardClaim: 0 } : currentLoggedInUser;
+            const ageDays = u.createdAt ? Math.floor((Date.now() - parseInt(u.createdAt)) / (1000 * 60 * 60 * 24)) : 0;
             
             const oneWeek = 7 * 24 * 60 * 60 * 1000;
             const timeSinceClaim = Date.now() - (u.lastRewardClaim || 0);
             const daysRemaining = Math.ceil((oneWeek - timeSinceClaim) / (24 * 60 * 60 * 1000));
-            const rewardStatus = timeSinceClaim >= oneWeek ? "<span style='color:#5cb85c; font-weight:bold;'>Available Now!</span>" : `<span style='color:#FFD700; font-weight:bold;'>${daysRemaining} day(s) remaining</span>`;
+            const rewardStatus = (isAdmin || timeSinceClaim >= oneWeek) ? "<span style='color:#5cb85c; font-weight:bold;'>Available Now!</span>" : `<span style='color:#FFD700; font-weight:bold;'>${daysRemaining} day(s) remaining</span>`;
             
             const html = `
                 <div class="profile-stat-row"><span class="profile-stat-label">Name:</span><span class="profile-stat-value">${u.name}</span></div>
@@ -1571,14 +1805,54 @@
         });
         document.getElementById("profileModalCloseBtn").addEventListener("click", () => {
             document.getElementById("profileModalOverlay").classList.remove("active");
+            updateURL("Homepage");
         });
 
-        document.getElementById("changePassBtn").addEventListener("click", async () => {
+        // Change Name Logic
+        document.getElementById("changeNameBtn").addEventListener("click", () => {
+            if (!isAdmin && !currentLoggedInUser) return;
+            updateURL("Change-Name");
+            document.getElementById("changeNameInput").value = isAdmin ? (localStorage.getItem("starCollectorAdminName") || "Admin") : currentLoggedInUser.name;
+            document.getElementById("changeNameModalOverlay").classList.add("active");
+        });
+        document.getElementById("changeNameCancelBtn").addEventListener("click", () => {
+            document.getElementById("changeNameModalOverlay").classList.remove("active");
+            updateURL("Homepage");
+        });
+        document.getElementById("changeNameSubmitBtn").addEventListener("click", async () => {
+            const newName = document.getElementById("changeNameInput").value.trim();
+            if (!newName) { await showInfo("Please enter a valid name."); return; }
+
             if (isAdmin) {
-                await showInfo("Admin password cannot be changed here. It is hardcoded for security.");
+                localStorage.setItem("starCollectorAdminName", newName);
+                document.getElementById("changeNameModalOverlay").classList.remove("active");
+                document.getElementById("activePilot").textContent = newName;
+                await showInfo("Admin name updated successfully!");
+                updateURL("Homepage");
                 return;
             }
-            if (!currentLoggedInUser) return;
+
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) {
+                    db.users[i].name = newName;
+                    currentLoggedInUser = db.users[i];
+                    await saveDB(db);
+                    document.getElementById("changeNameModalOverlay").classList.remove("active");
+                    document.getElementById("activePilot").textContent = newName;
+                    await showInfo("Name updated successfully!");
+                    updateURL("Homepage");
+                }
+            } catch (err) {
+                await showInfo("Error updating name. Check connection.");
+            }
+        });
+
+        // Change Password Fix
+        document.getElementById("changePassBtn").addEventListener("click", async () => {
+            if (!isAdmin && !currentLoggedInUser) return;
+            updateURL("Homepage"); // Or specific URL if desired, using Homepage for now
             document.getElementById("changePassOld").value = "";
             document.getElementById("changePassNew").value = "";
             document.getElementById("changePassConfirm").value = "";
@@ -1594,6 +1868,16 @@
 
             if (!oldPass || !newPass || !confirmPass) { await showInfo("Please fill all fields."); return; }
             if (newPass !== confirmPass) { await showInfo("New passwords do not match."); return; }
+
+            if (isAdmin) {
+                if (oldPass !== ADMIN_PASSWORD) { await showInfo("Old password is incorrect."); return; }
+                localStorage.setItem("starCollectorAdminPassword", newPass);
+                document.getElementById("changePasswordModalOverlay").classList.remove("active");
+                await showInfo("Admin password updated successfully! Please log in again.");
+                isAdmin = false; isGuest = false; currentLoggedInUser = null;
+                checkAdminStatus(); showPanel("loginPanel");
+                return;
+            }
 
             try {
                 const db = await getDB();
@@ -1620,7 +1904,9 @@
             if (isAdmin) {
                 highScore += 30;
                 document.getElementById("highScoreText").textContent = highScore;
-                claimRewardContainer.style.display = "none";
+                localStorage.setItem("starCollectorAdminHighScore", highScore);
+                localStorage.setItem("starCollectorAdminLastReward", Date.now()); // Save timestamp
+                claimRewardContainer.style.display = "none"; // Hide button
                 launchConfetti();
                 await showInfo("Admin reward claimed! +30 points.");
                 return;
@@ -1638,7 +1924,7 @@
                     document.getElementById("highScoreText").textContent = highScore;
                     await saveDB(db);
                     
-                    claimRewardContainer.style.display = "none";
+                    claimRewardContainer.style.display = "none"; // Hide button
                     launchConfetti();
                     await showInfo("You claimed your weekly reward! +30 points added to your High Score.");
                 } else {
@@ -1649,14 +1935,144 @@
             }
         });
 
+        // ============ REQUEST MORE TIME LOGIC ============
+        document.getElementById("requestTimeBtn").addEventListener("click", () => {
+            document.getElementById("requestTimeReason").value = "";
+            document.getElementById("requestTimeModalOverlay").classList.add("active");
+        });
+
+        document.getElementById("requestTimeCancelBtn").addEventListener("click", () => {
+            document.getElementById("requestTimeModalOverlay").classList.remove("active");
+        });
+
+        document.getElementById("requestTimeSubmitBtn").addEventListener("click", async () => {
+            const reason = document.getElementById("requestTimeReason").value.trim();
+            if (!reason) { await showInfo("Please enter a reason."); return; }
+
+            try {
+                const db = await getDB();
+                if (!db.requests) db.requests = [];
+                db.requests.push({ 
+                    id: Date.now().toString(), 
+                    name: currentLoggedInUser.name, 
+                    email: currentLoggedInUser.email, 
+                    reason: reason, 
+                    status: "pending", 
+                    type: "time_extension" 
+                });
+                await saveDB(db);
+                document.getElementById("requestTimeModalOverlay").classList.remove("active");
+                await showInfo("Your request has been sent to the admin!");
+            } catch (err) {
+                await showInfo("Error sending request. Check connection.");
+            }
+        });
+
         // ============ NAVIGATION & BUTTONS ============
         document.getElementById("settingsBtn").addEventListener("click", () => { showPanel("settingsPanel"); });
         document.getElementById("backBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
         document.getElementById("termsBtn").addEventListener("click", () => { showPanel("termsPanel"); });
         document.getElementById("backFromTermsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
-        document.getElementById("missedGamesBtn").addEventListener("click", () => { showPanel("missedGamesPanel"); });
-        document.getElementById("backFromMissedBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
         
+        // Missed Games Panel Navigation
+        document.getElementById("missedGamesBtn").addEventListener("click", async () => { 
+            showPanel("missedGamesPanel"); 
+            await renderMissedGames();
+        });
+        document.getElementById("backFromMissedBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
+        async function renderMissedGames() {
+            const list = document.getElementById("missedGamesList");
+            list.innerHTML = "<div class='lb-empty'>Loading...</div>";
+            
+            if (!currentLoggedInUser && !isAdmin) {
+                list.innerHTML = "<div class='lb-empty'>Log in to save and continue games.</div>";
+                return;
+            }
+
+            if (isAdmin) {
+                list.innerHTML = "<div class='lb-empty'>Admin saves are managed locally. Use 'Save & Exit' during gameplay.</div>";
+                return;
+            }
+
+            try {
+                const db = await getDB(); 
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i === -1) {
+                    list.innerHTML = "<div class='lb-empty'>User not found.</div>";
+                    return;
+                }
+                
+                let user = db.users[i];
+                if (!user.savedGames) user.savedGames = [];
+                
+                if (user.savedGames.length === 0) {
+                    list.innerHTML = "<div class='lb-empty'>You haven't saved any games. Use 'Save & Exit' during a game to save it here!</div>";
+                    return;
+                }
+
+                list.innerHTML = "";
+                user.savedGames.forEach((save, index) => {
+                    const item = document.createElement("div"); 
+                    item.className = "missed-game-item";
+                    const timeStr = `${Math.floor(save.time / 60)}m ${save.time % 60}s`;
+                    item.innerHTML = `
+                        <h3>Save Slot ${index + 1}</h3>
+                        <p><strong>Score:</strong> ${save.score}</p>
+                        <p><strong>Level:</strong> ${save.level}</p>
+                        <p><strong>Time Played:</strong> ${timeStr}</p>
+                        <div class="notification-actions" style="margin-top: 10px;">
+                            <button class="accept-btn" onclick="continueSavedGame('${save.id}')">Continue</button>
+                            <button class="decline-btn" onclick="deleteSavedGame('${save.id}')">Delete</button>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) { 
+                list.innerHTML = "<div class='lb-empty'>Error loading saved games. Check connection.</div>"; 
+            }
+        }
+
+        window.continueSavedGame = async (saveId) => {
+            if (isAdmin) return;
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) {
+                    let user = db.users[i];
+                    const saveIndex = user.savedGames ? user.savedGames.findIndex(s => s.id === saveId) : -1;
+                    if (saveIndex !== -1) {
+                        const save = user.savedGames[saveIndex];
+                        user.savedGames.splice(saveIndex, 1);
+                        await saveDB(db);
+                        startGame(save.score, save.level, save.time);
+                        return;
+                    }
+                }
+                await showInfo("Error: Save not found.");
+            } catch (err) {
+                await showInfo("Error loading save. Check connection.");
+            }
+        };
+
+        window.deleteSavedGame = async (saveId) => {
+            if (isAdmin) return;
+            try {
+                const db = await getDB();
+                const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                if (i !== -1) {
+                    let user = db.users[i];
+                    if (user.savedGames) {
+                        user.savedGames = user.savedGames.filter(s => s.id !== saveId);
+                        await saveDB(db);
+                        await renderMissedGames();
+                    }
+                }
+            } catch (err) {
+                await showInfo("Error deleting save. Check connection.");
+            }
+        };
+
         document.getElementById("achievementsBtn").addEventListener("click", async () => {
             showPanel("achievementsPanel");
             await renderAchievements();
@@ -1713,7 +2129,6 @@
         });
         document.getElementById("backFromDashboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
 
-        // Fixed Announcement Save Logic
         document.getElementById("setAnnouncementBtn").addEventListener("click", async () => {
             const msg = document.getElementById("announcementInput").value.trim();
             try {
@@ -1737,7 +2152,19 @@
                 list.innerHTML = "";
                 requests.forEach(req => {
                     const item = document.createElement("div"); item.className = "notification-item";
-                    item.innerHTML = `<h3>New Signup Request</h3><p><strong>Name:</strong> ${req.name}</p><p><strong>Email:</strong> ${req.email}</p><div class="notification-actions"><button class="accept-btn" onclick="approveUser('${req.id}')">Accept</button><button class="decline-btn" onclick="declineUser('${req.id}')">Decline</button></div>`;
+                    let actionsHtml = "";
+                    if (req.type === "signup") {
+                        actionsHtml = `<div class="notification-actions"><button class="accept-btn" onclick="approveUser('${req.id}')">Accept</button><button class="decline-btn" onclick="declineUser('${req.id}')">Decline</button></div>`;
+                    } else if (req.type === "time_extension") {
+                        actionsHtml = `<div class="notification-actions"><button class="accept-btn" onclick="openGrantTimeModal('${req.email}')">Grant Time</button><button class="decline-btn" onclick="declineUser('${req.id}')">Dismiss</button></div>`;
+                    }
+                    item.innerHTML = `
+                        <h3>${req.type === 'time_extension' ? 'Time Extension Request' : 'New Signup Request'}</h3>
+                        <p><strong>Name:</strong> ${req.name}</p>
+                        <p><strong>Email:</strong> ${req.email}</p>
+                        ${req.reason ? `<p><strong>Reason:</strong> ${req.reason}</p>` : ''}
+                        ${actionsHtml}
+                    `;
                     list.appendChild(item);
                 });
             } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading. Check connection.</div>"; }
@@ -1796,8 +2223,16 @@
         };
 
         let pendingTimeGrantUserId = null;
-        window.openGrantTimeModal = (userId) => {
-            pendingTimeGrantUserId = userId;
+        let pendingTimeGrantUserEmail = null;
+        
+        window.openGrantTimeModal = (userIdOrEmail) => {
+            if (userIdOrEmail.includes('@')) {
+                pendingTimeGrantUserEmail = userIdOrEmail;
+                pendingTimeGrantUserId = null;
+            } else {
+                pendingTimeGrantUserId = userIdOrEmail;
+                pendingTimeGrantUserEmail = null;
+            }
             document.getElementById("timeInputHours").value = "0";
             document.getElementById("timeInputMinutes").value = "15";
             document.getElementById("timeInputModalOverlay").classList.add("active");
@@ -1809,16 +2244,35 @@
             const totalSeconds = (hours * 3600) + (minutes * 60);
 
             if (totalSeconds <= 0) { await showInfo("Please enter a valid time."); return; }
-            if (!pendingTimeGrantUserId) { await showInfo("Error: No user selected."); return; }
 
             try {
-                const db = await getDB(); const i = db.users.findIndex(u => u.id === pendingTimeGrantUserId);
+                const db = await getDB(); 
+                let i = -1;
+                if (pendingTimeGrantUserId) {
+                    i = db.users.findIndex(u => u.id === pendingTimeGrantUserId);
+                } else if (pendingTimeGrantUserEmail) {
+                    i = db.users.findIndex(u => u.email === pendingTimeGrantUserEmail);
+                }
+
                 if (i !== -1) {
                     db.users[i].extraTimeGranted = (db.users[i].extraTimeGranted || 0) + totalSeconds;
                     await saveDB(db);
                     document.getElementById("timeInputModalOverlay").classList.remove("active");
                     await showInfo("Time granted successfully!");
+                    
+                    if (pendingTimeGrantUserEmail) {
+                        const reqIdx = db.requests.findIndex(r => r.email === pendingTimeGrantUserEmail && r.type === 'time_extension');
+                        if (reqIdx !== -1) {
+                            db.requests.splice(reqIdx, 1);
+                            await saveDB(db);
+                            loadAdminNotifications();
+                        }
+                    }
+                    
                     pendingTimeGrantUserId = null;
+                    pendingTimeGrantUserEmail = null;
+                } else {
+                    await showInfo("Error: User not found.");
                 }
             } catch (err) {
                 await showInfo("Error granting time. Check connection.");
@@ -1828,6 +2282,7 @@
         document.getElementById("timeInputCancelBtn").addEventListener("click", () => {
             document.getElementById("timeInputModalOverlay").classList.remove("active");
             pendingTimeGrantUserId = null;
+            pendingTimeGrantUserEmail = null;
         });
 
         window.approveUser = async (reqId) => {
@@ -1835,7 +2290,7 @@
                 const db = await getDB(); if (!db.requests) db.requests = []; if (!db.users) db.users = [];
                 const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
                 const req = db.requests[i];
-                db.users.push({ id: req.id, name: req.name, email: req.email, password: req.password, status: "active" });
+                db.users.push({ id: req.id, createdAt: req.createdAt || Date.now(), name: req.name, email: req.email, password: req.password, status: "active" });
                 db.requests.splice(i, 1); await saveDB(db);
                 await showInfo("User accepted!"); loadAdminNotifications();
             } catch (err) { showInfo("Error approving user. Check connection."); }
@@ -1851,7 +2306,7 @@
         };
 
         // ============ GAME CONTROLS ============
-        document.getElementById("startBtn").addEventListener("click", async function() {
+        async function startGame(savedScore = 0, savedLevel = 1, savedTime = 0) {
             if (currentLoggedInUser && !isAdmin) {
                 try {
                     const db = await getDB();
@@ -1870,7 +2325,7 @@
                         sessionTimeRemaining = sessionTimeLimit - played;
                         
                         if (sessionTimeRemaining <= 0) {
-                            await showInfo("You have reached your daily play limit of 30 minutes. Please come back tomorrow!");
+                            await showInfo("You have reached your daily play limit of 30 minutes. Please come back tomorrow or request more time!");
                             return;
                         }
                         
@@ -1881,14 +2336,25 @@
                     await showInfo("Error checking play time. Check connection.");
                     return;
                 }
+            } else if (isAdmin) {
+                sessionTimeRemaining = 999999; // Unlimited for Admin
             } else {
                 sessionTimeRemaining = 1800; 
             }
 
             resizeCanvas();
             applyDifficulty(difficultySelect.value);
-            speedX = baseSpeedX; speedY = baseSpeedY; score = 0; level = 1; gameSeconds = 0; gamePaused = false; totalPausedTime = 0;
-            document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateTimerDisplay();
+            score = savedScore; level = savedLevel; gameSeconds = savedTime;
+            
+            updateSpeedForLevel();
+            speedX = Math.random() > 0.5 ? baseSpeedX : -baseSpeedX;
+            speedY = Math.random() > 0.5 ? baseSpeedY : -baseSpeedY;
+            
+            gamePaused = false; totalPausedTime = 0;
+            document.getElementById("scoreText").textContent = score; 
+            document.getElementById("levelText").textContent = level; 
+            updateTimerDisplay();
+            
             starX = canvas.width / 2; starY = canvas.height / 2; currentRadius = normalRadius;
             menu.style.display = "none"; statsDiv.style.display = "flex"; canvas.style.display = "block"; controlsDiv.style.display = "block";
             
@@ -1897,10 +2363,20 @@
 
             timerInterval = setInterval(() => { 
                 gameSeconds++; 
-                sessionTimeRemaining--; 
+                if (!isAdmin) sessionTimeRemaining--; 
                 updateTimerDisplay(); 
             }, 1000);
-            gameActive = true; updateGame();
+            gameActive = true; 
+            
+            // Generate 16-digit Game Code and update URL
+            const gameCode = generateGameCode();
+            updateURL(`Game/${gameCode}`);
+            
+            updateGame();
+        }
+
+        document.getElementById("startBtn").addEventListener("click", async function() {
+            await startGame(0, 1, 0);
         });
 
         canvas.addEventListener("click", async function(event) {
@@ -1989,31 +2465,61 @@
                         await saveDB(db); 
                     }
                 } catch (err) { console.error("Failed to save high score to DB:", err); }
+            } else if (isAdmin) {
+                localStorage.setItem("starCollectorAdminHighScore", highScore);
             }
             await saveTimePlayed();
+        });
+
+        // Save & Exit Logic
+        document.getElementById("saveExitBtn").addEventListener("click", async () => {
+            if (!currentLoggedInUser && !isAdmin) {
+                await showInfo("You must be logged in to save your game.");
+                return;
+            }
+
+            if (isAdmin) {
+                // Admin Save & Exit Fix: Save locally
+                localStorage.setItem("starCollectorAdminSave", JSON.stringify({ score, level, time: gameSeconds }));
+                localStorage.setItem("starCollectorAdminHighScore", highScore);
+            } else {
+                try {
+                    const db = await getDB(); 
+                    const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
+                    if (i !== -1) {
+                        let user = db.users[i];
+                        if (!user.savedGames) user.savedGames = [];
+                        user.savedGames.push({
+                            id: Date.now().toString(),
+                            score: score,
+                            level: level,
+                            time: gameSeconds
+                        });
+                        user.highScore = highScore;
+                        user.lastActive = Date.now();
+                        currentLoggedInUser = user;
+                        await saveDB(db);
+                    }
+                } catch (err) {
+                    await showInfo("Error saving game. Check connection.");
+                    return;
+                }
+            }
+            
+            await saveTimePlayed();
+            await showInfo("Game saved successfully! You can continue it from the Missed Games panel.");
+            
+            gameActive = false; gamePaused = false; pauseOverlay.classList.remove("active");
+            cancelAnimationFrame(animationId); stopTimer(); inGameLimitBox.style.display = "none";
+            statsDiv.style.display = "none"; canvas.style.display = "none"; controlsDiv.style.display = "none";
+            menu.style.display = "block"; showPanel("mainMenuPanel");
         });
 
         document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
         document.getElementById("resetLevelBtn").addEventListener("click", () => { level = 1; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
         document.getElementById("resetBothBtn").addEventListener("click", () => { score = 0; level = 1; document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
 
-        document.getElementById("saveExitBtn").addEventListener("click", async () => {
-            await showInfo("Game saved successfully!");
-            if (currentLoggedInUser) {
-                try {
-                    const db = await getDB(); const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
-                    if (i !== -1) { 
-                        db.users[i].highScore = highScore; 
-                        db.users[i].lastActive = Date.now(); 
-                        currentLoggedInUser = db.users[i]; 
-                        await saveDB(db); 
-                    }
-                } catch (err) { console.error("Failed to save high score to DB:", err); }
-            }
-            document.getElementById("endGameBtn").click();
-        });
-
-        // ============ INIT ============ testing code is here.
+        // ============ INIT ============ testing ggggggggggggggggggggggg
         const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
         if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
         
@@ -2021,6 +2527,9 @@
         applyColorblindMode(colorblindMode); colorblindModeSelect.value = colorblindMode;
         applyDifficulty(difficulty); difficultySelect.value = difficulty;
         resizeCanvas();
+        
+        // Set initial URL
+        updateURL("Homepage");
     </script>
 </body>
 </html>
