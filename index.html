@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Star Collector - Enhanced</title>
+    <title>Star Collector</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%AD%90%3C/text%3E%3C/svg%3E">
     <style>
         :root {
@@ -33,7 +34,7 @@
         @keyframes slideInFade { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
         @keyframes confettiFall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
         
-        #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel, #achievementsPanel { animation: fadeIn 0.4s ease-out; }
+        #loginPanel, #mainMenuPanel, #settingsPanel, #termsPanel, #achievementsPanel, #publicProfilePanel, #messagesPanel { animation: fadeIn 0.4s ease-out; }
         .wrapper { width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; }
         .logo-container { display: flex; justify-content: center; align-items: center; margin: 10px auto; min-height: 80px; animation: slideInDown 0.5s ease-out; }
         @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
@@ -44,7 +45,7 @@
         #menu { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 320px; margin: 15px auto; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s; }
         .menu-element { margin: 15px 0; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s ease-out; }
         #loginPanel { display: block; width: 100%; }
-        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel, #achievementsPanel { display: none; width: 100%; }
+        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel, #achievementsPanel, #publicProfilePanel, #messagesPanel { display: none; width: 100%; }
         #pauseOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #pauseOverlay.active { display: flex; }
         #pauseBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 40px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
@@ -103,13 +104,13 @@
         #pauseGameBtn:hover { background-color: #ec971f; }
         .menu-stat { font-size: 16px; color: #FFD700; font-weight: bold; background-color: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1); width: 100%; box-sizing: border-box; display: flex; justify-content: space-between; align-items: center; }
         [data-theme="light"] .menu-stat { background-color: rgba(74, 85, 162, 0.05); border: 1px solid rgba(74, 85, 162, 0.2); color: #4a55a2; }
-        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay, #profileModalOverlay, #changePasswordModalOverlay, #requestTimeModalOverlay, #changeNameModalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
-        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active, #profileModalOverlay.active, #changePasswordModalOverlay.active, #requestTimeModalOverlay.active, #changeNameModalOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
-        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox, #profileModalBox, #changePasswordModalBox, #requestTimeModalBox, #changeNameModalBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
-        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle, #profileModalTitle, #changePasswordModalTitle, #requestTimeModalTitle, #changeNameModalTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
+        #confirmModalOverlay, #infoModalOverlay, #timeInputModalOverlay, #twoFASetupOverlay, #twoFALoginOverlay, #profileModalOverlay, #changePasswordModalOverlay, #requestTimeModalOverlay, #changeNameModalOverlay, #sendMessageModalOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); z-index: 1000; align-items: center; justify-content: center; }
+        #confirmModalOverlay.active, #infoModalOverlay.active, #timeInputModalOverlay.active, #twoFASetupOverlay.active, #twoFALoginOverlay.active, #profileModalOverlay.active, #changePasswordModalOverlay.active, #requestTimeModalOverlay.active, #changeNameModalOverlay.active, #sendMessageModalOverlay.active { display: flex; animation: fadeIn 0.2s ease-out; }
+        #confirmModalBox, #infoModalBox, #timeInputModalBox, #twoFASetupBox, #twoFALoginBox, #profileModalBox, #changePasswordModalBox, #requestTimeModalBox, #changeNameModalBox, #sendMessageModalBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 25px; max-width: 340px; width: 90%; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
+        #confirmModalTitle, #timeInputModalTitle, #twoFASetupTitle, #profileModalTitle, #changePasswordModalTitle, #requestTimeModalTitle, #changeNameModalTitle, #sendMessageModalTitle { margin: 0 0 12px 0; color: #FFD700; font-size: 20px; }
         #confirmModalMessage, #infoModalMessage, #timeInputModalMessage, #twoFASetupMessage { margin: 0 0 20px 0; color: var(--text-color); font-size: 15px; line-height: 1.5; }
-        #confirmModalActions, #timeInputModalActions, #twoFASetupActions, #requestTimeModalActions, #changeNameModalActions { display: flex; gap: 10px; }
-        #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button, #requestTimeModalActions button, #changeNameModalActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
+        #confirmModalActions, #timeInputModalActions, #twoFASetupActions, #requestTimeModalActions, #changeNameModalActions, #sendMessageModalActions { display: flex; gap: 10px; }
+        #confirmModalActions button, #timeInputModalActions button, #twoFASetupActions button, #requestTimeModalActions button, #changeNameModalActions button, #sendMessageModalActions button { flex: 1; font-size: 15px; padding: 10px; margin: 0; }
         #syncIndicator { display: none; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: var(--label-color); margin: -5px 0 10px 0; opacity: 0.85; }
         #syncIndicator.active { display: flex; }
         .sync-spinner { width: 14px; height: 14px; border: 2px solid var(--border-color); border-top-color: #FFD700; border-radius: 50%; animation: syncSpin 0.8s linear infinite; }
@@ -123,7 +124,7 @@
         #leaderboardPanel { display: none; width: 100%; }
         .leaderboard-header-row { display: flex; align-items: center; gap: 6px; padding: 0 6px 8px 6px; border-bottom: 2px solid var(--border-color); margin-bottom: 10px; font-size: 12px; font-weight: bold; color: var(--label-color); text-transform: uppercase; }
         .leaderboard-row { display: flex; align-items: center; gap: 6px; padding: 10px 6px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); font-size: 14px; animation: fadeIn 0.3s ease-out; }
-        .lb-col-name { flex: 2; text-align: left; color: var(--text-color); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px;}
+        .lb-col-name { flex: 2; text-align: left; color: var(--text-color); font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 8px; cursor: pointer;}
         .lb-col-score { flex: 1; text-align: center; color: #FFD700; font-weight: bold; }
         .lb-col-status { flex: 2; text-align: center; font-size: 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .lb-col-action { flex: 0 0 36px; text-align: center; }
@@ -186,6 +187,9 @@
         .achievement-info { text-align: left; flex: 1; }
         .achievement-title { font-weight: bold; font-size: 14px; color: var(--text-color); }
         .achievement-desc { font-size: 12px; color: var(--label-color); }
+        .message-item { background-color: rgba(74, 85, 162, 0.1); border-left: 4px solid #4a55a2; padding: 12px; margin-bottom: 12px; border-radius: 6px; text-align: left; animation: slideInLeft 0.3s ease-out; }
+        .message-item p { margin: 0 0 8px 0; font-size: 14px; color: var(--text-color); }
+        .message-item .meta { font-size: 12px; color: var(--label-color); }
     </style>
 </head>
 <body>
@@ -309,6 +313,10 @@
                     <button id="requestTimeBtn" class="secondary-btn" style="background-color: #f0ad4e; color: white;">Request More Time</button>
                 </div>
 
+                <div class="menu-element" id="messagesBtnContainer" style="display: none; margin-top: 5px;">
+                    <button id="messagesBtn" class="secondary-btn" style="background-color: #17a2b8;">Messages</button>
+                </div>
+
                 <div class="menu-element" id="adminNotificationsBtnContainer" style="display: none;">
                     <button id="adminNotificationsBtn" class="secondary-btn">Admin Notifications <span id="notificationCount" class="admin-badge">0</span></button>
                 </div>
@@ -335,6 +343,24 @@
                 </div>
                 <div class="menu-element" id="deleteAccountBtnContainer" style="display: none;">
                     <button id="deleteAccountBtn" class="secondary-btn" style="background-color: #8b0000;">Delete Account</button>
+                </div>
+            </div>
+
+            <div id="messagesPanel">
+                <h2 style="margin-top: 0; color: #17a2b8; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Messages</h2>
+                <div id="messagesList">
+                    <div class="no-notifications">No messages</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromMessagesBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="publicProfilePanel">
+                <h2 style="margin-top: 0; color: #6f42c1; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;" id="publicProfileTitle">User Profile</h2>
+                <div id="publicProfileContent"></div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromPublicProfileBtn" class="secondary-btn">Back to Leaderboard</button>
                 </div>
             </div>
 
@@ -372,7 +398,7 @@
                         <div class="avatar-option" style="background-color: #FF6B6B;" data-color="#FF6B6B"></div>
                         <div class="avatar-option" style="background-color: #5cb85c;" data-color="#5cb85c"></div>
                         <div class="avatar-option" style="background-color: #4a90e2;" data-color="#4a90e2"></div>
-                        <div class="avatar-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
+ <div class="avatar-option" style="background-color: #9b59b6;" data-color="#9b59b6"></div>
                     </div>
                 </div>
                 <div class="menu-element" style="align-items: flex-start; margin-bottom: 15px;">
@@ -449,6 +475,12 @@
                         <textarea id="announcementInput" placeholder="Type a message for all users..."></textarea>
                         <button id="setAnnouncementBtn" class="secondary-btn" style="background-color: #17a2b8; font-size: 14px; padding: 8px 12px;">Set Announcement</button>
                     </div>
+                    <div class="menu-element" style="margin-bottom: 25px; align-items: flex-start;">
+                        <label style="font-size: 15px; font-weight: bold; margin-bottom: 6px; color: var(--label-color); text-align: left; width: 100%;">Instant Broadcast:</label>
+                        <p style="font-size: 12px; color: var(--label-color); margin: 0 0 10px 0; width: 100%; text-align: left;">Instantly pops up a message for all online players.</p>
+                        <textarea id="broadcastInput" placeholder="Type an instant broadcast..."></textarea>
+                        <button id="broadcastBtn" class="secondary-btn" style="background-color: #d9534f; font-size: 14px; padding: 8px 12px;">Send Broadcast</button>
+                    </div>
                     <div class="menu-element" style="margin-bottom: 15px; position: relative;">
                         <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
                         <div class="admin-search-box">
@@ -480,6 +512,9 @@
                 
                 <div class="menu-element" style="margin: 15px 0;">
                     <button id="exportAnalyticsBtn" class="secondary-btn" style="background-color: #28a745; font-size: 14px;">Export Full Analytics (CSV)</button>
+                </div>
+                <div class="menu-element" style="margin: 15px 0;">
+                    <button id="resetDataBtn" class="secondary-btn" style="background-color: #d9534f; font-size: 14px;">Wipe All Game Data</button>
                 </div>
                 <div class="menu-element" style="margin-bottom: 15px;">
                     <button id="backFromDashboardBtn">Back to Menu</button>
@@ -680,6 +715,18 @@
         </div>
     </div>
 
+    <!-- Send Message Modal -->
+    <div id="sendMessageModalOverlay">
+        <div id="sendMessageModalBox">
+            <h3 id="sendMessageModalTitle">Send Message to Admin</h3>
+            <textarea id="sendMessageInput" placeholder="Type your message here..." style="min-height: 100px; margin-bottom: 20px;"></textarea>
+            <div id="sendMessageModalActions">
+                <button id="sendMessageSubmitBtn" class="accept-btn">Send Message</button>
+                <button id="sendMessageCancelBtn" class="decline-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="twoFASetupOverlay">
         <div id="twoFASetupBox">
             <h3 id="twoFASetupTitle">Setup Google Authenticator</h3>
@@ -770,7 +817,7 @@
         const EMAILJS_SERVICE_ID = "service_hnbvaot";
         const EMAILJS_TEMPLATE_ID = "template_xfaeozt";
         const EMAILJS_PUBLIC_KEY = "_LVa7sKWxP1A093PB";
-        const EMAILJS_PRIVATE_KEY = "Tkaz_fnY-BJUFDNiGCr9z"; // Private key for secure initialization
+        const EMAILJS_PRIVATE_KEY = "Tkaz_fnY-BJUFDNiGCr9z"; 
         emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY, privateKey: EMAILJS_PRIVATE_KEY });
 
         let isAdmin = false; 
@@ -843,6 +890,7 @@
         const claimRewardBtn = document.getElementById("claimRewardBtn");
         const claimRewardContainer = document.getElementById("claimRewardContainer");
         const requestTimeBtnContainer = document.getElementById("requestTimeBtnContainer");
+        const messagesBtnContainer = document.getElementById("messagesBtnContainer");
 
         const colorblindModeSelect = document.getElementById("colorblindMode");
         const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -867,8 +915,12 @@
         let timerInterval = null;
         let pauseStartTime = 0;
         let totalPausedTime = 0;
-        let sessionTimeLimit = 1800; // 30 minutes in seconds
+        let sessionTimeLimit = 1800; 
         let sessionTimeRemaining = 1800;
+
+        // Click Precision Stats
+        let totalClicks = 0;
+        let hitClicks = 0;
 
         let colorblindMode = localStorage.getItem("starCollectorColorblind") || "normal";
         let themeMode = localStorage.getItem("starCollectorTheme") || "dark";
@@ -891,10 +943,17 @@
         // ============ HELPER FUNCTIONS ============
         function updateURL(path) {
             try {
-                const newUrl = `${window.location.origin}/${path}`;
-                if (window.location.href !== newUrl) {
-                    window.history.pushState({ path: path }, "", newUrl);
+                const newHash = `#/${path}`;
+                if (window.location.hash !== newHash) {
+                    window.history.pushState({ path: path }, "", newHash);
                 }
+                let pageTitle = "Star Collector";
+                if (path.startsWith("Game/")) {
+                    pageTitle = `Playing - Score: ${score} - Star Collector`;
+                } else if (path !== "Homepage") {
+                    pageTitle = `${path.replace(/-/g, ' ')} - Star Collector`;
+                }
+                document.title = pageTitle;
             } catch (e) {}
         }
 
@@ -908,7 +967,6 @@
                 activePanel.offsetHeight; 
                 activePanel.style.animation = 'fadeIn 0.4s ease-out';
                 
-                // Update URL based on panel
                 let urlPath = "Homepage";
                 if (panelId === "mainMenuPanel") urlPath = "Homepage";
                 else if (panelId === "settingsPanel") urlPath = "Game-Settings";
@@ -918,12 +976,8 @@
                 else if (panelId === "leaderboardPanel") urlPath = "Leaderboard";
                 else if (panelId === "adminDashboardPanel") urlPath = "Admin-Dashboard";
                 else if (panelId === "adminNotificationsPanel") urlPath = "Admin-Notifications";
+                else if (panelId === "messagesPanel") urlPath = "Messages";
                 else if (panelId === "loginPanel") urlPath = "Homepage";
-                else if (panelId === "guestNamePanel") urlPath = "Homepage";
-                else if (panelId === "guestWaitingPanel") urlPath = "Homepage";
-                else if (panelId === "resetRequestPanel") urlPath = "Homepage";
-                else if (panelId === "resetVerifyPanel") urlPath = "Homepage";
-                else if (panelId === "resetNewPasswordPanel") urlPath = "Homepage";
                 
                 if (!gameActive) {
                     updateURL(urlPath);
@@ -966,8 +1020,8 @@
             deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             downloadCertContainer.style.display = (isAdmin || currentLoggedInUser) ? "flex" : "none";
             requestTimeBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            messagesBtnContainer.style.display = (currentLoggedInUser || isAdmin) ? "flex" : "none"; 
             
-            // Guest restrictions
             if (isGuest) {
                 achievementsBtnContainer.style.display = "none";
                 missedGamesBtnContainer.style.display = "none";
@@ -1295,7 +1349,7 @@
                 const remSec = sessionTimeRemaining % 60;
                 document.getElementById("inGameLimitText").textContent = `${remMin < 10 ? '0' + remMin : remMin}:${remSec < 10 ? '0' + remSec : remSec}`;
                 
-                if (sessionTimeRemaining <= 0 && !isAdmin) { // Admin has no limit
+                if (sessionTimeRemaining <= 0 && !isAdmin) { 
                     endGameDueToTimeLimit();
                 }
             }
@@ -1321,6 +1375,7 @@
                 if (timerInterval) clearInterval(timerInterval);
                 cancelAnimationFrame(animationId);
                 pauseGameBtn.textContent = "Resume (ESC)";
+                document.title = "Paused - Star Collector";
             } else {
                 totalPausedTime += Date.now() - pauseStartTime;
                 pauseOverlay.classList.remove("active");
@@ -1331,6 +1386,7 @@
                     updateTimerDisplay(); 
                 }, 1000);
                 updateGame();
+                document.title = `Playing - Score: ${score} - Star Collector`;
             }
         }
 
@@ -1417,14 +1473,14 @@
         });
         document.getElementById("copySecretBtn").addEventListener("click", (e) => {
             navigator.clipboard.writeText(document.getElementById("secretKeyDisplay").textContent).then(() => {
-                const btn = e.target; const orig = btn.textContent; btn.textContent = "✅ Copied!"; btn.style.backgroundColor = "#5cb85c";
+                const btn = e.target; const orig = btn.textContent; btn.textContent = "Copied!"; btn.style.backgroundColor = "#5cb85c";
                 setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = ""; }, 2000);
             });
         });
 
         document.getElementById("copyRecoveryBtn").addEventListener("click", (e) => {
             navigator.clipboard.writeText(document.getElementById("recoveryCodeDisplay").textContent).then(() => {
-                const btn = e.target; const orig = btn.textContent; btn.textContent = "✅ Copied!"; btn.style.backgroundColor = "#5cb85c";
+                const btn = e.target; const orig = btn.textContent; btn.textContent = "Copied!"; btn.style.backgroundColor = "#5cb85c";
                 setTimeout(() => { btn.textContent = orig; btn.style.backgroundColor = ""; }, 2000);
             });
         });
@@ -1470,7 +1526,7 @@
                 failedAttempts = 0;
                 isAdmin = pendingLoginUser.isAdmin; 
                 currentLoggedInUser = (isAdmin) ? null : pendingLoginUser; 
-                pendingLoginUser = null; // Clear pending state
+                pendingLoginUser = null; 
                 
                 document.getElementById("twoFALoginOverlay").classList.remove("active");
                 document.getElementById("twoFARecoverySection").style.display = "none";
@@ -1493,13 +1549,12 @@
             }
         });
 
-        // 2FA Cancel Bug Fix: Fully clear pending state
         document.getElementById("twoFALoginCancelBtn").addEventListener("click", () => {
             document.getElementById("twoFALoginOverlay").classList.remove("active");
             document.getElementById("twoFARecoverySection").style.display = "none";
             document.getElementById("twoFARecoveryInput").value = "";
             document.getElementById("twoFALoginCodeInput").value = "";
-            pendingLoginUser = null; // Clear pending state completely
+            pendingLoginUser = null; 
             failedAttempts = 0;
         });
 
@@ -1590,8 +1645,10 @@
                         document.getElementById("twoFARecoverySection").style.display = "none";
                     } else {
                         currentLoggedInUser = user;
+                        await updateDailyStreak();
                         document.getElementById("activePilot").textContent = user.name;
                         highScore = user.highScore || 0; document.getElementById("highScoreText").textContent = highScore;
+                        document.getElementById("streakText").textContent = user.streak || 0;
                         
                         if (user.theme) { themeMode = user.theme; themeModeSelect.value = themeMode; }
                         if (user.difficulty) { applyDifficulty(user.difficulty); difficultySelect.value = user.difficulty; }
@@ -1616,10 +1673,24 @@
             }
         });
 
-        // Forgot Password Flow (Ask Email -> Send Code -> Verify -> New Password)
+        async function updateDailyStreak() {
+            if (!currentLoggedInUser) return;
+            const todayStr = new Date().toDateString();
+            if (currentLoggedInUser.lastLoginDay !== todayStr) {
+                let yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                if (currentLoggedInUser.lastLoginDay === yesterday.toDateString()) {
+                    currentLoggedInUser.streak = (currentLoggedInUser.streak || 0) + 1;
+                } else {
+                    currentLoggedInUser.streak = 1; 
+                }
+                currentLoggedInUser.lastLoginDay = todayStr;
+            }
+        }
+
+        // Forgot Password Flow
         document.getElementById("forgotPasswordLink").addEventListener("click", (e) => {
             e.preventDefault();
-            // Pre-fill email if they typed it on the login screen
             document.getElementById("resetEmailInput").value = document.getElementById("authUsername").value;
             showPanel("resetRequestPanel");
         });
@@ -1644,10 +1715,8 @@
                     return;
                 }
 
-                // Generate 6-digit code
                 passwordResetCode = Math.floor(100000 + Math.random() * 900000).toString();
                 
-                // Send email via EmailJS
                 const templateParams = {
                     to_email: email,
                     to_name: user.name,
@@ -1695,7 +1764,6 @@
                 await showInfo("Invalid verification code.");
                 return;
             }
-            // Code is correct, move to new password panel
             showPanel("resetNewPasswordPanel");
         });
 
@@ -1715,7 +1783,6 @@
                     await saveDB(db);
                     await showInfo("Password updated successfully! Please log in.");
                     showPanel("loginPanel");
-                    // Clear reset fields
                     document.getElementById("resetNewPasswordInput").value = "";
                     document.getElementById("resetConfirmPasswordInput").value = "";
                     document.getElementById("resetCodeInput").value = "";
@@ -1782,13 +1849,15 @@
             if (!currentLoggedInUser && !isAdmin) return;
             updateURL("View-Profile");
             
-            const u = isAdmin ? { name: (localStorage.getItem("starCollectorAdminName") || "Admin"), email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, createdAt: Date.now(), lastRewardClaim: 0 } : currentLoggedInUser;
+            const u = isAdmin ? { name: (localStorage.getItem("starCollectorAdminName") || "Admin"), email: ADMIN_EMAIL, highScore: highScore, streak: 0, status: "active", twoFASecret: ADMIN_2FA_SECRET, createdAt: Date.now(), lastRewardClaim: 0, totalClicks: 0, hitClicks: 0 } : currentLoggedInUser;
             const ageDays = u.createdAt ? Math.floor((Date.now() - parseInt(u.createdAt)) / (1000 * 60 * 60 * 24)) : 0;
             
             const oneWeek = 7 * 24 * 60 * 60 * 1000;
             const timeSinceClaim = Date.now() - (u.lastRewardClaim || 0);
             const daysRemaining = Math.ceil((oneWeek - timeSinceClaim) / (24 * 60 * 60 * 1000));
             const rewardStatus = (isAdmin || timeSinceClaim >= oneWeek) ? "<span style='color:#5cb85c; font-weight:bold;'>Available Now!</span>" : `<span style='color:#FFD700; font-weight:bold;'>${daysRemaining} day(s) remaining</span>`;
+            
+            const acc = u.totalClicks > 0 ? ((u.hitClicks / u.totalClicks) * 100).toFixed(1) + "%" : "0%";
             
             const html = `
                 <div class="profile-stat-row"><span class="profile-stat-label">Name:</span><span class="profile-stat-value">${u.name}</span></div>
@@ -1799,6 +1868,7 @@
                 <div class="profile-stat-row"><span class="profile-stat-label">Status:</span><span class="profile-stat-value" style="color: ${u.status === 'active' ? '#5cb85c' : '#d9534f'};">${u.status.toUpperCase()}</span></div>
                 <div class="profile-stat-row"><span class="profile-stat-label">2FA Enabled:</span><span class="profile-stat-value">${u.twoFASecret ? 'Yes' : 'No'}</span></div>
                 <div class="profile-stat-row"><span class="profile-stat-label">Next Weekly Reward:</span><span class="profile-stat-value">${rewardStatus}</span></div>
+                <div class="profile-stat-row"><span class="profile-stat-label">Click Accuracy:</span><span class="profile-stat-value">${acc}</span></div>
             `;
             document.getElementById("profileContent").innerHTML = html;
             document.getElementById("profileModalOverlay").classList.add("active");
@@ -1852,7 +1922,7 @@
         // Change Password Fix
         document.getElementById("changePassBtn").addEventListener("click", async () => {
             if (!isAdmin && !currentLoggedInUser) return;
-            updateURL("Homepage"); // Or specific URL if desired, using Homepage for now
+            updateURL("Homepage"); 
             document.getElementById("changePassOld").value = "";
             document.getElementById("changePassNew").value = "";
             document.getElementById("changePassConfirm").value = "";
@@ -1905,8 +1975,8 @@
                 highScore += 30;
                 document.getElementById("highScoreText").textContent = highScore;
                 localStorage.setItem("starCollectorAdminHighScore", highScore);
-                localStorage.setItem("starCollectorAdminLastReward", Date.now()); // Save timestamp
-                claimRewardContainer.style.display = "none"; // Hide button
+                localStorage.setItem("starCollectorAdminLastReward", Date.now()); 
+                claimRewardContainer.style.display = "none"; 
                 launchConfetti();
                 await showInfo("Admin reward claimed! +30 points.");
                 return;
@@ -1924,7 +1994,7 @@
                     document.getElementById("highScoreText").textContent = highScore;
                     await saveDB(db);
                     
-                    claimRewardContainer.style.display = "none"; // Hide button
+                    claimRewardContainer.style.display = "none"; 
                     launchConfetti();
                     await showInfo("You claimed your weekly reward! +30 points added to your High Score.");
                 } else {
@@ -1932,6 +2002,152 @@
                 }
             } catch (err) {
                 await showInfo("Error claiming reward. Check connection.");
+            }
+        });
+
+        // ============ MESSAGING LOGIC ============
+        document.getElementById("messagesBtn").addEventListener("click", async () => {
+            showPanel("messagesPanel");
+            await renderMessages();
+        });
+        document.getElementById("backFromMessagesBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+        
+        async function renderMessages() {
+            const list = document.getElementById("messagesList");
+            list.innerHTML = "<div class='no-notifications'>Loading...</div>";
+            try {
+                const db = await getDB();
+                if (!db.messages) db.messages = [];
+                
+                list.innerHTML = "";
+                let btnText = isAdmin ? "Send Message to Player" : "Send Message to Admin";
+                let btnHtml = `<div class="menu-element" style="margin-bottom: 15px;"><button id="sendMsgBtn" class="secondary-btn" style="background-color: #17a2b8;">${btnText}</button></div>`;
+                list.innerHTML += btnHtml;
+
+                if (isAdmin) {
+                    let userMsgs = db.messages.filter(m => m.to === "admin");
+                    if (userMsgs.length === 0) {
+                        list.innerHTML += "<div class='no-notifications'>No messages from users.</div>";
+                    } else {
+                        userMsgs.forEach(msg => {
+                            const item = document.createElement("div"); 
+                            item.className = "message-item";
+                            item.innerHTML = `
+                                <p><strong>From:</strong> ${msg.fromName} (${msg.fromEmail})</p>
+                                <p>${msg.text}</p>
+                                <div class="meta">${new Date(msg.time).toLocaleString()}</div>
+                            `;
+                            list.appendChild(item);
+                        });
+                    }
+                } else {
+                    let adminMsgs = db.messages.filter(m => m.to === currentLoggedInUser.email);
+                    if (adminMsgs.length === 0) {
+                        list.innerHTML += "<div class='no-notifications'>No messages from Admin.</div>";
+                    } else {
+                        adminMsgs.forEach(msg => {
+                            const item = document.createElement("div"); 
+                            item.className = "message-item";
+                            item.innerHTML = `
+                                <p><strong>From:</strong> Admin</p>
+                                <p>${msg.text}</p>
+                                <div class="meta">${new Date(msg.time).toLocaleString()}</div>
+                            `;
+                            list.appendChild(item);
+                        });
+                    }
+                }
+                
+                // Attach listener to the dynamically created button
+                const sendBtn = document.getElementById("sendMsgBtn");
+                if(sendBtn) {
+                    sendBtn.addEventListener("click", () => {
+                        document.getElementById("sendMessageInput").value = "";
+                        document.getElementById("sendMessageModalOverlay").classList.add("active");
+                    });
+                }
+            } catch (err) { 
+                list.innerHTML = "<div class='no-notifications'>Error loading messages. Check connection.</div>"; 
+            }
+        }
+
+        document.getElementById("sendMessageCancelBtn").addEventListener("click", () => {
+            document.getElementById("sendMessageModalOverlay").classList.remove("active");
+        });
+        
+        document.getElementById("sendMessageSubmitBtn").addEventListener("click", async () => {
+            const text = document.getElementById("sendMessageInput").value.trim();
+            if (!text) { await showInfo("Please enter a message."); return; }
+            
+            try {
+                const db = await getDB();
+                if (!db.messages) db.messages = [];
+                
+                db.messages.push({
+                    id: Date.now().toString(),
+                    fromName: currentLoggedInUser ? currentLoggedInUser.name : "Admin",
+                    fromEmail: currentLoggedInUser ? currentLoggedInUser.email : ADMIN_EMAIL,
+                    to: "admin", // Users can only message admin
+                    text: text,
+                    time: Date.now()
+                });
+                
+                await saveDB(db);
+                document.getElementById("sendMessageModalOverlay").classList.remove("active");
+                await showInfo("Message sent to Admin successfully!");
+                await renderMessages(); // Refresh list
+            } catch (err) {
+                await showInfo("Error sending message. Check connection.");
+            }
+        });
+
+        // Admin Reply Logic (Admin clicks a user's message to reply)
+        // To keep it simple, Admin replies by typing in the search box or clicking a user
+        // For now, Admin can use the Send Message button to send to a specific user
+        // We will enhance the Send Message modal for Admin to include a "To" field
+        // Actually, let's make it simpler: Admin clicks "Send Message", and it asks for email.
+        // Let's override the send logic for Admin:
+        const origSendBtn = document.getElementById("sendMessageSubmitBtn");
+        origSendBtn.replaceWith(origSendBtn.cloneNode(true));
+        document.getElementById("sendMessageSubmitBtn").addEventListener("click", async () => {
+            const text = document.getElementById("sendMessageInput").value.trim();
+            if (!text) { await showInfo("Please enter a message."); return; }
+            
+            try {
+                const db = await getDB();
+                if (!db.messages) db.messages = [];
+                
+                if (isAdmin) {
+                    const targetEmail = prompt("Enter the email of the user you want to reply to:");
+                    if (!targetEmail) return;
+                    const targetUser = db.users.find(u => u.email === targetEmail.trim());
+                    if (!targetUser) { await showInfo("User not found."); return; }
+                    
+                    db.messages.push({
+                        id: Date.now().toString(),
+                        fromName: "Admin",
+                        fromEmail: ADMIN_EMAIL,
+                        to: targetEmail.trim(),
+                        text: text,
+                        time: Date.now()
+                    });
+                } else {
+                    db.messages.push({
+                        id: Date.now().toString(),
+                        fromName: currentLoggedInUser.name,
+                        fromEmail: currentLoggedInUser.email,
+                        to: "admin",
+                        text: text,
+                        time: Date.now()
+                    });
+                }
+                
+                await saveDB(db);
+                document.getElementById("sendMessageModalOverlay").classList.remove("active");
+                await showInfo("Message sent successfully!");
+                await renderMessages();
+            } catch (err) {
+                await showInfo("Error sending message. Check connection.");
             }
         });
 
@@ -2093,7 +2309,7 @@
                     let rankClass = ""; if (index === 0) rankClass = "rank-1"; else if (index === 1) rankClass = "rank-2"; else if (index === 2) rankClass = "rank-3";
                     let avatarColor = user.avatarColor || "#FFD700";
                     row.innerHTML = `
-                        <span class="lb-col-name">
+                        <span class="lb-col-name" onclick="viewPublicProfile('${user.id}')">
                             <span class="lb-rank ${rankClass}">${index + 1}</span> 
                             <span class="lb-avatar" style="background-color: ${avatarColor};"></span>
                             ${user.name}
@@ -2107,6 +2323,38 @@
             } catch (err) { list.innerHTML = "<div class='lb-empty'>Error loading leaderboard. Check connection.</div>"; }
         });
         document.getElementById("backFromLeaderboardBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+        
+        window.viewPublicProfile = async (userId) => {
+            try {
+                const db = await getDB();
+                const user = db.users.find(u => u.id === userId);
+                if (!user) { await showInfo("User not found."); return; }
+                
+                updateURL(`Profile/${user.name}`);
+                document.getElementById("publicProfileTitle").textContent = `${user.name}'s Profile`;
+                
+                const ageDays = user.createdAt ? Math.floor((Date.now() - parseInt(user.createdAt)) / (1000 * 60 * 60 * 24)) : 0;
+                const u = user;
+                const acc = u.totalClicks > 0 ? ((u.hitClicks / u.totalClicks) * 100).toFixed(1) + "%" : "0%";
+                const html = `
+                    <div class="profile-stat-row"><span class="profile-stat-label">Name:</span><span class="profile-stat-value">${u.name}</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">Email:</span><span class="profile-stat-value">${u.email}</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">High Score:</span><span class="profile-stat-value" style="color: #FFD700;">${u.highScore || 0}</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">Daily Streak:</span><span class="profile-stat-value">${u.streak || 0}</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">Account Age:</span><span class="profile-stat-value">${ageDays} days</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">Status:</span><span class="profile-stat-value" style="color: ${u.status === 'active' ? '#5cb85c' : '#d9534f'};">${u.status.toUpperCase()}</span></div>
+                    <div class="profile-stat-row"><span class="profile-stat-label">Click Accuracy:</span><span class="profile-stat-value">${acc}</span></div>
+                `;
+                document.getElementById("publicProfileContent").innerHTML = html;
+                showPanel("publicProfilePanel");
+            } catch (err) {
+                await showInfo("Error loading profile. Check connection.");
+            }
+        };
+        document.getElementById("backFromPublicProfileBtn").addEventListener("click", () => {
+            showPanel("leaderboardPanel");
+            document.getElementById("leaderboardBtn").click(); 
+        });
         
         document.getElementById("adminDashboardBtn").addEventListener("click", async () => {
             showPanel("adminDashboardPanel");
@@ -2142,6 +2390,54 @@
             }
         });
         
+        document.getElementById("broadcastBtn").addEventListener("click", async () => {
+            const msg = document.getElementById("broadcastInput").value.trim();
+            if (!msg) { await showInfo("Please enter a broadcast message."); return; }
+            try {
+                const db = await getDB();
+                if (!db.settings) db.settings = {};
+                db.settings.broadcast = msg;
+                db.settings.broadcastTime = Date.now();
+                await saveDB(db);
+                await showInfo("Broadcast sent successfully! All online players will see it.");
+                document.getElementById("broadcastInput").value = "";
+            } catch (err) {
+                await showInfo("Error sending broadcast. Check connection.");
+            }
+        });
+        
+        async function checkForBroadcasts() {
+            if (isAdmin || isGuest || !currentLoggedInUser) return;
+            try {
+                const db = await getDB();
+                if (db.settings && db.settings.broadcast) {
+                    const lastSeen = localStorage.getItem("starCollectorLastBroadcast") || 0;
+                    if (parseInt(db.settings.broadcastTime) > parseInt(lastSeen)) {
+                        localStorage.setItem("starCollectorLastBroadcast", db.settings.broadcastTime);
+                        await showInfo(`Admin Broadcast:\n\n${db.settings.broadcast}`);
+                    }
+                }
+            } catch (err) {}
+        }
+        setInterval(checkForBroadcasts, 5000); 
+        
+        document.getElementById("resetDataBtn").addEventListener("click", async () => {
+            const confirmed = await showConfirm("Reset Database", "Are you absolutely sure? This will wipe ALL users, scores, and saved games.");
+            if (!confirmed) return;
+            try {
+                const db = await getDB();
+                db.users = [];
+                db.requests = [];
+                db.settings = {};
+                await saveDB(db);
+                await showInfo("Database wiped successfully!");
+                showPanel("mainMenuPanel");
+                checkAdminStatus();
+            } catch (err) {
+                await showInfo("Error resetting database. Check connection.");
+            }
+        });
+
         document.getElementById("adminNotificationsBtn").addEventListener("click", async () => {
             showPanel("adminNotificationsPanel");
             const list = document.getElementById("notificationsList");
@@ -2191,6 +2487,7 @@
                             <button class="secondary-btn" onclick="toggleLockUser('${user.id}')">${user.status === 'locked' ? 'Unlock' : 'Lock'}</button>
                             <button class="secondary-btn" style="background-color: #d9534f;" onclick="resetUserScore('${user.id}')">Reset Score</button>
                             <button class="secondary-btn" style="background-color: #17a2b8;" onclick="openGrantTimeModal('${user.id}')">Grant Time</button>
+                            <button class="secondary-btn" style="background-color: #8b0000;" onclick="deleteUserAccount('${user.id}')">Delete Account</button>
                         </div>
                     `;
                     resultsList.appendChild(div);
@@ -2220,6 +2517,24 @@
                     document.getElementById("playerSearchBtn").click();
                 }
             } catch (err) { await showInfo("Error resetting score. Check connection."); }
+        };
+
+        window.deleteUserAccount = async (userId) => {
+            const confirmed = await showConfirm("Delete Account", "Are you absolutely sure you want to permanently delete this user's account? This cannot be undone.");
+            if (!confirmed) return;
+            try {
+                const db = await getDB(); if (!db.users) db.users = [];
+                const i = db.users.findIndex(u => u.id === userId);
+                if (i !== -1) {
+                    db.users.splice(i, 1);
+                    await saveDB(db);
+                    await showInfo("User account deleted successfully.");
+                    document.getElementById("playerSearchInput").value = ""; // Clear search box
+                    document.getElementById("searchResultsList").innerHTML = ""; // Clear results
+                } else {
+                    await showInfo("Error: User not found.");
+                }
+            } catch (err) { await showInfo("Error deleting account. Check connection."); }
         };
 
         let pendingTimeGrantUserId = null;
@@ -2337,7 +2652,7 @@
                     return;
                 }
             } else if (isAdmin) {
-                sessionTimeRemaining = 999999; // Unlimited for Admin
+                sessionTimeRemaining = 999999; 
             } else {
                 sessionTimeRemaining = 1800; 
             }
@@ -2368,7 +2683,6 @@
             }, 1000);
             gameActive = true; 
             
-            // Generate 16-digit Game Code and update URL
             const gameCode = generateGameCode();
             updateURL(`Game/${gameCode}`);
             
@@ -2379,14 +2693,14 @@
             await startGame(0, 1, 0);
         });
 
-        canvas.addEventListener("click", async function(event) {
+        // Click Precision tracking
+        async function handleCanvasClick(isHit) {
             if (!gameActive || gamePaused) return;
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
-            const mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
-            const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
-            if (distance < touchHitRadius) {
+            totalClicks++;
+            if (isHit) {
+                hitClicks++;
                 score++; document.getElementById("scoreText").textContent = score;
+                document.title = `Playing - Score: ${score} - Star Collector`;
                 if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; }
                 currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
                 if (score % 5 === 0) { 
@@ -2394,25 +2708,24 @@
                 }
                 await checkAndUnlockAchievements();
             }
+        }
+
+        canvas.addEventListener("click", async function(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = (event.clientX - rect.left) * (canvas.width / rect.width);
+            const mouseY = (event.clientY - rect.top) * (canvas.height / rect.height);
+            const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
+            await handleCanvasClick(distance < touchHitRadius);
         });
 
         canvas.addEventListener("touchstart", async function(event) {
             event.preventDefault();
-            if (!gameActive || gamePaused) return;
             const rect = canvas.getBoundingClientRect();
             const touch = event.touches[0];
             const mouseX = (touch.clientX - rect.left) * (canvas.width / rect.width);
             const mouseY = (touch.clientY - rect.top) * (canvas.height / rect.height);
             const distance = Math.sqrt((mouseX - starX) ** 2 + (mouseY - starY) ** 2);
-            if (distance < touchHitRadius) {
-                score++; document.getElementById("scoreText").textContent = score;
-                if (score > highScore) { highScore = score; document.getElementById("highScoreText").textContent = highScore; }
-                currentRadius = giantRadius; setTimeout(() => { currentRadius = normalRadius; }, 200);
-                if (score % 5 === 0) { 
-                    level++; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); 
-                }
-                await checkAndUnlockAchievements();
-            }
+            await handleCanvasClick(distance < touchHitRadius);
         }, { passive: false });
 
         document.getElementById("pauseGameBtn").addEventListener("click", togglePause);
@@ -2431,10 +2744,19 @@
                         }
                         db.users[i].timePlayedToday = (db.users[i].timePlayedToday || 0) + gameSeconds;
                         db.users[i].lastActive = Date.now(); 
+                        db.users[i].totalClicks = (db.users[i].totalClicks || 0) + totalClicks;
+                        db.users[i].hitClicks = (db.users[i].hitClicks || 0) + hitClicks;
                         currentLoggedInUser = db.users[i];
                         await saveDB(db);
                     }
                 } catch (err) { console.error("Failed to save play time:", err); }
+            } else if (isAdmin) {
+                let adminClicks = parseInt(localStorage.getItem("starCollectorAdminClicks")) || 0;
+                let adminHits = parseInt(localStorage.getItem("starCollectorAdminHits")) || 0;
+                adminClicks += totalClicks;
+                adminHits += hitClicks;
+                localStorage.setItem("starCollectorAdminClicks", adminClicks);
+                localStorage.setItem("starCollectorAdminHits", adminHits);
             }
         }
 
@@ -2471,7 +2793,6 @@
             await saveTimePlayed();
         });
 
-        // Save & Exit Logic
         document.getElementById("saveExitBtn").addEventListener("click", async () => {
             if (!currentLoggedInUser && !isAdmin) {
                 await showInfo("You must be logged in to save your game.");
@@ -2479,7 +2800,6 @@
             }
 
             if (isAdmin) {
-                // Admin Save & Exit Fix: Save locally
                 localStorage.setItem("starCollectorAdminSave", JSON.stringify({ score, level, time: gameSeconds }));
                 localStorage.setItem("starCollectorAdminHighScore", highScore);
             } else {
@@ -2515,11 +2835,11 @@
             menu.style.display = "block"; showPanel("mainMenuPanel");
         });
 
-        document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; });
+        document.getElementById("resetScoreBtn").addEventListener("click", () => { score = 0; document.getElementById("scoreText").textContent = score; document.title = `Playing - Score: ${score} - Star Collector`; });
         document.getElementById("resetLevelBtn").addEventListener("click", () => { level = 1; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
-        document.getElementById("resetBothBtn").addEventListener("click", () => { score = 0; level = 1; document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); });
+        document.getElementById("resetBothBtn").addEventListener("click", () => { score = 0; level = 1; document.getElementById("scoreText").textContent = score; document.getElementById("levelText").textContent = level; updateSpeedForLevel(); document.title = `Playing - Score: ${score} - Star Collector`; });
 
-        // ============ INIT ============ testing ggggggggggggggggggggggg
+        // ============ INIT ============testing
         const rememberedEmail = localStorage.getItem("starCollectorRememberEmail");
         if (rememberedEmail) { authUsernameInput.value = rememberedEmail; rememberMeCheckbox.checked = true; }
         
@@ -2528,8 +2848,13 @@
         applyDifficulty(difficulty); difficultySelect.value = difficulty;
         resizeCanvas();
         
-        // Set initial URL
         updateURL("Homepage");
+        
+        if ("Notification" in window) {
+            if (Notification.permission === "default") {
+                // Can request later
+            }
+        }
     </script>
 </body>
 </html>
