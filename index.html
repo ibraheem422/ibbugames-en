@@ -209,7 +209,7 @@
             }
         </script>
 
-        <h1>Welcome to Star Collector</h1>
+        <h1>Star Collector</h1>
 
         <div id="syncIndicator">
             <div class="sync-spinner"></div>
@@ -315,6 +315,10 @@
 
                 <div class="menu-element" id="messagesBtnContainer" style="display: none; margin-top: 5px;">
                     <button id="messagesBtn" class="secondary-btn" style="background-color: #17a2b8;">Messages</button>
+                </div>
+
+                <div class="menu-element" id="checkBroadcastBtnContainer" style="display: none; margin-top: 5px;">
+                    <button id="checkBroadcastBtn" class="secondary-btn" style="background-color: #20c997;">Check for Broadcast</button>
                 </div>
 
                 <div class="menu-element" id="adminNotificationsBtnContainer" style="display: none;">
@@ -453,6 +457,14 @@
                 </div>
             </div>
 
+            <div id="notFoundPanel" style="display: none; width: 100%;">
+                <h2 style="margin-top: 0; color: #FF6B6B; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">404 - Page Not Found</h2>
+                <p style="text-align: left; font-size: 14px; line-height: 1.6; color: var(--text-color); margin-bottom: 20px;">The page you're looking for doesn't exist.</p>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromNotFoundBtn" class="secondary-btn">Back to Menu</button>
+                </div>
+            </div>
+
             <div id="adminNotificationsPanel">
                 <h2 style="margin-top: 0; color: #FF6B6B; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Admin Notifications</h2>
                 <div class="menu-element" style="margin-bottom: 15px;">
@@ -480,6 +492,7 @@
                         <p style="font-size: 12px; color: var(--label-color); margin: 0 0 10px 0; width: 100%; text-align: left;">Instantly pops up a message for all online players.</p>
                         <textarea id="broadcastInput" placeholder="Type an instant broadcast..."></textarea>
                         <button id="broadcastBtn" class="secondary-btn" style="background-color: #d9534f; font-size: 14px; padding: 8px 12px;">Send Broadcast</button>
+                        <button id="deleteBroadcastBtn" class="secondary-btn" style="background-color: #6c757d; font-size: 14px; padding: 8px 12px; margin-top: 8px;">Delete Broadcast</button>
                     </div>
                     <div class="menu-element" style="margin-bottom: 15px; position: relative;">
                         <label style="font-size: 13px; margin-bottom: 8px; color: var(--label-color); text-align: left; width: 100%; display: block;">Search Player:</label>
@@ -796,12 +809,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsSHA/3.2.0/sha.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
     <script>
-        // ============ JSONBIN CONFIG ============
-        const JSONBIN_BIN_ID = "6a4cd69ada38895dfe3a0ae3";
-        const JSONBIN_MASTER_KEY = "$2a$10$x4RLzmXXNd8ylmjCBLdE8.gUy1Ue4WRfonZMe0StqRG4YFmY9tdBS";
-        const JSONBIN_BASE_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+        // ============ SUPABASE CONFIG ============
+        const SUPABASE_URL = "https://auwkqhktmdweiqenknpd.supabase.co";
+        const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Ekzb9FlYEf_YV3H1hn5aqQ_tM7HoXfg";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
         // ============ ADMIN CONFIG ============
         const ADMIN_EMAIL = "ibraheem.muhammad.ai@gmail.com";
@@ -809,10 +823,6 @@
         const ADMIN_2FA_SECRET = "BY72ZZYT7BM3O7P5"; 
         const ADMIN_RECOVERY_CODE = "IYK9I3H20H";
         
-        // ============ TEST ACCOUNT CONFIG ============
-        const TEST_EMAIL = "testauth@gmail.com";
-        const TEST_PASSWORD = "test";
-
         // ============ EMAILJS CONFIG ============
         const EMAILJS_SERVICE_ID = "service_hnbvaot";
         const EMAILJS_TEMPLATE_ID = "template_xfaeozt";
@@ -828,37 +838,15 @@
         let passwordResetCode = "";
 
         async function getDB() {
-            const res = await fetch(JSONBIN_BASE_URL + "/latest", { headers: { 'X-Master-Key': JSONBIN_MASTER_KEY } });
-            if (!res.ok) throw new Error("Network response was not ok");
-            const data = await res.json();
-            return data.record;
+            const { data, error } = await supabaseClient.from('app_state').select('data').eq('id', 'main').single();
+            if (error) throw new Error("Network response was not ok");
+            return data.data;
         }
 
         async function saveDB(db) {
-            const res = await fetch(JSONBIN_BASE_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_MASTER_KEY },
-                body: JSON.stringify(db)
-            });
-            if (!res.ok) throw new Error("Failed to save to database");
+            const { error } = await supabaseClient.from('app_state').update({ data: db }).eq('id', 'main');
+            if (error) throw new Error("Failed to save to database");
         }
-
-        async function ensureTestAccountExists() {
-            try {
-                const db = await getDB();
-                if (!db.users) db.users = [];
-                let testUser = db.users.find(u => u.email === TEST_EMAIL);
-                if (!testUser) {
-                    testUser = { id: Date.now().toString(), createdAt: Date.now(), name: "Test User", email: TEST_EMAIL, password: TEST_PASSWORD, status: "active" };
-                    db.users.push(testUser);
-                    await saveDB(db);
-                } else if (testUser.password !== TEST_PASSWORD) {
-                    testUser.password = TEST_PASSWORD;
-                    await saveDB(db);
-                }
-            } catch (err) { console.error("Error ensuring test account exists:", err); }
-        }
-        ensureTestAccountExists();
 
         // ============ CORE SETUP ============
         const canvas = document.getElementById("gameCanvas");
@@ -891,6 +879,7 @@
         const claimRewardContainer = document.getElementById("claimRewardContainer");
         const requestTimeBtnContainer = document.getElementById("requestTimeBtnContainer");
         const messagesBtnContainer = document.getElementById("messagesBtnContainer");
+        const checkBroadcastBtnContainer = document.getElementById("checkBroadcastBtnContainer");
 
         const colorblindModeSelect = document.getElementById("colorblindMode");
         const fontSizeSelect = document.getElementById("fontSizeSelect");
@@ -985,6 +974,68 @@
             }
         }
 
+        // ============ URL ROUTING ============
+        const ROUTE_PANEL_MAP = {
+            "Homepage": "mainMenuPanel",
+            "Game-Settings": "settingsPanel",
+            "Terms-And-Conditions": "termsPanel",
+            "Achievements": "achievementsPanel",
+            "Missed-Games": "missedGamesPanel",
+            "Leaderboard": "leaderboardPanel",
+            "Admin-Dashboard": "adminDashboardPanel",
+            "Admin-Notifications": "adminNotificationsPanel",
+            "Messages": "messagesPanel"
+        };
+        const ADMIN_ONLY_PANELS = ["adminDashboardPanel", "adminNotificationsPanel"];
+        const LOGIN_REQUIRED_PANELS = ["mainMenuPanel", "settingsPanel", "achievementsPanel", "missedGamesPanel", "leaderboardPanel", "messagesPanel"];
+
+        function show404() {
+            const panels = document.querySelectorAll('#menu > div');
+            panels.forEach(p => p.style.display = 'none');
+            const notFound = document.getElementById("notFoundPanel");
+            if (notFound) notFound.style.display = 'block';
+            document.title = "404 Not Found - Star Collector";
+        }
+
+        // This app is routed entirely by the URL hash (e.g. /#/Achievements) - the
+        // part after "#" is never sent to the server. If the page was reached via a
+        // plain path instead (e.g. /Achievements, with no "#"), rewrite it to the
+        // equivalent hash URL so routeToHash() can handle it the same way. Runs once,
+        // before any routing, and does nothing if a hash is already present.
+        function normalizePathToHash() {
+            if (window.location.hash) return;
+            const segments = window.location.pathname.split('/').filter(Boolean);
+            if (segments.length === 0) return;
+            const last = segments[segments.length - 1];
+            if (last.toLowerCase() === "index.html") return;
+            const base = segments.slice(0, -1).join('/');
+            const newUrl = `${window.location.origin}/${base ? base + '/' : ''}index.html${window.location.search}#/${last}`;
+            window.history.replaceState({ path: last }, "", newUrl);
+        }
+
+        // Reads the current URL hash and shows the matching page, or a 404 if the
+        // path doesn't correspond to any known page. Runs once on load (after any
+        // session restore) and again on browser back/forward (popstate).
+        function routeToHash() {
+            const rawPath = decodeURIComponent((window.location.hash || "").replace(/^#\/?/, ""));
+            if (!rawPath || rawPath === "Homepage") {
+                showPanel(isAdmin || currentLoggedInUser ? "mainMenuPanel" : "loginPanel");
+                return;
+            }
+            const panelId = ROUTE_PANEL_MAP[rawPath];
+            if (!panelId) { show404(); return; }
+            if (ADMIN_ONLY_PANELS.includes(panelId) && !isAdmin) {
+                showPanel(isAdmin || currentLoggedInUser ? "mainMenuPanel" : "loginPanel");
+                return;
+            }
+            if (LOGIN_REQUIRED_PANELS.includes(panelId) && !isAdmin && !currentLoggedInUser) {
+                showPanel("loginPanel");
+                return;
+            }
+            showPanel(panelId);
+        }
+        window.addEventListener("popstate", routeToHash);
+
         function showInfo(message) {
             return new Promise((resolve) => {
                 document.getElementById("infoModalMessage").textContent = message;
@@ -1012,6 +1063,15 @@
             });
         }
 
+        // ============ SESSION PERSISTENCE (restore-on-load, no polling) ============
+        function saveSession(isAdminSession, email) {
+            if (isAdminSession) localStorage.setItem("starCollectorSession", JSON.stringify({ admin: true }));
+            else localStorage.setItem("starCollectorSession", JSON.stringify({ admin: false, email }));
+        }
+        function clearSession() {
+            localStorage.removeItem("starCollectorSession");
+        }
+
         function checkAdminStatus() {
             document.getElementById("adminNotificationsBtnContainer").style.display = isAdmin ? "flex" : "none";
             document.getElementById("leaderboardBtnContainer").style.display = isAdmin ? "flex" : "none";
@@ -1020,7 +1080,8 @@
             deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             downloadCertContainer.style.display = (isAdmin || currentLoggedInUser) ? "flex" : "none";
             requestTimeBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
-            messagesBtnContainer.style.display = (currentLoggedInUser || isAdmin) ? "flex" : "none"; 
+            messagesBtnContainer.style.display = (currentLoggedInUser || isAdmin) ? "flex" : "none";
+            checkBroadcastBtnContainer.style.display = (currentLoggedInUser && !isAdmin && !isGuest) ? "flex" : "none";
             
             if (isGuest) {
                 achievementsBtnContainer.style.display = "none";
@@ -1536,7 +1597,8 @@
                 document.getElementById("activePilot").textContent = isAdmin ? (localStorage.getItem("starCollectorAdminName") || "Admin") : currentLoggedInUser.name;
                 highScore = isAdmin ? (parseInt(localStorage.getItem("starCollectorAdminHighScore")) || 0) : (currentLoggedInUser.highScore || 0);
                 document.getElementById("highScoreText").textContent = highScore;
-                
+
+                saveSession(isAdmin, isAdmin ? null : currentLoggedInUser.email);
                 checkAdminStatus(); showPanel("mainMenuPanel");
             } else {
                 failedAttempts++;
@@ -1666,7 +1728,8 @@
                         else localStorage.removeItem("starCollectorRememberEmail");
                         
                         user.lastActive = Date.now(); await saveDB(db);
-                        
+
+                        saveSession(false, user.email);
                         checkAdminStatus(); showPanel("mainMenuPanel");
                     }
                 } catch (err) { authMsg.textContent = "Error connecting to server."; authMsg.style.display = "block"; }
@@ -1802,6 +1865,7 @@
 
         document.getElementById("logoutBtn").addEventListener("click", () => {
             isAdmin = false; isGuest = false; currentLoggedInUser = null;
+            clearSession();
             highScore = 0; document.getElementById("highScoreText").textContent = highScore; checkAdminStatus(); showPanel("loginPanel");
         });
 
@@ -1812,7 +1876,7 @@
             try {
                 const db = await getDB(); if (!db.users) db.users = [];
                 const i = db.users.findIndex(u => u.id === currentLoggedInUser.id);
-                if (i !== -1) { db.users.splice(i, 1); await saveDB(db); await showInfo("Account deleted successfully."); currentLoggedInUser = null; checkAdminStatus(); showPanel("loginPanel"); }
+                if (i !== -1) { db.users.splice(i, 1); await saveDB(db); await showInfo("Account deleted successfully."); currentLoggedInUser = null; clearSession(); checkAdminStatus(); showPanel("loginPanel"); }
             } catch (err) { await showInfo("Error connecting to server."); }
         });
 
@@ -1945,6 +2009,7 @@
                 document.getElementById("changePasswordModalOverlay").classList.remove("active");
                 await showInfo("Admin password updated successfully! Please log in again.");
                 isAdmin = false; isGuest = false; currentLoggedInUser = null;
+                clearSession();
                 checkAdminStatus(); showPanel("loginPanel");
                 return;
             }
@@ -2189,6 +2254,9 @@
         document.getElementById("backBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
         document.getElementById("termsBtn").addEventListener("click", () => { showPanel("termsPanel"); });
         document.getElementById("backFromTermsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+        document.getElementById("backFromNotFoundBtn").addEventListener("click", () => {
+            showPanel(isAdmin || currentLoggedInUser ? "mainMenuPanel" : "loginPanel");
+        });
         
         // Missed Games Panel Navigation
         document.getElementById("missedGamesBtn").addEventListener("click", async () => { 
@@ -2405,22 +2473,55 @@
                 await showInfo("Error sending broadcast. Check connection.");
             }
         });
+
+        document.getElementById("deleteBroadcastBtn").addEventListener("click", async () => {
+            try {
+                const db = await getDB();
+                if (!db.settings || !db.settings.broadcast) { await showInfo("There is no active broadcast to delete."); return; }
+                const confirmed = await showConfirm("Delete Broadcast", "Are you sure you want to remove the current broadcast?");
+                if (!confirmed) return;
+                db.settings.broadcast = "";
+                db.settings.broadcastTime = 0;
+                await saveDB(db);
+                await showInfo("Broadcast deleted successfully.");
+            } catch (err) {
+                await showInfo("Error deleting broadcast. Check connection.");
+            }
+        });
         
-        async function checkForBroadcasts() {
-            if (isAdmin || isGuest || !currentLoggedInUser) return;
+        let broadcastCheckInProgress = false;
+        async function checkForBroadcasts(silent) {
+            if (isAdmin || isGuest || !currentLoggedInUser) return false;
+            if (broadcastCheckInProgress) return false;
+            broadcastCheckInProgress = true;
             try {
                 const db = await getDB();
                 if (db.settings && db.settings.broadcast) {
                     const lastSeen = localStorage.getItem("starCollectorLastBroadcast") || 0;
                     if (parseInt(db.settings.broadcastTime) > parseInt(lastSeen)) {
                         localStorage.setItem("starCollectorLastBroadcast", db.settings.broadcastTime);
+                        // Pause an in-progress game so it doesn't keep running invisibly behind the modal
+                        const shouldResume = gameActive && !gamePaused;
+                        if (shouldResume) togglePause();
                         await showInfo(`Admin Broadcast:\n\n${db.settings.broadcast}`);
+                        if (shouldResume && gameActive && gamePaused) togglePause();
+                        return true;
                     }
                 }
-            } catch (err) {}
+            } catch (err) {
+                if (!silent) await showInfo("Error checking for broadcast. Check connection.");
+                return false;
+            } finally {
+                broadcastCheckInProgress = false;
+            }
+            return false;
         }
-        setInterval(checkForBroadcasts, 5000); 
-        
+        document.getElementById("checkBroadcastBtn").addEventListener("click", async () => {
+            const found = await checkForBroadcasts();
+            if (!found) await showInfo("No new broadcasts.");
+        });
+        // Broadcasts are only ever checked when the user clicks "Check for Broadcasts" above -
+        // no automatic/background checking (no polling, no check-on-login).
         document.getElementById("resetDataBtn").addEventListener("click", async () => {
             const confirmed = await showConfirm("Reset Database", "Are you absolutely sure? This will wipe ALL users, scores, and saved games.");
             if (!confirmed) return;
@@ -2847,14 +2948,64 @@
         applyColorblindMode(colorblindMode); colorblindModeSelect.value = colorblindMode;
         applyDifficulty(difficulty); difficultySelect.value = difficulty;
         resizeCanvas();
-        
-        updateURL("Homepage");
-        
+
         if ("Notification" in window) {
             if (Notification.permission === "default") {
                 // Can request later
             }
         }
+
+        // If the page was loaded via a plain path (no "#"), rewrite it to the
+        // equivalent hash URL before any routing happens.
+        normalizePathToHash();
+
+        // Restore a previously logged-in session on page load (one-time check, no polling).
+        // Once the session (if any) is resolved, routeToHash() reads the current URL and
+        // shows whatever page it points to (or a 404 if it doesn't match a known page).
+        (async function restoreSession() {
+            const raw = localStorage.getItem("starCollectorSession");
+            if (!raw) { routeToHash(); return; }
+            let session;
+            try { session = JSON.parse(raw); } catch (e) { clearSession(); routeToHash(); return; }
+
+            try {
+                if (session.admin) {
+                    isAdmin = true; isGuest = false; currentLoggedInUser = null;
+                    document.getElementById("activePilot").textContent = localStorage.getItem("starCollectorAdminName") || "Admin";
+                    highScore = parseInt(localStorage.getItem("starCollectorAdminHighScore")) || 0;
+                    document.getElementById("highScoreText").textContent = highScore;
+
+                    checkAdminStatus(); routeToHash();
+                } else if (session.email) {
+                    const db = await getDB();
+                    const user = (db.users || []).find(u => u.email === session.email);
+                    if (!user || user.status === "locked") { clearSession(); routeToHash(); return; }
+
+                    isAdmin = false; isGuest = false; currentLoggedInUser = user;
+                    document.getElementById("activePilot").textContent = user.name;
+                    highScore = user.highScore || 0;
+                    document.getElementById("highScoreText").textContent = highScore;
+                    document.getElementById("streakText").textContent = user.streak || 0;
+
+                    if (user.theme) { themeMode = user.theme; themeModeSelect.value = themeMode; applyTheme(themeMode); }
+                    if (user.difficulty) { applyDifficulty(user.difficulty); difficultySelect.value = user.difficulty; }
+                    if (user.avatarColor) {
+                        selectedAvatarColor = user.avatarColor;
+                        document.querySelectorAll(".avatar-option").forEach(el => {
+                            if (el.getAttribute("data-color") === user.avatarColor) el.classList.add("active");
+                            else el.classList.remove("active");
+                        });
+                    }
+
+                    checkAdminStatus(); routeToHash();
+                } else {
+                    clearSession(); routeToHash();
+                }
+            } catch (err) {
+                // Network/DB error - leave the user on the login screen; session stays stored so it can retry next load.
+                routeToHash();
+            }
+        })();
     </script>
 </body>
 </html>
