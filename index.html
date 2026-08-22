@@ -39,13 +39,12 @@
         .logo-container { display: flex; justify-content: center; align-items: center; margin: 10px auto; min-height: 80px; animation: slideInDown 0.5s ease-out; }
         @keyframes slideInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
         .site-logo { max-width: 120px; height: auto; display: block; }
-        .fallback-logo { background: linear-gradient(135deg, #FFD700, #FFA500); width: 70px; height: 70px; border-radius: 50px; display: flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 0 15px rgba(255, 215, 0, 0.4); animation: pulse 2s infinite alternate; }
         @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
         h1 { margin: 0 0 15px 0; font-weight: 800; letter-spacing: 1px; color: var(--text-color); font-size: 36px; text-shadow: 0 2px 10px rgba(0,0,0,0.2); animation: glow 2s ease-in-out infinite; }
         #menu { background-color: var(--panel-bg); border: 4px solid var(--border-color); border-radius: 12px; width: 100%; max-width: 320px; margin: 15px auto; padding: 25px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); box-sizing: border-box; transition: background-color 0.3s, border-color 0.3s; }
         .menu-element { margin: 15px 0; display: flex; justify-content: center; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.5s ease-out; }
         #loginPanel { display: block; width: 100%; }
-        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel, #achievementsPanel, #publicProfilePanel, #messagesPanel { display: none; width: 100%; }
+        #mainMenuPanel, #settingsPanel, #termsPanel, #adminNotificationsPanel, #missedGamesPanel, #leaderboardPanel, #adminDashboardPanel, #guestNamePanel, #guestWaitingPanel, #resetRequestPanel, #resetVerifyPanel, #resetNewPasswordPanel, #achievementsPanel, #publicProfilePanel, #messagesPanel, #myRequestsPanel, #playerRequestsPanel { display: none; width: 100%; }
         #pauseOverlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); z-index: 500; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         #pauseOverlay.active { display: flex; }
         #pauseBox { background-color: var(--panel-bg); border: 3px solid var(--border-color); border-radius: 12px; padding: 40px; text-align: center; animation: modalFadeIn 0.3s ease-out forwards; }
@@ -198,16 +197,17 @@
 
     <div class="wrapper">
         <div class="logo-container">
-            <img id="logoImg" src="logo.png" alt="Game Logo" class="site-logo" onerror="handleLogoError()">
+            <svg id="logoImg" class="site-logo" viewBox="0 0 100 100" role="img" aria-label="Game Logo">
+                <polygon points="50,4 62,36 97,36 69,57 79,90 50,70 21,90 31,57 3,36 38,36"
+                    fill="url(#logoStarGradient)" stroke="#B8860B" stroke-width="2" stroke-linejoin="round"/>
+                <defs>
+                    <linearGradient id="logoStarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#FFD700"/>
+                        <stop offset="100%" stop-color="#FFA500"/>
+                    </linearGradient>
+                </defs>
+            </svg>
         </div>
-        <script>
-            function handleLogoError() {
-                const logoContainer = document.querySelector('.logo-container');
-                if (logoContainer) {
-                    logoContainer.innerHTML = '<div class="fallback-logo">?</div>';
-                }
-            }
-        </script>
 
         <h1>Star Collector</h1>
 
@@ -313,6 +313,10 @@
                     <button id="requestTimeBtn" class="secondary-btn" style="background-color: #f0ad4e; color: white;">Request More Time</button>
                 </div>
 
+                <div class="menu-element" id="myRequestsBtnContainer" style="display: none; margin-top: 5px;">
+                    <button id="myRequestsBtn" class="secondary-btn" style="background-color: #5bc0de; color: white;">My Requests</button>
+                </div>
+
                 <div class="menu-element" id="messagesBtnContainer" style="display: none; margin-top: 5px;">
                     <button id="messagesBtn" class="secondary-btn" style="background-color: #17a2b8;">Messages</button>
                 </div>
@@ -323,6 +327,9 @@
 
                 <div class="menu-element" id="adminNotificationsBtnContainer" style="display: none;">
                     <button id="adminNotificationsBtn" class="secondary-btn">Admin Notifications <span id="notificationCount" class="admin-badge">0</span></button>
+                </div>
+                <div class="menu-element" id="playerRequestsBtnContainer" style="display: none;">
+                    <button id="playerRequestsBtn" class="secondary-btn" style="background-color: #6610f2;">Requests From Players</button>
                 </div>
                 <div class="menu-element" id="leaderboardBtnContainer" style="display: none;">
                     <button id="leaderboardBtn" class="secondary-btn" style="background-color: #6f42c1;">Leaderboard</button>
@@ -475,6 +482,26 @@
                 </div>
                 <div class="menu-element" style="margin-top: 20px;">
                     <button id="backFromAdminBtn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="myRequestsPanel">
+                <h2 style="margin-top: 0; color: #5bc0de; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">My Requests</h2>
+                <div id="myRequestsList">
+                    <div class="no-notifications">Loading...</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromMyRequestsBtn">Back to Menu</button>
+                </div>
+            </div>
+
+            <div id="playerRequestsPanel">
+                <h2 style="margin-top: 0; color: #6610f2; font-size: 24px; border-bottom: 2px solid var(--border-color); padding-bottom: 8px; margin-bottom: 20px;">Requests From Players</h2>
+                <div id="playerRequestsList">
+                    <div class="no-notifications">Loading...</div>
+                </div>
+                <div class="menu-element" style="margin-top: 20px;">
+                    <button id="backFromPlayerRequestsBtn">Back to Menu</button>
                 </div>
             </div>
 
@@ -878,6 +905,8 @@
         const claimRewardBtn = document.getElementById("claimRewardBtn");
         const claimRewardContainer = document.getElementById("claimRewardContainer");
         const requestTimeBtnContainer = document.getElementById("requestTimeBtnContainer");
+        const myRequestsBtnContainer = document.getElementById("myRequestsBtnContainer");
+        const playerRequestsBtnContainer = document.getElementById("playerRequestsBtnContainer");
         const messagesBtnContainer = document.getElementById("messagesBtnContainer");
         const checkBroadcastBtnContainer = document.getElementById("checkBroadcastBtnContainer");
 
@@ -965,6 +994,8 @@
                 else if (panelId === "leaderboardPanel") urlPath = "Leaderboard";
                 else if (panelId === "adminDashboardPanel") urlPath = "Admin-Dashboard";
                 else if (panelId === "adminNotificationsPanel") urlPath = "Admin-Notifications";
+                else if (panelId === "myRequestsPanel") urlPath = "My-Requests";
+                else if (panelId === "playerRequestsPanel") urlPath = "Player-Requests";
                 else if (panelId === "messagesPanel") urlPath = "Messages";
                 else if (panelId === "loginPanel") urlPath = "Homepage";
                 
@@ -984,10 +1015,12 @@
             "Leaderboard": "leaderboardPanel",
             "Admin-Dashboard": "adminDashboardPanel",
             "Admin-Notifications": "adminNotificationsPanel",
+            "My-Requests": "myRequestsPanel",
+            "Player-Requests": "playerRequestsPanel",
             "Messages": "messagesPanel"
         };
-        const ADMIN_ONLY_PANELS = ["adminDashboardPanel", "adminNotificationsPanel"];
-        const LOGIN_REQUIRED_PANELS = ["mainMenuPanel", "settingsPanel", "achievementsPanel", "missedGamesPanel", "leaderboardPanel", "messagesPanel"];
+        const ADMIN_ONLY_PANELS = ["adminDashboardPanel", "adminNotificationsPanel", "playerRequestsPanel"];
+        const LOGIN_REQUIRED_PANELS = ["mainMenuPanel", "settingsPanel", "achievementsPanel", "missedGamesPanel", "leaderboardPanel", "messagesPanel", "myRequestsPanel", "playerRequestsPanel"];
 
         function show404() {
             const panels = document.querySelectorAll('#menu > div');
@@ -1080,6 +1113,8 @@
             deleteAccountBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
             downloadCertContainer.style.display = (isAdmin || currentLoggedInUser) ? "flex" : "none";
             requestTimeBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            myRequestsBtnContainer.style.display = (!isAdmin && currentLoggedInUser) ? "flex" : "none";
+            playerRequestsBtnContainer.style.display = isAdmin ? "flex" : "none";
             messagesBtnContainer.style.display = (currentLoggedInUser || isAdmin) ? "flex" : "none";
             checkBroadcastBtnContainer.style.display = (currentLoggedInUser && !isAdmin && !isGuest) ? "flex" : "none";
             
@@ -2233,13 +2268,18 @@
             try {
                 const db = await getDB();
                 if (!db.requests) db.requests = [];
-                db.requests.push({ 
-                    id: Date.now().toString(), 
-                    name: currentLoggedInUser.name, 
-                    email: currentLoggedInUser.email, 
-                    reason: reason, 
-                    status: "pending", 
-                    type: "time_extension" 
+                if (db.requests.find(r => r.email === currentLoggedInUser.email && r.type === 'time_extension')) {
+                    document.getElementById("requestTimeModalOverlay").classList.remove("active");
+                    await showInfo("You already have a pending time request. Please wait for the admin to respond.");
+                    return;
+                }
+                db.requests.push({
+                    id: Date.now().toString(),
+                    name: currentLoggedInUser.name,
+                    email: currentLoggedInUser.email,
+                    reason: reason,
+                    status: "pending",
+                    type: "time_extension"
                 });
                 await saveDB(db);
                 document.getElementById("requestTimeModalOverlay").classList.remove("active");
@@ -2539,8 +2579,7 @@
             }
         });
 
-        document.getElementById("adminNotificationsBtn").addEventListener("click", async () => {
-            showPanel("adminNotificationsPanel");
+        async function loadAdminNotifications() {
             const list = document.getElementById("notificationsList");
             list.innerHTML = "<div class='no-notifications'>Loading...</div>";
             try {
@@ -2565,8 +2604,71 @@
                     list.appendChild(item);
                 });
             } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading. Check connection.</div>"; }
+        }
+        document.getElementById("adminNotificationsBtn").addEventListener("click", async () => {
+            showPanel("adminNotificationsPanel");
+            await loadAdminNotifications();
         });
         document.getElementById("backFromAdminBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
+        async function loadMyRequests() {
+            const list = document.getElementById("myRequestsList");
+            list.innerHTML = "<div class='no-notifications'>Loading...</div>";
+            try {
+                const db = await getDB();
+                const requests = (db.requests || []).filter(r => r.type === "time_extension" && r.email === currentLoggedInUser.email);
+                if (requests.length === 0) { list.innerHTML = "<div class='no-notifications'>You have no pending requests.</div>"; return; }
+                list.innerHTML = "";
+                requests.forEach(req => {
+                    const item = document.createElement("div"); item.className = "notification-item";
+                    item.innerHTML = `
+                        <h3>Time Extension Request</h3>
+                        <p><strong>Status:</strong> ${req.status}</p>
+                        ${req.reason ? `<p><strong>Reason:</strong> ${req.reason}</p>` : ''}
+                        <div class="notification-actions"><button class="decline-btn" onclick="declineUser('${req.id}')">Cancel Request</button></div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading. Check connection.</div>"; }
+        }
+        document.getElementById("myRequestsBtn").addEventListener("click", async () => {
+            showPanel("myRequestsPanel");
+            await loadMyRequests();
+        });
+        document.getElementById("backFromMyRequestsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
+        async function loadPlayerRequests() {
+            const list = document.getElementById("playerRequestsList");
+            list.innerHTML = "<div class='no-notifications'>Loading...</div>";
+            try {
+                const db = await getDB();
+                const requests = (db.requests || []).filter(r => r.type !== "signup");
+                if (requests.length === 0) { list.innerHTML = "<div class='no-notifications'>No requests from players.</div>"; return; }
+                list.innerHTML = "";
+                requests.forEach(req => {
+                    const item = document.createElement("div"); item.className = "notification-item";
+                    item.innerHTML = `
+                        <h3>Time Extension Request</h3>
+                        <p><strong>Name:</strong> ${req.name}</p>
+                        <p><strong>Email:</strong> ${req.email}</p>
+                        ${req.reason ? `<p><strong>Reason:</strong> ${req.reason}</p>` : ''}
+                        <div class="notification-actions"><button class="accept-btn" onclick="openGrantTimeModal('${req.email}')">Grant Time</button><button class="decline-btn" onclick="declineUser('${req.id}')">Dismiss</button></div>
+                    `;
+                    list.appendChild(item);
+                });
+            } catch (err) { list.innerHTML = "<div class='no-notifications'>Error loading. Check connection.</div>"; }
+        }
+        document.getElementById("playerRequestsBtn").addEventListener("click", async () => {
+            showPanel("playerRequestsPanel");
+            await loadPlayerRequests();
+        });
+        document.getElementById("backFromPlayerRequestsBtn").addEventListener("click", () => { showPanel("mainMenuPanel"); });
+
+        async function refreshRequestPanels() {
+            if (document.getElementById("adminNotificationsPanel").style.display === "block") await loadAdminNotifications();
+            if (document.getElementById("myRequestsPanel").style.display === "block") await loadMyRequests();
+            if (document.getElementById("playerRequestsPanel").style.display === "block") await loadPlayerRequests();
+        }
 
         document.getElementById("playerSearchBtn").addEventListener("click", async () => {
             const searchVal = document.getElementById("playerSearchInput").value.trim().toLowerCase();
@@ -2681,7 +2783,7 @@
                         if (reqIdx !== -1) {
                             db.requests.splice(reqIdx, 1);
                             await saveDB(db);
-                            loadAdminNotifications();
+                            await refreshRequestPanels();
                         }
                     }
                     
@@ -2708,7 +2810,7 @@
                 const req = db.requests[i];
                 db.users.push({ id: req.id, createdAt: req.createdAt || Date.now(), name: req.name, email: req.email, password: req.password, status: "active" });
                 db.requests.splice(i, 1); await saveDB(db);
-                await showInfo("User accepted!"); loadAdminNotifications();
+                await showInfo("User accepted!"); await refreshRequestPanels();
             } catch (err) { showInfo("Error approving user. Check connection."); }
         };
 
@@ -2717,7 +2819,7 @@
                 const db = await getDB(); if (!db.requests) db.requests = [];
                 const i = db.requests.findIndex(r => r.id === reqId); if (i === -1) return;
                 db.requests.splice(i, 1); await saveDB(db);
-                await showInfo("User declined."); loadAdminNotifications();
+                await showInfo("User declined."); await refreshRequestPanels();
             } catch (err) { showInfo("Error declining user. Check connection."); }
         };
 
